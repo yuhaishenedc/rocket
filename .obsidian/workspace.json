@@ -180,7 +180,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -197,6 +198,20 @@
   },
   "active": "856a7de4fa65c18b",
   "lastOpenFiles": [
+    "page_checks/thomas_ch1_tmp2/pdf_page_38.png",
+    "page_checks/thomas_ch1_tmp2/pdf_page_37.png",
+    "page_checks/thomas_ch1_tmp2",
+    "page_checks/thomas_ch1_tmp/pdf_page_36.png",
+    "page_checks/thomas_ch1_tmp/pdf_page_35.png",
+    "page_checks/thomas_ch1_tmp/pdf_page_34.png",
+    "托马斯微积分/images/1-3-sinusoid.png",
+    "托马斯微积分/images/1-3-transformations.png",
+    "托马斯微积分/images/1-47.png",
+    "托马斯微积分/images/1-46.png",
+    "托马斯微积分/images/1-45.png",
+    "托马斯微积分/images/1-44.png",
+    "page_checks/thomas_ch1_tmp",
+    "page_checks/thomas_ch1",
     "未命名 1.base",
     "未命名.base",
     "托马斯微积分/第12章_向量与空间几何.md",
