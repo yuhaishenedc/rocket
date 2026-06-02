@@ -1,0 +1,27 @@
+/* Center Markdown images and their italic captions in reading view. */
+.markdown-preview-view p:has(> img:only-child),
+.markdown-preview-view p:has(> span.internal-embed.image-embed:only-child) {
+  text-align: center;
+}
+
+.markdown-preview-view p:has(> img:only-child) img,
+.markdown-preview-view p:has(> span.internal-embed.image-embed:only-child) img {
+  display: block;
+  margin-inline: auto;
+}
+
+.markdown-preview-view p:has(> img:only-child) + p:has(> em:only-child),
+.markdown-preview-view p:has(> span.internal-embed.image-embed:only-child) + p:has(> em:only-child) {
+  text-align: center;
+}
+
+/* Center the same figure patterns in Live Preview. */
+.markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image),
+.markdown-source-view.mod-cm6 .cm-line:has(.image-embed) {
+  text-align: center;
+}
+
+.markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image) + .cm-line:has(.cm-em),
+.markdown-source-view.mod-cm6 .cm-line:has(.image-embed) + .cm-line:has(.cm-em) {
+  text-align: center;
+}

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "托马斯微积分/第12章_向量与空间几何.md",
+                "file": "托马斯微积分/第1章_函数.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "第12章_向量与空间几何"
+              "title": "第1章_函数"
             }
           }
         ]
@@ -180,8 +180,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -198,6 +197,7 @@
   },
   "active": "856a7de4fa65c18b",
   "lastOpenFiles": [
+    "托马斯微积分/第12章_向量与空间几何.md",
     "托马斯微积分/第1章_函数.md",
     "托马斯微积分/images/12-22.png",
     "page_checks/thomas_ch12_fig22/pdf_page_733_4x.png",
@@ -218,7 +218,6 @@
     "page_checks/thomas_ch1",
     "未命名 1.base",
     "未命名.base",
-    "托马斯微积分/第12章_向量与空间几何.md",
     "托马斯微积分/第1章_函数_英文初稿.md",
     "托马斯微积分/Thomas Calculus 13th [Solutions].pdf"
   ]
