@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "托马斯微积分/第1章_函数.md",
+                "file": "托马斯微积分/第12章_向量与空间几何.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "第1章_函数"
+              "title": "第12章_向量与空间几何"
             }
           }
         ]
@@ -180,7 +180,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -197,23 +198,23 @@
   },
   "active": "856a7de4fa65c18b",
   "lastOpenFiles": [
-    "托马斯微积分/第12章_向量与空间几何.md",
     "托马斯微积分/第1章_函数.md",
+    "托马斯微积分/第12章_向量与空间几何.md",
+    "托马斯微积分/images/12-34.png",
+    "托马斯微积分/images/12-33.png",
+    "托马斯微积分/images/12-32.png",
+    "托马斯微积分/images/12-31.png",
+    "托马斯微积分/images/12-30.png",
+    "托马斯微积分/images/12-29.png",
+    "托马斯微积分/images/12-28.png",
+    "托马斯微积分/images/12-27.png",
     "托马斯微积分/images/12-22.png",
     "page_checks/thomas_ch12_fig22/pdf_page_733_4x.png",
     "page_checks/thomas_ch12_fig22",
-    "托马斯微积分/images/12-21.png",
-    "page_checks/thomas_ch12_fig21/pdf_page_732_4x.png",
     "page_checks/thomas_ch12_fig21",
-    "page_checks/thomas_ch1_fix37/pdf_page_35_4x.png",
     "page_checks/thomas_ch1_fix37",
-    "page_checks/thomas_ch1_fix/pdf_page_36_4x.png",
     "page_checks/thomas_ch1_fix",
-    "page_checks/thomas_ch1_tmp2/pdf_page_38.png",
-    "page_checks/thomas_ch1_tmp2/pdf_page_37.png",
     "page_checks/thomas_ch1_tmp2",
-    "page_checks/thomas_ch1_tmp/pdf_page_36.png",
-    "page_checks/thomas_ch1_tmp/pdf_page_35.png",
     "page_checks/thomas_ch1_tmp",
     "page_checks/thomas_ch1",
     "未命名 1.base",
