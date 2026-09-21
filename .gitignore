@@ -1,3 +1,11 @@
 # Obsidian local directories
 .obsidian/
 .trash/
+
+# Local PDF/OCR conversion work files
+.codex_*.py
+.hf_nllb/
+page_checks/
+**/.english_ch1_ocr.json
+**/.english_ch1_zh_cache.json
+**/images/_chapter*_montage.*
