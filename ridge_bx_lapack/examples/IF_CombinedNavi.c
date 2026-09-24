@@ -84,6 +84,83 @@ IF_CombinedNavi g_CombinedNaviInput = { 0 };
 #define CONTROL_PERIOD 0.02
 #define PI 3.1415926
 
+/*--------------------更新指定位置的姿态角差分--------------------*/
+static void ShipUpdateAttangleDiff(int pos)
+{
+	int left;
+	int right;
+	int i;
+	double dt;
+
+	if (pos < 0 || pos >= s_stShipPriv.cnt)
+	{
+		return;
+	}
+
+	if (s_stShipPriv.cnt < 2)
+	{
+		for (i = 0; i < 3; i++)
+		{
+			s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] = 0.0;
+		}
+		return;
+	}
+
+	left = pos > 0 ? pos - 1 : 0;
+	right = pos + 1 < s_stShipPriv.cnt ? pos + 1 : s_stShipPriv.cnt - 1;
+	dt = s_stShipPriv.AttangleBuffer[right].time - s_stShipPriv.AttangleBuffer[left].time;
+	if (dt <= 0.0)
+	{
+		for (i = 0; i < 3; i++)
+		{
+			s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] = 0.0;
+		}
+		return;
+	}
+
+	for (i = 0; i < 3; i++)
+	{
+		s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] =
+			(s_stShipPriv.AttangleBuffer[right].Attangle[i] -
+			 s_stShipPriv.AttangleBuffer[left].Attangle[i]) / dt;
+	}
+}
+
+/*--------------------更新指定位置的六维平滑数据--------------------*/
+static void ShipUpdateTrainData(int pos)
+{
+	int left;
+	int right;
+	int i;
+	int j;
+	double angleSum[3] = { 0.0 };
+	double diffSum[3] = { 0.0 };
+	double scale;
+
+	if (pos < 0 || pos >= s_stShipPriv.cnt)
+	{
+		return;
+	}
+
+	left = pos > 1 ? pos - 2 : 0;
+	right = pos + 2 < s_stShipPriv.cnt ? pos + 2 : s_stShipPriv.cnt - 1;
+	for (i = left; i <= right; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			angleSum[j] += s_stShipPriv.AttangleBuffer[i].Attangle[j];
+			diffSum[j] += s_stShipPriv.AttangleBuffer[i].AttangleDiff[j];
+		}
+	}
+
+	scale = 1.0 / (right - left + 1);
+	for (i = 0; i < 3; i++)
+	{
+		s_stShipPriv.trainData[pos][i] = angleSum[i] * scale;
+		s_stShipPriv.trainData[pos][i + 3] = diffSum[i] * scale;
+	}
+}
+
 
 void testShip()
 {
@@ -111,12 +188,19 @@ void testShip()
 	if (index > 0)
 	{
 		memmove(&s_stShipPriv.AttangleBuffer[0], &s_stShipPriv.AttangleBuffer[index], sizeof(s_stShipPriv.AttangleBuffer[0]) * (s_stShipPriv.cnt - index));
+		memmove(&s_stShipPriv.trainData[0], &s_stShipPriv.trainData[index], sizeof(s_stShipPriv.trainData[0]) * (s_stShipPriv.cnt - index));
 		s_stShipPriv.cnt -= index;
 		s_stShipPriv.method1EndIndex -= index;
 		if (s_stShipPriv.method1EndIndex < 0)
 		{
 			s_stShipPriv.method1EndIndex = 0;
 		}
+
+		/*--------------------删除数据后更新左边界差分和平滑值--------------------*/
+		ShipUpdateAttangleDiff(0);
+		ShipUpdateTrainData(0);
+		ShipUpdateTrainData(1);
+		ShipUpdateTrainData(2);
 	}
 
     /*--------------------数据降频，100ms数据更新一次--------------------*/
@@ -141,6 +225,14 @@ void testShip()
             }
             s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].time = s_stShipPriv.dTimeStore;
             s_stShipPriv.cnt++;
+
+            /*--------------------加入数据后更新右边界差分和平滑值--------------------*/
+            ShipUpdateAttangleDiff(s_stShipPriv.cnt - 2);
+            ShipUpdateAttangleDiff(s_stShipPriv.cnt - 1);
+            ShipUpdateTrainData(s_stShipPriv.cnt - 4);
+            ShipUpdateTrainData(s_stShipPriv.cnt - 3);
+            ShipUpdateTrainData(s_stShipPriv.cnt - 2);
+            ShipUpdateTrainData(s_stShipPriv.cnt - 1);
 
             /*--------------------更新method1近10s数据起始索引--------------------*/
             while (s_stShipPriv.method1EndIndex < s_stShipPriv.cnt &&
