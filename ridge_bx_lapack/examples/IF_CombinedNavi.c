@@ -33,6 +33,7 @@ typedef struct
 	Data AttangleBuffer[SHIP_WINDOW_SIZE_30S];		// 近30s内的船姿数据
     
     /*--------------------峰值+周期法--------------------*/
+	int method1EndIndex;
 	double detPitch[SHIP_WINDOW_SIZE_10S];			// 近10s内均值归零俯仰角数据
 	double dTCross[SHIP_WINDOW_SIZE_10S];		    // 近10s内穿越时间点
 	double validPeriod[SHIP_WINDOW_SIZE_10S];	    // 近10s内数据周期
@@ -111,6 +112,11 @@ void testShip()
 	{
 		memmove(&s_stShipPriv.AttangleBuffer[0], &s_stShipPriv.AttangleBuffer[index], sizeof(s_stShipPriv.AttangleBuffer[0]) * (s_stShipPriv.cnt - index));
 		s_stShipPriv.cnt -= index;
+		s_stShipPriv.method1EndIndex -= index;
+		if (s_stShipPriv.method1EndIndex < 0)
+		{
+			s_stShipPriv.method1EndIndex = 0;
+		}
 	}
 
     /*--------------------数据降频，100ms数据更新一次--------------------*/
@@ -135,6 +141,14 @@ void testShip()
             }
             s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].time = s_stShipPriv.dTimeStore;
             s_stShipPriv.cnt++;
+
+            /*--------------------更新method1近10s数据起始索引--------------------*/
+            while (s_stShipPriv.method1EndIndex < s_stShipPriv.cnt &&
+                   s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time -
+                   s_stShipPriv.AttangleBuffer[s_stShipPriv.method1EndIndex].time > 10.0)
+            {
+                s_stShipPriv.method1EndIndex++;
+            }
         }
         s_stShipPriv.bUpdate100ms = FALSE;
 	}
@@ -259,22 +273,21 @@ void testShip()
 	/*--------------------峰值法+周期法--------------------*/
 	if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time < 29.5)
 	{
-		/*--------------------endIndex指向10s内的数据--------------------*/
-		int endIndex = 0;
-		for (endIndex = 0; endIndex < s_stShipPriv.cnt && s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[endIndex].time > 10; endIndex++);
+		/*--------------------method1EndIndex指向近10s内的数据--------------------*/
+		int method1EndIndex = s_stShipPriv.method1EndIndex;
 
 		/*--------------------对10s内数据进行赋值--------------------*/
-		int Num10s = s_stShipPriv.cnt - endIndex;		// 10s内数据总数
+		int Num10s = s_stShipPriv.cnt - method1EndIndex;		// 10s内数据总数
 		memset(s_stShipPriv.detPitch, 0, sizeof(s_stShipPriv.detPitch));
 		double SumPitch = 0;							// 10s内俯仰角和
-		for (int i = endIndex; i < s_stShipPriv.cnt; i++)
+		for (int i = method1EndIndex; i < s_stShipPriv.cnt; i++)
 		{
 			SumPitch += s_stShipPriv.trainData[i][1];
 		}
 		SumPitch /= Num10s;
 		for (int i = 0; i < Num10s; i++)
 		{
-			s_stShipPriv.detPitch[i] = s_stShipPriv.trainData[i + endIndex][1] - SumPitch;
+			s_stShipPriv.detPitch[i] = s_stShipPriv.trainData[i + method1EndIndex][1] - SumPitch;
 		}
 
 		//////////////////////////////计算平均周期//////////////////////////////
@@ -303,7 +316,7 @@ void testShip()
 			{
 				if (s_stShipPriv.detPitch[i] <= -0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[endIndex + i].time;
+					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[method1EndIndex + i].time;
 					currentState = -1;
 				}
 			}
@@ -312,7 +325,7 @@ void testShip()
 			{
 				if (s_stShipPriv.detPitch[i] >= 0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[endIndex + i].time;
+					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[method1EndIndex + i].time;
 					currentState = 1;
 				}
 			}
@@ -364,9 +377,9 @@ void testShip()
 		if (Num10s >= 3)
 		{
 			/*--------------------计算峰峰值--------------------*/
-			double mx = s_stShipPriv.trainData[endIndex][1];
-			double mn = s_stShipPriv.trainData[endIndex][1];
-			for (int i = endIndex + 1; i < s_stShipPriv.cnt; i++)
+			double mx = s_stShipPriv.trainData[method1EndIndex][1];
+			double mn = s_stShipPriv.trainData[method1EndIndex][1];
+			for (int i = method1EndIndex + 1; i < s_stShipPriv.cnt; i++)
 			{
 				if (s_stShipPriv.trainData[i][1] > mx)
 				{
@@ -384,7 +397,7 @@ void testShip()
 
 			/*--------------------从后向前扫描（靠近当前时刻优先级最高）波峰条件：左侧显著上升，右侧显著下降--------------------*/
 			double found = 0;
-			for (int i = s_stShipPriv.cnt - 2; i > endIndex; i--)
+			for (int i = s_stShipPriv.cnt - 2; i > method1EndIndex; i--)
 			{
 				double diffLeft = s_stShipPriv.trainData[i][1] - s_stShipPriv.trainData[i - 1][1];
 				double diffRight = s_stShipPriv.trainData[i + 1][1] - s_stShipPriv.trainData[i][1];
@@ -400,7 +413,7 @@ void testShip()
 			/*--------------------退化1（未找到显著波峰，标准降为普通符号过0）--------------------*/
 			if (0 == found)
 			{
-				for (int i = s_stShipPriv.cnt - 2; i > endIndex; i--)
+				for (int i = s_stShipPriv.cnt - 2; i > method1EndIndex; i--)
 				{
 					double diffLeft = s_stShipPriv.trainData[i][1] - s_stShipPriv.trainData[i - 1][1];
 					double diffRight = s_stShipPriv.trainData[i + 1][1] - s_stShipPriv.trainData[i][1];
@@ -417,9 +430,9 @@ void testShip()
 			/*--------------------退化2（若缓存单调（无任何波峰），退化为全局最大值索引）--------------------*/
 			if (0 == found)
 			{
-				double peakValTmp = s_stShipPriv.trainData[endIndex][1];
-				peakIdx = endIndex;
-				for (int i = endIndex; i < s_stShipPriv.cnt; i++)
+				double peakValTmp = s_stShipPriv.trainData[method1EndIndex][1];
+				peakIdx = method1EndIndex;
+				for (int i = method1EndIndex; i < s_stShipPriv.cnt; i++)
 				{
 					if (s_stShipPriv.trainData[i][1] > peakValTmp)
 					{
