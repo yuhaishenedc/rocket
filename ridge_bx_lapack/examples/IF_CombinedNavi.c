@@ -13,7 +13,6 @@ typedef struct
 }PredResult;
 typedef struct
 {
-	double time;				// 接收到数据的时间
 	double Attangle[3];			// 船姿态（滚转、偏航、俯仰）
 	double AttangleDiff[3];		// 船角速度
 }Data;
@@ -24,9 +23,14 @@ typedef struct
 }ClusterPool;
 typedef struct
 {
-    double dTimeStore;                              // 100ms内最近一次更新数据
+	/*--------------------每100ms是否更新判断--------------------*/
+    double dTimeStore;                              // 100ms内最近一次更新数据时间
     double dAttangleStore[3];                       // 100ms内最近一次更新船体姿态数据
     unsigned char bUpdate100ms;                     // 100ms内数据是否更新过
+
+	/*--------------------30s内存储的原始数据--------------------*/
+	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     // 30s内存储的原始时间数据
+
     unsigned char bCalculated;                      // 本周期是否进行计算
     unsigned char bUseCheck;                        // 船姿数据启用标志字
     int cnt;									    // 已存储数据计数
@@ -108,7 +112,7 @@ static void ShipUpdateAttangleDiff(int pos)
 
 	left = pos > 0 ? pos - 1 : 0;
 	right = pos + 1 < s_stShipPriv.cnt ? pos + 1 : s_stShipPriv.cnt - 1;
-	dt = s_stShipPriv.AttangleBuffer[right].time - s_stShipPriv.AttangleBuffer[left].time;
+	dt = s_stShipPriv.dTimeStore30s[right] - s_stShipPriv.dTimeStore30s[left];
 	if (dt <= 0.0)
 	{
 		for (i = 0; i < 3; i++)
@@ -184,7 +188,7 @@ void testShip()
     
     /*--------------------清除30s以前的数据--------------------*/
 	int index = 0;
-	for (index = 0; index < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - s_stShipPriv.AttangleBuffer[index].time > 30; index++);
+	for (index = 0; index < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - s_stShipPriv.dTimeStore30s[index] > 30; index++);
 	if (index > 0)
 	{
 		memmove(&s_stShipPriv.AttangleBuffer[0], &s_stShipPriv.AttangleBuffer[index], sizeof(s_stShipPriv.AttangleBuffer[0]) * (s_stShipPriv.cnt - index));
@@ -223,7 +227,7 @@ void testShip()
                     s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[i] = s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].Attangle[i];
                 }
             }
-            s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].time = s_stShipPriv.dTimeStore;
+            s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt] = s_stShipPriv.dTimeStore;
             s_stShipPriv.cnt++;
 
             /*--------------------加入数据后更新右边界差分和平滑值--------------------*/
@@ -236,8 +240,8 @@ void testShip()
 
             /*--------------------更新method1近10s数据起始索引--------------------*/
             while (s_stShipPriv.method1EndIndex < s_stShipPriv.cnt &&
-                   s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time -
-                   s_stShipPriv.AttangleBuffer[s_stShipPriv.method1EndIndex].time > 10.0)
+                   s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] -
+                   s_stShipPriv.dTimeStore30s[s_stShipPriv.method1EndIndex] > 10.0)
             {
                 s_stShipPriv.method1EndIndex++;
             }
@@ -248,19 +252,19 @@ void testShip()
 	/*--------------------检查数据是否启用--------------------*/
 	if (s_stShipPriv.cnt > 0 && FALSE == s_stShipPriv.bUseCheck)
 	{
-		if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time >= 5)
+		if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] >= 5)
 		{
 			s_stShipPriv.bUseCheck = TRUE;
 			for (int i = 1; i < s_stShipPriv.cnt; i++)
 			{
-				if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[i].time <= 5
-					&& s_stShipPriv.AttangleBuffer[i].time - s_stShipPriv.AttangleBuffer[i - 1].time > 1)
+				if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[i] <= 5
+					&& s_stShipPriv.dTimeStore30s[i] - s_stShipPriv.dTimeStore30s[i - 1] > 1)
 				{
 					s_stShipPriv.bUseCheck = FALSE;
 					break;
 				}
 			}
-			if (g_CombinedNaviInput.t_fly - s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time > 1)
+			if (g_CombinedNaviInput.t_fly - s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] > 1)
 			{
 				s_stShipPriv.bUseCheck = FALSE;
 			}
@@ -269,13 +273,13 @@ void testShip()
 	}
 
 	/*--------------------检查启动条件（存储船姿数据大于10s）--------------------*/
-	if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time < 10)
+	if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] < 10)
 	{
 		return;
 	}
 
 	/*--------------------差分数据更新（差分时间间隔每次重算，因此放在这里）--------------------*/
-	double dt = (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time) / (s_stShipPriv.cnt - 1);
+	double dt = (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0]) / (s_stShipPriv.cnt - 1);
 	VectorSub(s_stShipPriv.AttangleBuffer[1].Attangle, s_stShipPriv.AttangleBuffer[0].Attangle, 3, s_stShipPriv.AttangleBuffer[0].AttangleDiff);
 	VectorMulConst(s_stShipPriv.AttangleBuffer[0].AttangleDiff, 3, 1.0 / dt, s_stShipPriv.AttangleBuffer[0].AttangleDiff);												// 第一个点
 	VectorSub(s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].Attangle, s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 2].Attangle, 3, s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].AttangleDiff);
@@ -350,7 +354,7 @@ void testShip()
     const int countAfterDel = head - count + 1;
     
     static double XTrainTXTrain[120][120] = { 0 };
-    if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time >= 29.5)
+    if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] >= 29.5)
     {
         /*--------------------第一次计算完整矩阵--------------------*/
         if(0 == n30sInit)
@@ -363,7 +367,7 @@ void testShip()
     }
 
 	/*--------------------峰值法+周期法--------------------*/
-	if (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time - s_stShipPriv.AttangleBuffer[0].time < 29.5)
+	if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] < 29.5)
 	{
 		/*--------------------method1EndIndex指向近10s内的数据--------------------*/
 		int method1EndIndex = s_stShipPriv.method1EndIndex;
@@ -408,7 +412,7 @@ void testShip()
 			{
 				if (s_stShipPriv.detPitch[i] <= -0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[method1EndIndex + i].time;
+					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.dTimeStore30s[method1EndIndex + i];
 					currentState = -1;
 				}
 			}
@@ -417,7 +421,7 @@ void testShip()
 			{
 				if (s_stShipPriv.detPitch[i] >= 0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.AttangleBuffer[method1EndIndex + i].time;
+					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.dTimeStore30s[method1EndIndex + i];
 					currentState = 1;
 				}
 			}
@@ -464,7 +468,7 @@ void testShip()
 		/*--------------------默认退化到当前最新点--------------------*/
 		int peakIdx = Num10s;
 		double peakVal = s_stShipPriv.detPitch[Num10s - 1];
-		double peakTime = s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].time;
+		double peakTime = s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1];
 
 		if (Num10s >= 3)
 		{
@@ -535,7 +539,7 @@ void testShip()
 			}
 
 			peakVal = s_stShipPriv.trainData[peakIdx][1];
-			peakTime = s_stShipPriv.AttangleBuffer[peakIdx].time;
+			peakTime = s_stShipPriv.dTimeStore30s[peakIdx];
 		}
 
 		//////////////////////////////计算当前时刻后最近的两个下降速度最大时刻//////////////////////////////
