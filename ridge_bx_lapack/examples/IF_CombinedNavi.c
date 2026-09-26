@@ -13,28 +13,24 @@ typedef struct
 }PredResult;
 typedef struct
 {
-	double Attangle[3];			// 船姿态（滚转、偏航、俯仰）
-	double AttangleDiff[3];		// 船角速度
-}Data;
-typedef struct
-{
 	double pool[100];
 	int poolSize;
 }ClusterPool;
 typedef struct
 {
 	/*--------------------每100ms是否更新判断--------------------*/
-    double dTimeStore;                              // 100ms内最近一次更新数据时间
-    double dAttangleStore[3];                       // 100ms内最近一次更新船体姿态数据
-    unsigned char bUpdate100ms;                     // 100ms内数据是否更新过
+    double dTimeStore;                              	// 100ms内最近一次更新数据时间
+    double dAttangleStore[3];                       	// 100ms内最近一次更新船体姿态数据
+    unsigned char bUpdate100ms;                     	// 100ms内数据是否更新过
 
 	/*--------------------30s内存储的原始数据--------------------*/
-	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     // 30s内存储的原始时间数据
+	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     	// 30s内存储的原始时间数据
+	double Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、偏航、俯仰）
+	double AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
 
     unsigned char bCalculated;                      // 本周期是否进行计算
     unsigned char bUseCheck;                        // 船姿数据启用标志字
     int cnt;									    // 已存储数据计数
-	Data AttangleBuffer[SHIP_WINDOW_SIZE_30S];		// 近30s内的船姿数据
     
     /*--------------------峰值+周期法--------------------*/
 	int method1EndIndex;
@@ -105,7 +101,7 @@ static void ShipUpdateAttangleDiff(int pos)
 	{
 		for (i = 0; i < 3; i++)
 		{
-			s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] = 0.0;
+			s_stShipPriv.AttangleDiff30s[pos][i] = 0.0;
 		}
 		return;
 	}
@@ -117,16 +113,16 @@ static void ShipUpdateAttangleDiff(int pos)
 	{
 		for (i = 0; i < 3; i++)
 		{
-			s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] = 0.0;
+			s_stShipPriv.AttangleDiff30s[pos][i] = 0.0;
 		}
 		return;
 	}
 
 	for (i = 0; i < 3; i++)
 	{
-		s_stShipPriv.AttangleBuffer[pos].AttangleDiff[i] =
-			(s_stShipPriv.AttangleBuffer[right].Attangle[i] -
-			 s_stShipPriv.AttangleBuffer[left].Attangle[i]) / dt;
+		s_stShipPriv.AttangleDiff30s[pos][i] =
+			(s_stShipPriv.Attangle30s[right][i] -
+			 s_stShipPriv.Attangle30s[left][i]) / dt;
 	}
 }
 
@@ -152,8 +148,8 @@ static void ShipUpdateTrainData(int pos)
 	{
 		for (j = 0; j < 3; j++)
 		{
-			angleSum[j] += s_stShipPriv.AttangleBuffer[i].Attangle[j];
-			diffSum[j] += s_stShipPriv.AttangleBuffer[i].AttangleDiff[j];
+			angleSum[j] += s_stShipPriv.Attangle30s[i][j];
+			diffSum[j] += s_stShipPriv.AttangleDiff30s[i][j];
 		}
 	}
 
@@ -191,7 +187,9 @@ void testShip()
 	for (index = 0; index < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - s_stShipPriv.dTimeStore30s[index] > 30; index++);
 	if (index > 0)
 	{
-		memmove(&s_stShipPriv.AttangleBuffer[0], &s_stShipPriv.AttangleBuffer[index], sizeof(s_stShipPriv.AttangleBuffer[0]) * (s_stShipPriv.cnt - index));
+		memmove(&s_stShipPriv.dTimeStore30s[0], &s_stShipPriv.dTimeStore30s[index], sizeof(s_stShipPriv.dTimeStore30s[0]) * (s_stShipPriv.cnt - index));
+		memmove(&s_stShipPriv.Attangle30s[0], &s_stShipPriv.Attangle30s[index], sizeof(s_stShipPriv.Attangle30s[0]) * (s_stShipPriv.cnt - index));
+		memmove(&s_stShipPriv.AttangleDiff30s[0], &s_stShipPriv.AttangleDiff30s[index], sizeof(s_stShipPriv.AttangleDiff30s[0]) * (s_stShipPriv.cnt - index));
 		memmove(&s_stShipPriv.trainData[0], &s_stShipPriv.trainData[index], sizeof(s_stShipPriv.trainData[0]) * (s_stShipPriv.cnt - index));
 		s_stShipPriv.cnt -= index;
 		s_stShipPriv.method1EndIndex -= index;
@@ -216,15 +214,15 @@ void testShip()
         /*--------------------数据存储及异常处理--------------------*/
         if(TRUE == s_stShipPriv.bUpdate100ms)
         {
-            s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[0] = s_stShipPriv.dAttangleStore[0];
-            s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[1] = s_stShipPriv.dAttangleStore[2];
-            s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[2] = s_stShipPriv.dAttangleStore[1];
+            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][0] = s_stShipPriv.dAttangleStore[0];
+            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][1] = s_stShipPriv.dAttangleStore[2];
+            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][2] = s_stShipPriv.dAttangleStore[1];
             for (int i = 0; i < 3; i++)
             {
                 if ((s_stShipPriv.cnt > 0) 
-                    && (s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[i] - s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].Attangle[i] > 3))	// 异常剔除
+                    && (s_stShipPriv.Attangle30s[s_stShipPriv.cnt][i] - s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1][i] > 3))	// 异常剔除
                 {
-                    s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt].Attangle[i] = s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].Attangle[i];
+                    s_stShipPriv.Attangle30s[s_stShipPriv.cnt][i] = s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1][i];
                 }
             }
             s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt] = s_stShipPriv.dTimeStore;
@@ -280,14 +278,14 @@ void testShip()
 
 	/*--------------------差分数据更新（差分时间间隔每次重算，因此放在这里）--------------------*/
 	double dt = (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0]) / (s_stShipPriv.cnt - 1);
-	VectorSub(s_stShipPriv.AttangleBuffer[1].Attangle, s_stShipPriv.AttangleBuffer[0].Attangle, 3, s_stShipPriv.AttangleBuffer[0].AttangleDiff);
-	VectorMulConst(s_stShipPriv.AttangleBuffer[0].AttangleDiff, 3, 1.0 / dt, s_stShipPriv.AttangleBuffer[0].AttangleDiff);												// 第一个点
-	VectorSub(s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].Attangle, s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 2].Attangle, 3, s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].AttangleDiff);
-	VectorMulConst(s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].AttangleDiff, 3, 1.0 / dt, s_stShipPriv.AttangleBuffer[s_stShipPriv.cnt - 1].AttangleDiff);		// 最后一个点
+	VectorSub(s_stShipPriv.Attangle30s[1], s_stShipPriv.Attangle30s[0], 3, s_stShipPriv.AttangleDiff30s[0]);
+	VectorMulConst(s_stShipPriv.AttangleDiff30s[0], 3, 1.0 / dt, s_stShipPriv.AttangleDiff30s[0]);												// 第一个点
+	VectorSub(s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1], s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 2], 3, s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1]);
+	VectorMulConst(s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1], 3, 1.0 / dt, s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1]);		// 最后一个点
 	for (int i = 1; i < s_stShipPriv.cnt - 1; i++)
 	{
-		VectorSub(s_stShipPriv.AttangleBuffer[i + 1].Attangle, s_stShipPriv.AttangleBuffer[i - 1].Attangle, 3, s_stShipPriv.AttangleBuffer[i].AttangleDiff);
-		VectorMulConst(s_stShipPriv.AttangleBuffer[i].AttangleDiff, 3, 1.0 / (2 * dt), s_stShipPriv.AttangleBuffer[i].AttangleDiff);
+		VectorSub(s_stShipPriv.Attangle30s[i + 1], s_stShipPriv.Attangle30s[i - 1], 3, s_stShipPriv.AttangleDiff30s[i]);
+		VectorMulConst(s_stShipPriv.AttangleDiff30s[i], 3, 1.0 / (2 * dt), s_stShipPriv.AttangleDiff30s[i]);
 	}
 
 	/*--------------------姿态角及差分平均值更新--------------------*/
@@ -300,8 +298,8 @@ void testShip()
 		double averageDiff[3] = { 0 };
 		for (int j = left; j <= right; j++)
 		{
-			VectorAdd(average, s_stShipPriv.AttangleBuffer[j].Attangle, 3, average);
-			VectorAdd(averageDiff, s_stShipPriv.AttangleBuffer[j].AttangleDiff, 3, averageDiff);
+			VectorAdd(average, s_stShipPriv.Attangle30s[j], 3, average);
+			VectorAdd(averageDiff, s_stShipPriv.AttangleDiff30s[j], 3, averageDiff);
 		}
 		VectorMulConst(average, 3, 1.0 / (right - left + 1), s_stShipPriv.trainData[i]);
 		VectorMulConst(averageDiff, 3, 1.0 / (right - left + 1), &s_stShipPriv.trainData[i][3]);
