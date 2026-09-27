@@ -23,17 +23,19 @@ typedef struct
     double dAttangleStore[3];                       	// 100ms内最近一次更新船体姿态数据
     unsigned char bUpdate100ms;                     	// 100ms内数据是否更新过
 
-	/*--------------------30s内存储的原始数据--------------------*/
+	/*--------------------30s内存储的原始数据（环形缓冲区）--------------------*/
+	int headPhysicalIndex;						    // 环形缓冲区最旧样本的物理索引
+	int cnt;										    // 已存储数据计数
 	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     	// 30s内存储的原始时间数据
 	double Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、偏航、俯仰）
 	double AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
+	double trainData[SHIP_WINDOW_SIZE_30S][6];	    	// 30s平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
 
     unsigned char bCalculated;                      // 本周期是否进行计算
     unsigned char bUseCheck;                        // 船姿数据启用标志字
-    int cnt;									    // 已存储数据计数
     
     /*--------------------峰值+周期法--------------------*/
-	int method1EndIndex;
+	int method1StartLogicalIndex;
 	double detPitch[SHIP_WINDOW_SIZE_10S];			// 近10s内均值归零俯仰角数据
 	double dTCross[SHIP_WINDOW_SIZE_10S];		    // 近10s内穿越时间点
 	double validPeriod[SHIP_WINDOW_SIZE_10S];	    // 近10s内数据周期
@@ -42,8 +44,6 @@ typedef struct
 	double MatrixB[120][6];
 	double PredData[SHIP_WINDOW_SIZE_30S][6];
     
-    double trainData[SHIP_WINDOW_SIZE_30S][6];	    // 平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
-	
     double PredSlope[SHIP_WINDOW_SIZE_30S];
 	double dNeg[SHIP_WINDOW_SIZE_30S];
 	int NegIdx[SHIP_WINDOW_SIZE_30S];
@@ -84,84 +84,142 @@ IF_CombinedNavi g_CombinedNaviInput = { 0 };
 #define CONTROL_PERIOD 0.02
 #define PI 3.1415926
 
-/*--------------------更新指定位置的姿态角差分--------------------*/
-static void ShipUpdateAttangleDiff(int pos)
-{
-	int left;
-	int right;
-	int i;
-	double dt;
 
-	if (pos < 0 || pos >= s_stShipPriv.cnt)
+/*
+* @brief 将环形缓冲区的逻辑索引转换为物理数组索引
+* @param logicalIndex 相对于最旧有效样本的逻辑索引
+* @note 调用方必须保证逻辑索引位于有效样本范围内，写入尾部时允许等于cnt
+*/
+static inline int ShipLogicalToPhysicalIndex(int logicalIndex)
+{
+	int physicalIndex = s_stShipPriv.headPhysicalIndex + logicalIndex;
+
+	if (physicalIndex >= SHIP_WINDOW_SIZE_30S)
+	{
+		physicalIndex -= SHIP_WINDOW_SIZE_30S;
+	}
+
+	return physicalIndex;
+}
+
+/*
+- @brief 获取指定逻辑位置的采样时间
+- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+- @note 函数只读取数据，不检查索引是否越界
+*/
+static inline double ShipTimeAt(int logicalIndex)
+{
+	return s_stShipPriv.dTimeStore30s[ShipLogicalToPhysicalIndex(logicalIndex)];
+}
+
+/*
+- @brief 获取指定逻辑位置的三维姿态数据
+- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+*/
+static inline double *ShipAttangleAt(int logicalIndex)
+{
+	return s_stShipPriv.Attangle30s[ShipLogicalToPhysicalIndex(logicalIndex)];
+}
+
+/*
+- @brief 获取指定逻辑位置的三维姿态角速度数据
+- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+*/
+static inline double *ShipAttangleDiffAt(int logicalIndex)
+{
+	return s_stShipPriv.AttangleDiff30s[ShipLogicalToPhysicalIndex(logicalIndex)];
+}
+
+/*
+- @brief 获取指定逻辑位置的六维平滑训练数据
+- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+*/
+static inline double *ShipTrainDataAt(int logicalIndex)
+{
+	return s_stShipPriv.trainData[ShipLogicalToPhysicalIndex(logicalIndex)];
+}
+
+/*
+ * @brief 更新指定逻辑位置的三维姿态角速度
+ * @param logicalIndex 待更新样本的逻辑索引
+ * @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
+*/
+static void ShipUpdateAttangleDiff(int logicalIndex)
+{
+	if (logicalIndex < 0 || logicalIndex >= s_stShipPriv.cnt)
 	{
 		return;
 	}
+
+	int targetPhysicalIndex = ShipLogicalToPhysicalIndex(logicalIndex);
 
 	if (s_stShipPriv.cnt < 2)
 	{
-		for (i = 0; i < 3; i++)
+		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 		{
-			s_stShipPriv.AttangleDiff30s[pos][i] = 0.0;
+			s_stShipPriv.AttangleDiff30s[targetPhysicalIndex][channelIndex] = 0.0;
 		}
 		return;
 	}
 
-	left = pos > 0 ? pos - 1 : 0;
-	right = pos + 1 < s_stShipPriv.cnt ? pos + 1 : s_stShipPriv.cnt - 1;
-	dt = s_stShipPriv.dTimeStore30s[right] - s_stShipPriv.dTimeStore30s[left];
-	if (dt <= 0.0)
-	{
-		for (i = 0; i < 3; i++)
-		{
-			s_stShipPriv.AttangleDiff30s[pos][i] = 0.0;
-		}
-		return;
-	}
+	int leftLogicalIndex = logicalIndex > 0 ? logicalIndex - 1 : 0;
+	int rightLogicalIndex = logicalIndex + 1 < s_stShipPriv.cnt ? logicalIndex + 1 : s_stShipPriv.cnt - 1;
+	int leftPhysicalIndex = ShipLogicalToPhysicalIndex(leftLogicalIndex);
+	int rightPhysicalIndex = ShipLogicalToPhysicalIndex(rightLogicalIndex);
+	double dt = s_stShipPriv.dTimeStore30s[rightPhysicalIndex] - s_stShipPriv.dTimeStore30s[leftPhysicalIndex];
 
-	for (i = 0; i < 3; i++)
+	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 	{
-		s_stShipPriv.AttangleDiff30s[pos][i] =
-			(s_stShipPriv.Attangle30s[right][i] -
-			 s_stShipPriv.Attangle30s[left][i]) / dt;
+		s_stShipPriv.AttangleDiff30s[targetPhysicalIndex][channelIndex] =
+			(s_stShipPriv.Attangle30s[rightPhysicalIndex][channelIndex] -
+			 s_stShipPriv.Attangle30s[leftPhysicalIndex][channelIndex]) / dt;
 	}
 }
 
-/*--------------------更新指定位置的六维平滑数据--------------------*/
-static void ShipUpdateTrainData(int pos)
+/*
+ * @brief 更新指定逻辑位置的六维平滑训练数据
+ * @param logicalIndex 待更新样本的逻辑索引
+ * @note 使用当前位置前后各最多两个样本计算姿态和角速度的滑动平均
+ */
+static void ShipUpdateTrainData(int logicalIndex)
 {
-	int left;
-	int right;
-	int i;
-	int j;
-	double angleSum[3] = { 0.0 };
-	double diffSum[3] = { 0.0 };
-	double scale;
-
-	if (pos < 0 || pos >= s_stShipPriv.cnt)
+	if (logicalIndex < 0 || logicalIndex >= s_stShipPriv.cnt)
 	{
 		return;
 	}
 
-	left = pos > 1 ? pos - 2 : 0;
-	right = pos + 2 < s_stShipPriv.cnt ? pos + 2 : s_stShipPriv.cnt - 1;
-	for (i = left; i <= right; i++)
+	int leftLogicalIndex = logicalIndex > 1 ? logicalIndex - 2 : 0;
+	int rightLogicalIndex = logicalIndex + 2 < s_stShipPriv.cnt ? logicalIndex + 2 : s_stShipPriv.cnt - 1;
+	double angleSum[3] = { 0.0 }, diffSum[3] = { 0.0 };
+	for (int sampleLogicalIndex = leftLogicalIndex; sampleLogicalIndex <= rightLogicalIndex; sampleLogicalIndex++)
 	{
-		for (j = 0; j < 3; j++)
+		double *angle = ShipAttangleAt(sampleLogicalIndex);
+		double *diff = ShipAttangleDiffAt(sampleLogicalIndex);
+
+		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 		{
-			angleSum[j] += s_stShipPriv.Attangle30s[i][j];
-			diffSum[j] += s_stShipPriv.AttangleDiff30s[i][j];
+			angleSum[channelIndex] += angle[channelIndex];
+			diffSum[channelIndex] += diff[channelIndex];
 		}
 	}
 
-	scale = 1.0 / (right - left + 1);
-	for (i = 0; i < 3; i++)
+	double scale = 1.0 / (rightLogicalIndex - leftLogicalIndex + 1);
+	double *train = ShipTrainDataAt(logicalIndex);
+	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 	{
-		s_stShipPriv.trainData[pos][i] = angleSum[i] * scale;
-		s_stShipPriv.trainData[pos][i + 3] = diffSum[i] * scale;
+		train[channelIndex] = angleSum[channelIndex] * scale;
+		train[channelIndex + 3] = diffSum[channelIndex] * scale;
 	}
 }
 
-
+/*
+- @brief 执行船姿数据采集、窗口维护、特征处理和预测计算
+- @param 无
+- @note 当前按20ms周期调用并每100ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
+*/
 void testShip()
 {
 #if 1
@@ -183,26 +241,27 @@ void testShip()
 	}
     
     /*--------------------清除30s以前的数据--------------------*/
-	int index = 0;
-	for (index = 0; index < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - s_stShipPriv.dTimeStore30s[index] > 30; index++);
-	if (index > 0)
+	int removeCount = 0;
+	while (removeCount < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - ShipTimeAt(removeCount) > 30.0)
 	{
-		memmove(&s_stShipPriv.dTimeStore30s[0], &s_stShipPriv.dTimeStore30s[index], sizeof(s_stShipPriv.dTimeStore30s[0]) * (s_stShipPriv.cnt - index));
-		memmove(&s_stShipPriv.Attangle30s[0], &s_stShipPriv.Attangle30s[index], sizeof(s_stShipPriv.Attangle30s[0]) * (s_stShipPriv.cnt - index));
-		memmove(&s_stShipPriv.AttangleDiff30s[0], &s_stShipPriv.AttangleDiff30s[index], sizeof(s_stShipPriv.AttangleDiff30s[0]) * (s_stShipPriv.cnt - index));
-		memmove(&s_stShipPriv.trainData[0], &s_stShipPriv.trainData[index], sizeof(s_stShipPriv.trainData[0]) * (s_stShipPriv.cnt - index));
-		s_stShipPriv.cnt -= index;
-		s_stShipPriv.method1EndIndex -= index;
-		if (s_stShipPriv.method1EndIndex < 0)
-		{
-			s_stShipPriv.method1EndIndex = 0;
-		}
+		removeCount++;
+	}
+	if (removeCount > 0)
+	{
+		int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
 
-		/*--------------------删除数据后更新左边界差分和平滑值--------------------*/
-		ShipUpdateAttangleDiff(0);
-		ShipUpdateTrainData(0);
-		ShipUpdateTrainData(1);
-		ShipUpdateTrainData(2);
+		s_stShipPriv.headPhysicalIndex = newHeadPhysicalIndex >= SHIP_WINDOW_SIZE_30S
+			? newHeadPhysicalIndex - SHIP_WINDOW_SIZE_30S : newHeadPhysicalIndex;
+		s_stShipPriv.cnt -= removeCount;
+		s_stShipPriv.method1StartLogicalIndex = s_stShipPriv.method1StartLogicalIndex > removeCount
+			? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
+
+		/*--------------------删除只改变新的左边界，右边界的邻接关系不变。--------------------*/
+		ShipUpdateAttangleDiff(0);		// 更新左边界三维角速度
+		for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 3; ++boundaryLogicalIndex)
+		{
+			ShipUpdateTrainData(boundaryLogicalIndex);
+		}
 	}
 
     /*--------------------数据降频，100ms数据更新一次--------------------*/
@@ -210,121 +269,125 @@ void testShip()
 	if (++counter >= 5)
 	{
 		counter = 0;
-        
-        /*--------------------数据存储及异常处理--------------------*/
-        if(TRUE == s_stShipPriv.bUpdate100ms)
-        {
-            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][0] = s_stShipPriv.dAttangleStore[0];
-            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][1] = s_stShipPriv.dAttangleStore[2];
-            s_stShipPriv.Attangle30s[s_stShipPriv.cnt][2] = s_stShipPriv.dAttangleStore[1];
-            for (int i = 0; i < 3; i++)
-            {
-                if ((s_stShipPriv.cnt > 0) 
-                    && (s_stShipPriv.Attangle30s[s_stShipPriv.cnt][i] - s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1][i] > 3))	// 异常剔除
-                {
-                    s_stShipPriv.Attangle30s[s_stShipPriv.cnt][i] = s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1][i];
-                }
-            }
-            s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt] = s_stShipPriv.dTimeStore;
-            s_stShipPriv.cnt++;
 
-            /*--------------------加入数据后更新右边界差分和平滑值--------------------*/
-            ShipUpdateAttangleDiff(s_stShipPriv.cnt - 2);
-            ShipUpdateAttangleDiff(s_stShipPriv.cnt - 1);
-            ShipUpdateTrainData(s_stShipPriv.cnt - 4);
-            ShipUpdateTrainData(s_stShipPriv.cnt - 3);
-            ShipUpdateTrainData(s_stShipPriv.cnt - 2);
-            ShipUpdateTrainData(s_stShipPriv.cnt - 1);
-
-            /*--------------------更新method1近10s数据起始索引--------------------*/
-            while (s_stShipPriv.method1EndIndex < s_stShipPriv.cnt &&
-                   s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] -
-                   s_stShipPriv.dTimeStore30s[s_stShipPriv.method1EndIndex] > 10.0)
-            {
-                s_stShipPriv.method1EndIndex++;
-            }
-        }
-        s_stShipPriv.bUpdate100ms = FALSE;
-	}
-
-	/*--------------------检查数据是否启用--------------------*/
-	if (s_stShipPriv.cnt > 0 && FALSE == s_stShipPriv.bUseCheck)
-	{
-		if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] >= 5)
+		/*--------------------数据存储及异常处理--------------------*/
+		if (TRUE == s_stShipPriv.bUpdate100ms)
 		{
-			s_stShipPriv.bUseCheck = TRUE;
-			for (int i = 1; i < s_stShipPriv.cnt; i++)
+			/*--------------------逻辑尾部通过一次条件减法转换为物理写入位置--------------------*/
+			int writePhysicalIndex = ShipLogicalToPhysicalIndex(s_stShipPriv.cnt);
+			int previousPhysicalIndex = -1;
+			if (s_stShipPriv.cnt > 0)
 			{
-				if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[i] <= 5
-					&& s_stShipPriv.dTimeStore30s[i] - s_stShipPriv.dTimeStore30s[i - 1] > 1)
+				previousPhysicalIndex = ShipLogicalToPhysicalIndex(s_stShipPriv.cnt - 1);
+			}
+			s_stShipPriv.cnt++;
+
+			/*--------------------写入本周期更新值--------------------*/
+			s_stShipPriv.dTimeStore30s[writePhysicalIndex] = s_stShipPriv.dTimeStore;
+			s_stShipPriv.Attangle30s[writePhysicalIndex][0] = s_stShipPriv.dAttangleStore[0];
+			s_stShipPriv.Attangle30s[writePhysicalIndex][1] = s_stShipPriv.dAttangleStore[2];
+			s_stShipPriv.Attangle30s[writePhysicalIndex][2] = s_stShipPriv.dAttangleStore[1];
+			for (int channelIndex = 0; channelIndex < 3; channelIndex++)
+			{
+				/*--------------------异常数据剔除--------------------*/
+				if (previousPhysicalIndex >= 0
+					&& (s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] - s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex] > 3))
 				{
-					s_stShipPriv.bUseCheck = FALSE;
-					break;
+					s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] = s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex];
 				}
 			}
-			if (g_CombinedNaviInput.t_fly - s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] > 1)
+
+			/*--------------------加入数据后更新右边界差分和平滑值--------------------*/
+			ShipUpdateAttangleDiff(s_stShipPriv.cnt - 2);	// 倒数第二个角速度变为中心差分
+			ShipUpdateAttangleDiff(s_stShipPriv.cnt - 1);	// 倒数第一个角速度（新增）为右边界差分
+			ShipUpdateTrainData(s_stShipPriv.cnt - 4);		// 由于cnt-2的角速度发生变化，最大影响cnt-2-2的角速度平滑结果
+			ShipUpdateTrainData(s_stShipPriv.cnt - 3);
+			ShipUpdateTrainData(s_stShipPriv.cnt - 2);
+			ShipUpdateTrainData(s_stShipPriv.cnt - 1);
+
+			/*--------------------更新method1近10s数据起始索引--------------------*/
+			while (s_stShipPriv.method1StartLogicalIndex < s_stShipPriv.cnt &&
+				   ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(s_stShipPriv.method1StartLogicalIndex) > 10.0)
 			{
-				s_stShipPriv.bUseCheck = FALSE;
+				s_stShipPriv.method1StartLogicalIndex++;
 			}
 		}
+		s_stShipPriv.bUpdate100ms = FALSE;
+	}
+
+	/*--------------------数据个数不足，不进入后续判断--------------------*/
+	if (s_stShipPriv.cnt < 2)
+	{
+		return;
+	}
+
+	/*--------------------检查数据是否启用（仅判别一次）--------------------*/
+	if (FALSE == s_stShipPriv.bUseCheck)
+	{
+		double latestTime = ShipTimeAt(s_stShipPriv.cnt - 1);
+
+		/*--------------------历史数据不足5秒，保持未启用状态--------------------*/
+		if (latestTime - ShipTimeAt(0) < 5.0)
+		{
+			return;
+		}
+
+		/*--------------------启用前检查最新数据是否已经超时--------------------*/
+		if (g_CombinedNaviInput.t_fly - latestTime > 1.0)
+		{
+			return;
+		}
+
+		/*--------------------从最新数据向前检查最近5秒内是否存在超过1秒的数据断点--------------------*/
+		for (int logicalIndex = s_stShipPriv.cnt - 1; logicalIndex > 0; logicalIndex--)
+		{
+			double currentTime = ShipTimeAt(logicalIndex);
+
+			if (latestTime - currentTime > 5.0)
+			{
+				break;
+			}
+
+			if (currentTime - ShipTimeAt(logicalIndex - 1) > 1.0)
+			{
+				return;
+			}
+		}
+
+		/*--------------------启动条件全部满足后锁存，后续周期不再重复检查--------------------*/
+		s_stShipPriv.bUseCheck = TRUE;
 		return;
 	}
 
 	/*--------------------检查启动条件（存储船姿数据大于10s）--------------------*/
-	if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] < 10)
+	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 10)
 	{
 		return;
 	}
 
-	/*--------------------差分数据更新（差分时间间隔每次重算，因此放在这里）--------------------*/
-	double dt = (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0]) / (s_stShipPriv.cnt - 1);
-	VectorSub(s_stShipPriv.Attangle30s[1], s_stShipPriv.Attangle30s[0], 3, s_stShipPriv.AttangleDiff30s[0]);
-	VectorMulConst(s_stShipPriv.AttangleDiff30s[0], 3, 1.0 / dt, s_stShipPriv.AttangleDiff30s[0]);												// 第一个点
-	VectorSub(s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 1], s_stShipPriv.Attangle30s[s_stShipPriv.cnt - 2], 3, s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1]);
-	VectorMulConst(s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1], 3, 1.0 / dt, s_stShipPriv.AttangleDiff30s[s_stShipPriv.cnt - 1]);		// 最后一个点
-	for (int i = 1; i < s_stShipPriv.cnt - 1; i++)
+	/*--------------------计算相位调整标志字--------------------*/
+	int tgoFlag = 1;
+	int PitchSmallCount = 0;
+	for (int logicalIndex = 0; logicalIndex < s_stShipPriv.cnt; logicalIndex++)
 	{
-		VectorSub(s_stShipPriv.Attangle30s[i + 1], s_stShipPriv.Attangle30s[i - 1], 3, s_stShipPriv.AttangleDiff30s[i]);
-		VectorMulConst(s_stShipPriv.AttangleDiff30s[i], 3, 1.0 / (2 * dt), s_stShipPriv.AttangleDiff30s[i]);
-	}
-
-	/*--------------------姿态角及差分平均值更新--------------------*/
-    int PitchSmallCount = 0;
-	for (int i = 0; i < s_stShipPriv.cnt; i++)
-	{
-		int left = i > 1 ? i - 2 : 0;
-		int right = i + 2 < s_stShipPriv.cnt ? i + 2 : s_stShipPriv.cnt - 1;
-		double average[3] = { 0 };
-		double averageDiff[3] = { 0 };
-		for (int j = left; j <= right; j++)
-		{
-			VectorAdd(average, s_stShipPriv.Attangle30s[j], 3, average);
-			VectorAdd(averageDiff, s_stShipPriv.AttangleDiff30s[j], 3, averageDiff);
-		}
-		VectorMulConst(average, 3, 1.0 / (right - left + 1), s_stShipPriv.trainData[i]);
-		VectorMulConst(averageDiff, 3, 1.0 / (right - left + 1), &s_stShipPriv.trainData[i][3]);
-
-		if (s_stShipPriv.trainData[i][1] < 0.5)
+		if (ShipTrainDataAt(logicalIndex)[1] < 0.5)
 		{
 			PitchSmallCount++;
 		}
 	}
-
-	/*--------------------计算相位调整标志字--------------------*/
-	int tgoFlag = 1;
 	if (PitchSmallCount > s_stShipPriv.cnt * 0.995)	// 无需调整
 	{
 		tgoFlag = 0;
 	}
-    
+
     /*--------------------30s后预测每周期预计算--------------------*/
     
 #define WIN 20
 #define DIM 6
 #define COL (WIN * DIM)
 
-    static int head = 0;        // 指向当前最旧元素
-    static int headPre = 0;     // 指向上一次最旧元素
+	static int modelHeadPhysicalIndex = 0;          // 指向当前最旧元素
+	static int modelPreviousHeadPhysicalIndex = 0;  // 指向上一次最旧元素
     static int count = 0;       // 当前有效行数
     static int countPre = 0;    // 上次有效行数
     
@@ -346,13 +409,13 @@ void testShip()
         }
     }
     
-    int doDel = (head != headPre);
+	int doDel = (modelHeadPhysicalIndex != modelPreviousHeadPhysicalIndex);
     int doAdd = (count != countPre);
     //const int removePair = doDel && (count >);       // 
-    const int countAfterDel = head - count + 1;
+	const int countAfterDel = modelHeadPhysicalIndex - count + 1;
     
     static double XTrainTXTrain[120][120] = { 0 };
-    if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] >= 29.5)
+    if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) >= 29.5)
     {
         /*--------------------第一次计算完整矩阵--------------------*/
         if(0 == n30sInit)
@@ -365,23 +428,28 @@ void testShip()
     }
 
 	/*--------------------峰值法+周期法--------------------*/
-	if (s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1] - s_stShipPriv.dTimeStore30s[0] < 29.5)
+	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
 	{
 		/*--------------------method1EndIndex指向近10s内的数据--------------------*/
-		int method1EndIndex = s_stShipPriv.method1EndIndex;
+		int method1StartLogicalIndex = s_stShipPriv.method1StartLogicalIndex;
 
 		/*--------------------对10s内数据进行赋值--------------------*/
-		int Num10s = s_stShipPriv.cnt - method1EndIndex;		// 10s内数据总数
+		int Num10s = s_stShipPriv.cnt - method1StartLogicalIndex;		// 10s内数据总数
 		memset(s_stShipPriv.detPitch, 0, sizeof(s_stShipPriv.detPitch));
 		double SumPitch = 0;							// 10s内俯仰角和
-		for (int i = method1EndIndex; i < s_stShipPriv.cnt; i++)
+		for (int logicalIndex = method1StartLogicalIndex;
+			 logicalIndex < s_stShipPriv.cnt;
+			 logicalIndex++)
 		{
-			SumPitch += s_stShipPriv.trainData[i][1];
+			SumPitch += ShipTrainDataAt(logicalIndex)[1];
 		}
 		SumPitch /= Num10s;
-		for (int i = 0; i < Num10s; i++)
+		for (int windowLogicalOffset = 0;
+			 windowLogicalOffset < Num10s;
+			 windowLogicalOffset++)
 		{
-			s_stShipPriv.detPitch[i] = s_stShipPriv.trainData[i + method1EndIndex][1] - SumPitch;
+			s_stShipPriv.detPitch[windowLogicalOffset] =
+				ShipTrainDataAt(method1StartLogicalIndex + windowLogicalOffset)[1] - SumPitch;
 		}
 
 		//////////////////////////////计算平均周期//////////////////////////////
@@ -391,16 +459,18 @@ void testShip()
 		memset(s_stShipPriv.dTCross, 0, sizeof(s_stShipPriv.dTCross));
 		int dTCrossCount = 0;
 		int currentState = 0;
-		for (int i = 0; i < Num10s; i++)
+		for (int windowLogicalOffset = 0;
+			 windowLogicalOffset < Num10s;
+			 windowLogicalOffset++)
 		{
 			/*--------------------找第一个点--------------------*/
 			if (0 == currentState)
 			{
-				if (s_stShipPriv.detPitch[i] >= 0.1)
+				if (s_stShipPriv.detPitch[windowLogicalOffset] >= 0.1)
 				{
 					currentState = 1;
 				}
-				else if (s_stShipPriv.detPitch[i] < -0.1)
+				else if (s_stShipPriv.detPitch[windowLogicalOffset] < -0.1)
 				{
 					currentState = -1;
 				}
@@ -408,18 +478,20 @@ void testShip()
 			/*--------------------当前在上方，寻找向下穿越点--------------------*/
 			else if (1 == currentState)
 			{
-				if (s_stShipPriv.detPitch[i] <= -0.1)
+				if (s_stShipPriv.detPitch[windowLogicalOffset] <= -0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.dTimeStore30s[method1EndIndex + i];
+					s_stShipPriv.dTCross[dTCrossCount++] =
+						ShipTimeAt(method1StartLogicalIndex + windowLogicalOffset);
 					currentState = -1;
 				}
 			}
 			/*--------------------当前在下方，寻找向上穿越点--------------------*/
 			else if (-1 == currentState)
 			{
-				if (s_stShipPriv.detPitch[i] >= 0.1)
+				if (s_stShipPriv.detPitch[windowLogicalOffset] >= 0.1)
 				{
-					s_stShipPriv.dTCross[dTCrossCount++] = s_stShipPriv.dTimeStore30s[method1EndIndex + i];
+					s_stShipPriv.dTCross[dTCrossCount++] =
+						ShipTimeAt(method1StartLogicalIndex + windowLogicalOffset);
 					currentState = 1;
 				}
 			}
@@ -464,24 +536,26 @@ void testShip()
 		//////////////////////////////寻找最近峰值//////////////////////////////
 
 		/*--------------------默认退化到当前最新点--------------------*/
-		int peakIdx = Num10s;
+		int peakLogicalIndex = Num10s;
 		double peakVal = s_stShipPriv.detPitch[Num10s - 1];
-		double peakTime = s_stShipPriv.dTimeStore30s[s_stShipPriv.cnt - 1];
+		double peakTime = ShipTimeAt(s_stShipPriv.cnt - 1);
 
 		if (Num10s >= 3)
 		{
 			/*--------------------计算峰峰值--------------------*/
-			double mx = s_stShipPriv.trainData[method1EndIndex][1];
-			double mn = s_stShipPriv.trainData[method1EndIndex][1];
-			for (int i = method1EndIndex + 1; i < s_stShipPriv.cnt; i++)
+			double mx = ShipTrainDataAt(method1StartLogicalIndex)[1];
+			double mn = ShipTrainDataAt(method1StartLogicalIndex)[1];
+			for (int logicalIndex = method1StartLogicalIndex + 1;
+				 logicalIndex < s_stShipPriv.cnt;
+				 logicalIndex++)
 			{
-				if (s_stShipPriv.trainData[i][1] > mx)
+				if (ShipTrainDataAt(logicalIndex)[1] > mx)
 				{
-					mx = s_stShipPriv.trainData[i][1];
+					mx = ShipTrainDataAt(logicalIndex)[1];
 				}
-				if (s_stShipPriv.trainData[i][1] < mn)
+				if (ShipTrainDataAt(logicalIndex)[1] < mn)
 				{
-					mn = s_stShipPriv.trainData[i][1];
+					mn = ShipTrainDataAt(logicalIndex)[1];
 				}
 			}
 			double pk2pk = mx - mn;
@@ -491,14 +565,18 @@ void testShip()
 
 			/*--------------------从后向前扫描（靠近当前时刻优先级最高）波峰条件：左侧显著上升，右侧显著下降--------------------*/
 			double found = 0;
-			for (int i = s_stShipPriv.cnt - 2; i > method1EndIndex; i--)
+			for (int logicalIndex = s_stShipPriv.cnt - 2;
+				 logicalIndex > method1StartLogicalIndex;
+				 logicalIndex--)
 			{
-				double diffLeft = s_stShipPriv.trainData[i][1] - s_stShipPriv.trainData[i - 1][1];
-				double diffRight = s_stShipPriv.trainData[i + 1][1] - s_stShipPriv.trainData[i][1];
+				double diffLeft = ShipTrainDataAt(logicalIndex)[1] -
+					ShipTrainDataAt(logicalIndex - 1)[1];
+				double diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
+					ShipTrainDataAt(logicalIndex)[1];
 
 				if (diffLeft > HDiff && diffRight < -HDiff)
 				{
-					peakIdx = i;
+					peakLogicalIndex = logicalIndex;
 					found = 1;
 					break;
 				}
@@ -507,14 +585,18 @@ void testShip()
 			/*--------------------退化1（未找到显著波峰，标准降为普通符号过0）--------------------*/
 			if (0 == found)
 			{
-				for (int i = s_stShipPriv.cnt - 2; i > method1EndIndex; i--)
+				for (int logicalIndex = s_stShipPriv.cnt - 2;
+					 logicalIndex > method1StartLogicalIndex;
+					 logicalIndex--)
 				{
-					double diffLeft = s_stShipPriv.trainData[i][1] - s_stShipPriv.trainData[i - 1][1];
-					double diffRight = s_stShipPriv.trainData[i + 1][1] - s_stShipPriv.trainData[i][1];
+					double diffLeft = ShipTrainDataAt(logicalIndex)[1] -
+						ShipTrainDataAt(logicalIndex - 1)[1];
+					double diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
+						ShipTrainDataAt(logicalIndex)[1];
 
 					if (diffLeft > 0 && diffRight < 0)
 					{
-						peakIdx = i;
+						peakLogicalIndex = logicalIndex;
 						found = 1;
 						break;
 					}
@@ -524,20 +606,22 @@ void testShip()
 			/*--------------------退化2（若缓存单调（无任何波峰），退化为全局最大值索引）--------------------*/
 			if (0 == found)
 			{
-				double peakValTmp = s_stShipPriv.trainData[method1EndIndex][1];
-				peakIdx = method1EndIndex;
-				for (int i = method1EndIndex; i < s_stShipPriv.cnt; i++)
+				double peakValTmp = ShipTrainDataAt(method1StartLogicalIndex)[1];
+				peakLogicalIndex = method1StartLogicalIndex;
+				for (int logicalIndex = method1StartLogicalIndex;
+					 logicalIndex < s_stShipPriv.cnt;
+					 logicalIndex++)
 				{
-					if (s_stShipPriv.trainData[i][1] > peakValTmp)
+					if (ShipTrainDataAt(logicalIndex)[1] > peakValTmp)
 					{
-						peakValTmp = s_stShipPriv.trainData[i][1];
-						peakIdx = i;
+						peakValTmp = ShipTrainDataAt(logicalIndex)[1];
+						peakLogicalIndex = logicalIndex;
 					}
 				}
 			}
 
-			peakVal = s_stShipPriv.trainData[peakIdx][1];
-			peakTime = s_stShipPriv.dTimeStore30s[peakIdx];
+			peakVal = ShipTrainDataAt(peakLogicalIndex)[1];
+			peakTime = ShipTimeAt(peakLogicalIndex);
 		}
 
 		//////////////////////////////计算当前时刻后最近的两个下降速度最大时刻//////////////////////////////
@@ -579,9 +663,7 @@ void testShip()
 
         //////////////////////////////构建回归预测模型//////////////////////////////
         
-        double (*YTrain)[6] = &s_stShipPriv.trainData[lag];
-
-        /*--------------------计算左项--------------------*/
+	    /*--------------------计算左项--------------------*/
         static double blk[6][6];
         
         /*
@@ -594,8 +676,8 @@ void testShip()
             /*--------------------先完整计算这一条“块对角线”的第一个块，以进行后续递推--------------------*/
             for(int r = 0; r < numSamples; ++r)
             {
-                const double *x = s_stShipPriv.trainData[r];
-                const double *y = s_stShipPriv.trainData[r + d];
+	                const double *x = ShipTrainDataAt(r);
+	                const double *y = ShipTrainDataAt(r + d);
                 
                 for(int p = 0; p < numFeatures; ++p)
                 {
@@ -644,12 +726,12 @@ void testShip()
                 */
                 
                 /*--------------------上一个窗口中离开的两个6维数组--------------------*/
-                const double *oldX = s_stShipPriv.trainData[a];
-                const double *oldY = s_stShipPriv.trainData[a + d];
+	                const double *oldX = ShipTrainDataAt(a);
+	                const double *oldY = ShipTrainDataAt(a + d);
                 
                 /*--------------------新窗口最后进入的两个6维数组--------------------*/
-                const double *newX = s_stShipPriv.trainData[a + numSamples];
-                const double *newY = s_stShipPriv.trainData[a + numSamples + d];
+	                const double *newX = ShipTrainDataAt(a + numSamples);
+	                const double *newY = ShipTrainDataAt(a + numSamples + d);
                 
                 /*
                     更新整个6*6的块
@@ -674,19 +756,21 @@ void testShip()
         /*--------------------计算右项--------------------*/
         static double XTrainTYTrain[120][6] = { 0 };
         
-        for(int r = 0; r < numSamples; r++)
-        {
-            /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
-            const double y0 = YTrain[r][0];
-            const double y1 = YTrain[r][1];
-            const double y2 = YTrain[r][2];
-            const double y3 = YTrain[r][3];
-            const double y4 = YTrain[r][4];
-            const double y5 = YTrain[r][5];
+	        for(int r = 0; r < numSamples; r++)
+	        {
+	            const double *y = ShipTrainDataAt(r + lag);
+
+	            /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
+	            const double y0 = y[0];
+	            const double y1 = y[1];
+	            const double y2 = y[2];
+	            const double y3 = y[3];
+	            const double y4 = y[4];
+	            const double y5 = y[5];
             
             for(int a = 0; a < lag; ++a)
             {
-                const double *x = s_stShipPriv.trainData[r + a];
+	                const double *x = ShipTrainDataAt(r + a);
                 double (*out)[6] = &XTrainTYTrain[a * numFeatures];
                 
                 for(int p = 0; p < numFeatures; ++p)
@@ -709,10 +793,24 @@ void testShip()
 		MatrixMultiply(*XTrainTXTrain, *XTrainTYTrain, 120, 120, 6, *s_stShipPriv.MatrixB);
         
         /*--------------------预测未来20s--------------------*/
-		int dynamicPredLen = (int)round(20.0 / dt);
+		double averageSampleInterval =
+			(ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) /
+			(s_stShipPriv.cnt - 1);
+		if (averageSampleInterval <= 0.0)
+		{
+			return;
+		}
+		int dynamicPredLen = (int)round(20.0 / averageSampleInterval);
         static double hist[20][6] = { 0 };
-        memcpy(hist, s_stShipPriv.trainData[s_stShipPriv.cnt - lag], sizeof(double) * 120);
-        int head = 0;
+	        for (int historyLogicalOffset = 0;
+	            historyLogicalOffset < lag;
+	            ++historyLogicalOffset)
+	        {
+	            memcpy(hist[historyLogicalOffset],
+	                ShipTrainDataAt(s_stShipPriv.cnt - lag + historyLogicalOffset),
+	                sizeof(hist[historyLogicalOffset]));
+	        }
+	        int historyWritePhysicalIndex = 0;
 		for (int i = 0; i < dynamicPredLen; i++)
 		{
             /*--------------------使用6个独立寄存器，尽量让其保存在VFP寄存器中--------------------*/
@@ -723,10 +821,12 @@ void testShip()
             for(int k = 0; k < lag; ++k)
             {
                 /*--------------------将环形缓冲拆成两段，避免热点计算未命中--------------------*/
-                for(int j = head; j < 20; ++j, b += lag)
-                {
-                    /*--------------------将X保持在VFP中--------------------*/
-                    const double x = hist[k][j];
+	                for(int historyPhysicalIndex = historyWritePhysicalIndex;
+	                    historyPhysicalIndex < 20;
+	                    ++historyPhysicalIndex, b += lag)
+	                {
+	                    /*--------------------将X保持在VFP中--------------------*/
+	                    const double x = hist[k][historyPhysicalIndex];
                     
                     y0 += x * b[0];
                     y1 += x * b[1];
@@ -737,10 +837,12 @@ void testShip()
                 }
                 
                 /*--------------------hist回绕，b继续向前扫描--------------------*/
-                for(int j = 0; j < head; ++j, b += lag)
-                {
-                    /*--------------------将X保持在VFP中--------------------*/
-                    const double x = hist[k][j];
+	                for(int historyPhysicalIndex = 0;
+	                    historyPhysicalIndex < historyWritePhysicalIndex;
+	                    ++historyPhysicalIndex, b += lag)
+	                {
+	                    /*--------------------将X保持在VFP中--------------------*/
+	                    const double x = hist[k][historyPhysicalIndex];
                     
                     y0 += x * b[0];
                     y1 += x * b[1];
@@ -752,23 +854,23 @@ void testShip()
             }
             
             double *out = s_stShipPriv.PredData[i];
-            out[0] = hist[0][head] = y0;
-            out[1] = hist[1][head] = y1;
-            out[2] = hist[2][head] = y2;
-            out[3] = hist[3][head] = y3;
-            out[4] = hist[4][head] = y4;
-            out[5] = hist[5][head] = y5;
-            
-            if(++head == numFeatures)
-            {
-                head = 0;
+	            out[0] = hist[0][historyWritePhysicalIndex] = y0;
+	            out[1] = hist[1][historyWritePhysicalIndex] = y1;
+	            out[2] = hist[2][historyWritePhysicalIndex] = y2;
+	            out[3] = hist[3][historyWritePhysicalIndex] = y3;
+	            out[4] = hist[4][historyWritePhysicalIndex] = y4;
+	            out[5] = hist[5][historyWritePhysicalIndex] = y5;
+
+	            if(++historyWritePhysicalIndex == numFeatures)
+	            {
+	                historyWritePhysicalIndex = 0;
             }
 		}
 #if 0
 		//////////////////////////////在预测的俯仰角上寻找最快下降沿//////////////////////////////
 		
 		/*--------------------构建预测角序列--------------------*/
-		double currentAngle = s_stShipPriv.trainData[s_stShipPriv.cnt - 1][1];
+		double currentAngle = ShipTrainDataAt(s_stShipPriv.cnt - 1)[1];
 		int fullPredLen = dynamicPredLen + 1;
 		s_stShipPriv.stPredResult.predAngle[0] = currentAngle;
 		for (int i = 0; i < dynamicPredLen; i++)
@@ -1013,5 +1115,3 @@ void testShip()
 #endif
 	}
 }
-
-
