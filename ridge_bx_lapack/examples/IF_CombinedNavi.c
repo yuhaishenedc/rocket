@@ -391,41 +391,18 @@ void testShip()
     static int count = 0;       // 当前有效行数
     static int countPre = 0;    // 上次有效行数
     
-    static double G[120][120] = { 0 };
-    static double H[120][6] = { 0 };
+	static double H[120][6] = { 0 };
     
     static double oldX[120] = { 0 };    // 每次增量操作需要的临时120维变量
     static double newX[120] = { 0 };    
     static double oldY[6] = { 0 };
-    
-    static int n30sInit = 0;    // 第一次构建
-    if(0 == n30sInit)
-    {
-        n30sInit = 1;
-        /*--------------------岭回归对角元素仅加一次--------------------*/
-        for (int i = 0; i < 120; i++)
-        {
-            G[i][i] += 5;
-        }
-    }
     
 	int doDel = (modelHeadPhysicalIndex != modelPreviousHeadPhysicalIndex);
     int doAdd = (count != countPre);
     //const int removePair = doDel && (count >);       // 
 	const int countAfterDel = modelHeadPhysicalIndex - count + 1;
     
-    static double XTrainTXTrain[120][120] = { 0 };
-    if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) >= 29.5)
-    {
-        /*--------------------第一次计算完整矩阵--------------------*/
-        if(0 == n30sInit)
-        {
-            
-            
-            
-        }
-        
-    }
+	static double XTrainTXTrain[120][120] = { 0 };
 
 	/*--------------------峰值法+周期法--------------------*/
 	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
@@ -788,9 +765,16 @@ void testShip()
             }
         }
 
-		/*--------------------计算标准解析解--------------------*/
-		MatrixInv(*XTrainTXTrain, 120);
-		MatrixMultiply(*XTrainTXTrain, *XTrainTYTrain, 120, 120, 6, *s_stShipPriv.MatrixB);
+		/*--------------------加入岭回归正则项：X'X + 5I--------------------*/
+		const double ridgeLambda = 5.0;
+		for (int diagonalIndex = 0; diagonalIndex < COL; diagonalIndex++)
+		{
+			XTrainTXTrain[diagonalIndex][diagonalIndex] += ridgeLambda;
+		}
+
+		/*--------------------计算岭回归解析解--------------------*/
+		MatrixInv(*XTrainTXTrain, COL);
+		MatrixMultiply(*XTrainTXTrain, *XTrainTYTrain, COL, COL, DIM, *s_stShipPriv.MatrixB);
         
         /*--------------------预测未来20s--------------------*/
 		double averageSampleInterval = (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) / (s_stShipPriv.cnt - 1);
