@@ -755,22 +755,22 @@ void testShip()
         
         /*--------------------计算右项--------------------*/
         static double XTrainTYTrain[120][6] = { 0 };
-        
-	        for(int r = 0; r < numSamples; r++)
-	        {
-	            const double *y = ShipTrainDataAt(r + lag);
+		memset(XTrainTYTrain, 0, sizeof(XTrainTYTrain));
+	    for(int r = 0; r < numSamples; r++)
+	    {
+	        const double *y = ShipTrainDataAt(r + lag);
 
-	            /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
-	            const double y0 = y[0];
-	            const double y1 = y[1];
-	            const double y2 = y[2];
-	            const double y3 = y[3];
-	            const double y4 = y[4];
-	            const double y5 = y[5];
+	        /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
+	        const double y0 = y[0];
+	        const double y1 = y[1];
+	        const double y2 = y[2];
+	        const double y3 = y[3];
+	        const double y4 = y[4];
+	        const double y5 = y[5];
             
             for(int a = 0; a < lag; ++a)
             {
-	                const double *x = ShipTrainDataAt(r + a);
+	            const double *x = ShipTrainDataAt(r + a);
                 double (*out)[6] = &XTrainTYTrain[a * numFeatures];
                 
                 for(int p = 0; p < numFeatures; ++p)
@@ -793,13 +793,7 @@ void testShip()
 		MatrixMultiply(*XTrainTXTrain, *XTrainTYTrain, 120, 120, 6, *s_stShipPriv.MatrixB);
         
         /*--------------------预测未来20s--------------------*/
-		double averageSampleInterval =
-			(ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) /
-			(s_stShipPriv.cnt - 1);
-		if (averageSampleInterval <= 0.0)
-		{
-			return;
-		}
+		double averageSampleInterval = (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) / (s_stShipPriv.cnt - 1);
 		int dynamicPredLen = (int)round(20.0 / averageSampleInterval);
 
 		/*--------------------初始化最近20个时刻的历史数据--------------------*/
