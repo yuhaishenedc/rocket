@@ -801,70 +801,69 @@ void testShip()
 			return;
 		}
 		int dynamicPredLen = (int)round(20.0 / averageSampleInterval);
-        static double hist[20][6] = { 0 };
-	        for (int historyLogicalOffset = 0;
-	            historyLogicalOffset < lag;
-	            ++historyLogicalOffset)
-	        {
-	            memcpy(hist[historyLogicalOffset],
-	                ShipTrainDataAt(s_stShipPriv.cnt - lag + historyLogicalOffset),
-	                sizeof(hist[historyLogicalOffset]));
-	        }
-	        int historyWritePhysicalIndex = 0;
-		for (int i = 0; i < dynamicPredLen; i++)
-		{
-            /*--------------------使用6个独立寄存器，尽量让其保存在VFP寄存器中--------------------*/
-			double y0 = 0, y1 = 0, y2 = 0, y3 = 0, y4 = 0, y5 = 0;
-            
-            /*--------------------b从B[0][0]开始，仅连续向前移动，尽量命中L1 cache--------------------*/
-            const double *b = &s_stShipPriv.MatrixB[0][0];
-            for(int k = 0; k < lag; ++k)
-            {
-                /*--------------------将环形缓冲拆成两段，避免热点计算未命中--------------------*/
-	                for(int historyPhysicalIndex = historyWritePhysicalIndex;
-	                    historyPhysicalIndex < 20;
-	                    ++historyPhysicalIndex, b += lag)
-	                {
-	                    /*--------------------将X保持在VFP中--------------------*/
-	                    const double x = hist[k][historyPhysicalIndex];
-                    
-                    y0 += x * b[0];
-                    y1 += x * b[1];
-                    y2 += x * b[2];
-                    y3 += x * b[3];
-                    y4 += x * b[4];
-                    y5 += x * b[5];
-                }
-                
-                /*--------------------hist回绕，b继续向前扫描--------------------*/
-	                for(int historyPhysicalIndex = 0;
-	                    historyPhysicalIndex < historyWritePhysicalIndex;
-	                    ++historyPhysicalIndex, b += lag)
-	                {
-	                    /*--------------------将X保持在VFP中--------------------*/
-	                    const double x = hist[k][historyPhysicalIndex];
-                    
-                    y0 += x * b[0];
-                    y1 += x * b[1];
-                    y2 += x * b[2];
-                    y3 += x * b[3];
-                    y4 += x * b[4];
-                    y5 += x * b[5];
-                }
-            }
-            
-            double *out = s_stShipPriv.PredData[i];
-	            out[0] = hist[0][historyWritePhysicalIndex] = y0;
-	            out[1] = hist[1][historyWritePhysicalIndex] = y1;
-	            out[2] = hist[2][historyWritePhysicalIndex] = y2;
-	            out[3] = hist[3][historyWritePhysicalIndex] = y3;
-	            out[4] = hist[4][historyWritePhysicalIndex] = y4;
-	            out[5] = hist[5][historyWritePhysicalIndex] = y5;
 
-	            if(++historyWritePhysicalIndex == numFeatures)
-	            {
-	                historyWritePhysicalIndex = 0;
-            }
+		/*--------------------初始化最近20个时刻的历史数据--------------------*/
+		static double hist[WIN][DIM] = { 0 };
+		for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
+		{
+			memcpy(hist[historyLogicalIndex], ShipTrainDataAt(s_stShipPriv.cnt - WIN + historyLogicalIndex), sizeof(hist[historyLogicalIndex]));
+		}
+
+		/*--------------------指向当前最旧样本，也是下一次预测结果的写入位置--------------------*/
+		int historyHeadPhysicalIndex = 0;
+		for (int predictionIndex = 0; predictionIndex < dynamicPredLen; predictionIndex++)
+		{
+			/*--------------------使用6个独立累加器，尽量保存在VFP寄存器中--------------------*/
+			double y0 = 0.0;
+			double y1 = 0.0;
+			double y2 = 0.0;
+			double y3 = 0.0;
+			double y4 = 0.0;
+			double y5 = 0.0;
+
+			const double *coefficientRow = &s_stShipPriv.MatrixB[0][0];
+			int historyPhysicalIndex = historyHeadPhysicalIndex;
+			for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
+			{
+				const double *history = hist[historyPhysicalIndex];
+
+				/*--------------------针对matrixB的六列，将History的20*6进行展开计算，这里一个循环计算了1*6--------------------*/
+				for (int featureIndex = 0; featureIndex < DIM; featureIndex++)
+				{
+					const double featureValue = history[featureIndex];
+
+					y0 += featureValue * coefficientRow[0];
+					y1 += featureValue * coefficientRow[1];
+					y2 += featureValue * coefficientRow[2];
+					y3 += featureValue * coefficientRow[3];
+					y4 += featureValue * coefficientRow[4];
+					y5 += featureValue * coefficientRow[5];
+
+					coefficientRow += DIM;
+				}
+
+				historyPhysicalIndex++;
+				if (historyPhysicalIndex == WIN)
+				{
+					historyPhysicalIndex = 0;
+				}
+			}
+
+			/*--------------------保存预测结果并覆盖最旧历史样本--------------------*/
+			double *prediction = s_stShipPriv.PredData[predictionIndex];
+			double *historyWrite = hist[historyHeadPhysicalIndex];
+			prediction[0] = historyWrite[0] = y0;
+			prediction[1] = historyWrite[1] = y1;
+			prediction[2] = historyWrite[2] = y2;
+			prediction[3] = historyWrite[3] = y3;
+			prediction[4] = historyWrite[4] = y4;
+			prediction[5] = historyWrite[5] = y5;
+
+			historyHeadPhysicalIndex++;
+			if (historyHeadPhysicalIndex == WIN)
+			{
+				historyHeadPhysicalIndex = 0;
+			}
 		}
 #if 0
 		//////////////////////////////在预测的俯仰角上寻找最快下降沿//////////////////////////////
