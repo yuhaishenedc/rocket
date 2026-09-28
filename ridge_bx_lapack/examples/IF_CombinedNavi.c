@@ -301,7 +301,8 @@ void testShip(void)
 			{
 				/*--------------------异常数据剔除--------------------*/
 				if (previousPhysicalIndex >= 0
-					&& (s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] - s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex] > 3))
+					&& fabs(s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] -
+						s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex]) > 3.0)
 				{
 					s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] = s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex];
 				}
