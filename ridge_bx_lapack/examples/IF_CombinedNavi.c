@@ -137,9 +137,9 @@ static inline double *ShipAttangleDiffAt(int logicalIndex)
 }
 
 /*
-- @brief 获取指定逻辑位置的六维平滑训练数据
-- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
-- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+* @brief 获取指定逻辑位置的六维平滑训练数据
+* @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+* @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
 */
 static inline double *ShipTrainDataAt(int logicalIndex)
 {
@@ -147,9 +147,9 @@ static inline double *ShipTrainDataAt(int logicalIndex)
 }
 
 /*
- * @brief 更新指定逻辑位置的三维姿态角速度
- * @param logicalIndex 待更新样本的逻辑索引
- * @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
+* @brief 更新指定逻辑位置的三维姿态角速度
+* @param logicalIndex 待更新样本的逻辑索引
+* @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
 */
 static void ShipUpdateAttangleDiff(int logicalIndex)
 {
@@ -224,7 +224,7 @@ static void ShipUpdateTrainData(int logicalIndex)
 - @param 无
 - @note 当前按20ms周期调用并每100ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
 */
-void testShip()
+void testShip(void)
 {
 	unsigned char sampleInserted = FALSE;
 
@@ -414,10 +414,7 @@ void testShip()
 	}
 
     /*--------------------30s后预测每周期预计算--------------------*/
-    
-#define WIN 20
-#define DIM 6
-#define COL (WIN * DIM)
+
 
 	/*--------------------法方程下三角以packed格式存储在Cholesky工作区--------------------*/
 	static ridge_normal_workspace_f64 ridgeWork;
@@ -433,19 +430,14 @@ void testShip()
 		int Num10s = s_stShipPriv.cnt - method1StartLogicalIndex;		// 10s内数据总数
 		memset(s_stShipPriv.detPitch, 0, sizeof(s_stShipPriv.detPitch));
 		double SumPitch = 0;							// 10s内俯仰角和
-		for (int logicalIndex = method1StartLogicalIndex;
-			 logicalIndex < s_stShipPriv.cnt;
-			 logicalIndex++)
+		for (int logicalIndex = method1StartLogicalIndex; logicalIndex < s_stShipPriv.cnt; logicalIndex++)
 		{
 			SumPitch += ShipTrainDataAt(logicalIndex)[1];
 		}
 		SumPitch /= Num10s;
-		for (int windowLogicalOffset = 0;
-			 windowLogicalOffset < Num10s;
-			 windowLogicalOffset++)
+		for (int windowLogicalOffset = 0; windowLogicalOffset < Num10s; windowLogicalOffset++)
 		{
-			s_stShipPriv.detPitch[windowLogicalOffset] =
-				ShipTrainDataAt(method1StartLogicalIndex + windowLogicalOffset)[1] - SumPitch;
+			s_stShipPriv.detPitch[windowLogicalOffset] = ShipTrainDataAt(method1StartLogicalIndex + windowLogicalOffset)[1] - SumPitch;
 		}
 
 		//////////////////////////////计算平均周期//////////////////////////////
@@ -455,9 +447,7 @@ void testShip()
 		memset(s_stShipPriv.dTCross, 0, sizeof(s_stShipPriv.dTCross));
 		int dTCrossCount = 0;
 		int currentState = 0;
-		for (int windowLogicalOffset = 0;
-			 windowLogicalOffset < Num10s;
-			 windowLogicalOffset++)
+		for (int windowLogicalOffset = 0; windowLogicalOffset < Num10s; windowLogicalOffset++)
 		{
 			/*--------------------找第一个点--------------------*/
 			if (0 == currentState)
@@ -651,29 +641,27 @@ void testShip()
 	}
 	else
 	{
-		int lag = 20;
-		int numSamples = s_stShipPriv.cnt - lag;
-		int numFeatures = 6;
+#define WIN 20
+#define DIM 6
+#define COL (WIN * DIM)
+
+		int numSamples = s_stShipPriv.cnt - WIN;
 
         //////////////////////////////构建回归预测模型//////////////////////////////
         
 	    /*--------------------计算左项--------------------*/
-        static double blk[6][6];
-        
-        /*
-            d表示两个20*6时间位置之间相差多少
-        */
-        for(int d = 0; d < lag; ++d)
+        static double blk[6][6];		// 这个6*6的矩阵每次需要进行计算
+        for(int d = 0; d < WIN; ++d)
         {
             memset(blk, 0, sizeof(blk));
             
-            /*--------------------先完整计算这一条“块对角线”的第一个块，以进行后续递推--------------------*/
-            for(int r = 0; r < numSamples; ++r)
+            /*--------------------利用数据局部性，计算“对角线”上的第一个块--------------------*/
+            for(int r = 0; r < numSamples; ++r)	// 这一层for循环表示最终120*120的矩阵的每个元素都需要numSamples次乘法
             {
-	                const double *x = ShipTrainDataAt(r);
-	                const double *y = ShipTrainDataAt(r + d);
+	            const double *x = ShipTrainDataAt(r);
+	            const double *y = ShipTrainDataAt(r + d);
                 
-                for(int p = 0; p < numFeatures; ++p)
+                for(int p = 0; p < DIM; ++p)	// 这一层for循环表示numSamples次的每个对应元素相乘（没有显式展开120个元素）
                 {
                     const double v = x[p];
                     double *b = blk[p];
@@ -686,48 +674,42 @@ void testShip()
                 }
             }
             
-            /*
-                沿当前d方向计算所有6 * 6的块
-            */
-            for(int a = 0; a < lag - d; ++a)
+			/*--------------------沿“对角线”方向计算全部6*6块--------------------*/
+            for(int a = 0; a < WIN - d; ++a)	// 这一层for循环表示需要沿“对角线”移动几次
             {
                 int bb = a + d;
                 
-				/*--------------------将当前6×6块写入法方程packed下三角--------------------*/
-                for(int p = 0; p < numFeatures; ++p)
+				/*--------------------先将当前6×6块写入法方程packed下三角--------------------*/
+                for(int p = 0; p < DIM; ++p)
                 {
-                    for(int q = 0; q < numFeatures; ++q)
+                    for(int q = 0; q < DIM; ++q)
                     {
-                        int row = a * numFeatures + p;
-                        int col = bb * numFeatures + q;
+                        int row = a * DIM + p;
+                        int col = bb * DIM + q;
 
-						packedXTrainTXTrain[ridge_packed_lower_index(
-							(size_t)row, (size_t)col)] = blk[p][q];
+						packedXTrainTXTrain[ridge_packed_lower_index((size_t)row, (size_t)col)] = blk[p][q];
                     }
                 }
                 
-                /*--------------------已经到当前d的最后一个块，后面不再需要再更新blk--------------------*/
-                if(a == lag - d + 1)
+                /*--------------------已经到写入了d的最后一个块，后面不再需要再更新blk--------------------*/
+                if(a == WIN - d - 1)
                 {
                     break;
                 }
                 
-                /*
-                    不重新执行m次累加来计算下一个6*6块
-                */
-                
-                /*--------------------上一个窗口中离开的两个6维数组--------------------*/
-	                const double *oldX = ShipTrainDataAt(a);
-	                const double *oldY = ShipTrainDataAt(a + d);
-                
-                /*--------------------新窗口最后进入的两个6维数组--------------------*/
-	                const double *newX = ShipTrainDataAt(a + numSamples);
-	                const double *newY = ShipTrainDataAt(a + numSamples + d);
-                
-                /*
-                    更新整个6*6的块
-                */
-                for(int p = 0; p < numFeatures; p++)
+                /*--------------------滚动更新6*6的热点数据--------------------*/
+				/*
+				|a1|a2|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|
+				|a2|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|a21|
+				|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|a21|a22|
+				...
+				|a_s1|a_s2|a_s3|a_s4|a_s5|a_s6|a_s7|a_s8|a_s9|a_s10|a_s11|a_s12|a_s13|a_s14|a_s15|a_s16|a_s17|a_s18|a_s19|a_s20|
+				*/
+	            const double *oldX = ShipTrainDataAt(a);				// 上一个窗口中离开的两个6维数组
+	            const double *oldY = ShipTrainDataAt(a + d);
+	            const double *newX = ShipTrainDataAt(a + numSamples);	// 新窗口最后进入的两个6维数组
+	            const double *newY = ShipTrainDataAt(a + numSamples + d);
+                for(int p = 0; p < DIM; p++)
                 {
                     const double oldV = oldX[p];
                     const double newV = newX[p];
@@ -749,7 +731,7 @@ void testShip()
 		memset(XTrainTYTrain, 0, sizeof(XTrainTYTrain));
 	    for(int r = 0; r < numSamples; r++)
 	    {
-	        const double *y = ShipTrainDataAt(r + lag);
+	        const double *y = ShipTrainDataAt(r + WIN);
 
 	        /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
 	        const double y0 = y[0];
@@ -759,12 +741,12 @@ void testShip()
 	        const double y4 = y[4];
 	        const double y5 = y[5];
             
-            for(int a = 0; a < lag; ++a)
+            for(int a = 0; a < WIN; ++a)
             {
 	            const double *x = ShipTrainDataAt(r + a);
-                double (*out)[6] = &XTrainTYTrain[a * numFeatures];
+                double (*out)[6] = &XTrainTYTrain[a * DIM];
                 
-                for(int p = 0; p < numFeatures; ++p)
+                for(int p = 0; p < DIM; ++p)
                 {
                     const double v = x[p];
                     double *o = out[p];
