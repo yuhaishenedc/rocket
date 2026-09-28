@@ -401,15 +401,15 @@ void testShip()
 
 	/*--------------------计算相位调整标志字--------------------*/
 	int tgoFlag = 1;
-	int PitchSmallCount = 0;
+	int pitchSmallCount = 0;
 	for (int logicalIndex = 0; logicalIndex < s_stShipPriv.cnt; logicalIndex++)
 	{
-		if (ShipTrainDataAt(logicalIndex)[1] < 0.5)
+		if (fabs(ShipTrainDataAt(logicalIndex)[1]) < 0.5)
 		{
-			PitchSmallCount++;
+			pitchSmallCount++;
 		}
 	}
-	if (PitchSmallCount > s_stShipPriv.cnt * 0.995)	// 无需调整
+	if (pitchSmallCount * 200 > s_stShipPriv.cnt * 199)	// 无需调整
 	{
 		tgoFlag = 0;
 	}
