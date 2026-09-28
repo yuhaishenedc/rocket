@@ -1,3 +1,7 @@
+#include "ridge.h"
+#include <math.h>
+#include <string.h>
+
 #define		SHIP_WINDOW_SIZE_30S	(301)
 #define		SHIP_WINDOW_SIZE_20S	(201)
 #define		SHIP_WINDOW_SIZE_10S	(101)
@@ -40,8 +44,9 @@ typedef struct
 	double dTCross[SHIP_WINDOW_SIZE_10S];		    // 近10s内穿越时间点
 	double validPeriod[SHIP_WINDOW_SIZE_10S];	    // 近10s内数据周期
 	
-	double XTrain[SHIP_WINDOW_SIZE_30S][120];		
 	double MatrixB[120][6];
+	int ridgeSolveStatus;
+	long ridgeLapackInfo;
 	double PredData[SHIP_WINDOW_SIZE_30S][6];
     
     double PredSlope[SHIP_WINDOW_SIZE_30S];
@@ -386,23 +391,10 @@ void testShip()
 #define DIM 6
 #define COL (WIN * DIM)
 
-	static int modelHeadPhysicalIndex = 0;          // 指向当前最旧元素
-	static int modelPreviousHeadPhysicalIndex = 0;  // 指向上一次最旧元素
-    static int count = 0;       // 当前有效行数
-    static int countPre = 0;    // 上次有效行数
-    
-	static double H[120][6] = { 0 };
-    
-    static double oldX[120] = { 0 };    // 每次增量操作需要的临时120维变量
-    static double newX[120] = { 0 };    
-    static double oldY[6] = { 0 };
-    
-	int doDel = (modelHeadPhysicalIndex != modelPreviousHeadPhysicalIndex);
-    int doAdd = (count != countPre);
-    //const int removePair = doDel && (count >);       // 
-	const int countAfterDel = modelHeadPhysicalIndex - count + 1;
-    
-	static double XTrainTXTrain[120][120] = { 0 };
+	/*--------------------唯一的120×120法方程矩阵位于Cholesky工作区--------------------*/
+	static ridge_normal_workspace_f64 ridgeWork;
+	double (*XTrainTXTrain)[RIDGE_N] =
+		(double (*)[RIDGE_N])ridge_normal_matrix_f64(&ridgeWork);
 
 	/*--------------------峰值法+周期法--------------------*/
 	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
@@ -765,16 +757,18 @@ void testShip()
             }
         }
 
-		/*--------------------加入岭回归正则项：X'X + 5I--------------------*/
+		/*--------------------Cholesky分解并直接求解六个右端项--------------------*/
 		const double ridgeLambda = 5.0;
-		for (int diagonalIndex = 0; diagonalIndex < COL; diagonalIndex++)
+		s_stShipPriv.ridgeSolveStatus = ridge_solve_normal_f64(
+			*XTrainTYTrain,
+			ridgeLambda,
+			*s_stShipPriv.MatrixB,
+			&ridgeWork);
+		s_stShipPriv.ridgeLapackInfo = ridgeWork.lapack_info;
+		if (s_stShipPriv.ridgeSolveStatus != RIDGE_OK)
 		{
-			XTrainTXTrain[diagonalIndex][diagonalIndex] += ridgeLambda;
+			return;
 		}
-
-		/*--------------------计算岭回归解析解--------------------*/
-		MatrixInv(*XTrainTXTrain, COL);
-		MatrixMultiply(*XTrainTXTrain, *XTrainTYTrain, COL, COL, DIM, *s_stShipPriv.MatrixB);
         
         /*--------------------预测未来20s--------------------*/
 		double averageSampleInterval = (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) / (s_stShipPriv.cnt - 1);

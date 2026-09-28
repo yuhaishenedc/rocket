@@ -159,3 +159,77 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
 
     return RIDGE_OK;
 }
+
+double *ridge_normal_matrix_f64(ridge_normal_workspace_f64 *work)
+{
+    if (!work) return (double *)0;
+    return work->factor + RIDGE_N + 1;
+}
+
+int ridge_solve_normal_f64(const double *xty, double lambda,
+                           double *coefficients,
+                           ridge_normal_workspace_f64 *work)
+{
+    int i, j;
+    integer n = RIDGE_N;
+    integer nrhs = RIDGE_NORMAL_RHS;
+    integer info = 0;
+    char lower = 'L';
+    double value;
+    double *factor;
+    double *rhs;
+
+    if (!xty || !coefficients || !work ||
+        !finite_f64(lambda) || lambda <= 0.0)
+        return RIDGE_EINVAL;
+
+    work->lapack_info = 0;
+    factor = work->factor + RIDGE_N + 1;
+    rhs = work->rhs + RIDGE_N + 1;
+
+    /* Pack the lower triangle in LAPACK column-major layout and regularize. */
+    for (j = 0; j < RIDGE_N; ++j) {
+        for (i = j; i < RIDGE_N; ++i) {
+            value = factor[i * RIDGE_N + j];
+            if (i == j) value += lambda;
+            if (!finite_f64(value)) return RIDGE_ENUMERIC;
+            factor[i + j * RIDGE_N] = value;
+        }
+    }
+
+    /* Pack all six right-hand sides in LAPACK column-major layout. */
+    for (j = 0; j < RIDGE_NORMAL_RHS; ++j) {
+        for (i = 0; i < RIDGE_N; ++i) {
+            value = xty[i * RIDGE_NORMAL_RHS + j];
+            if (!finite_f64(value)) return RIDGE_ENUMERIC;
+            rhs[i + j * RIDGE_N] = value;
+        }
+    }
+
+    dpotf2_(&lower, &n, factor, &n, &info);
+    work->lapack_info = info;
+    if (info > 0) return RIDGE_ENOTSPD;
+    if (info < 0) return RIDGE_ELAPACK;
+
+    for (j = 0; j < RIDGE_N; ++j)
+        for (i = j; i < RIDGE_N; ++i)
+            if (!finite_f64(factor[i + j * RIDGE_N]))
+                return RIDGE_ENUMERIC;
+
+    dpotrs_(&lower, &n, &nrhs, factor, &n, rhs, &n, &info);
+    work->lapack_info = info;
+    if (info != 0) return RIDGE_ELAPACK;
+
+    /* Validate every result before publishing a new coefficient matrix. */
+    for (j = 0; j < RIDGE_NORMAL_RHS; ++j)
+        for (i = 0; i < RIDGE_N; ++i)
+            if (!finite_f64(rhs[i + j * RIDGE_N]))
+                return RIDGE_ENUMERIC;
+
+    for (i = 0; i < RIDGE_N; ++i)
+        for (j = 0; j < RIDGE_NORMAL_RHS; ++j)
+            coefficients[i * RIDGE_NORMAL_RHS + j] =
+                rhs[i + j * RIDGE_N];
+
+    return RIDGE_OK;
+}

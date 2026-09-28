@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 #define RIDGE_N 120
+#define RIDGE_NORMAL_RHS 6
 
 enum {
     RIDGE_OK = 0,
@@ -32,6 +33,12 @@ typedef struct {
     long lapack_info;
 } ridge_workspace_f64;
 
+typedef struct {
+    double factor[RIDGE_N * RIDGE_N + RIDGE_N + 1];
+    double rhs[RIDGE_N * RIDGE_NORMAL_RHS + RIDGE_N + 1];
+    long lapack_info;
+} ridge_normal_workspace_f64;
+
 /* X is row-major X[120][120], Y is row-major Y[rows][120], and B is
  * row-major B[rows][120]. Both functions minimize
  * ||B*X-Y||_F^2 + lambda*||B||_F^2 for lambda > 0.
@@ -44,6 +51,25 @@ int ridge_solve_f32(const float *x, const float *y, size_t rows,
 
 int ridge_solve_f64(const double *x, const double *y, size_t rows,
                     double lambda, double *b, ridge_workspace_f64 *work);
+
+/* Returns the row-major XTX[120][120] construction area owned by work.
+ * ridge_solve_normal_f64 overwrites this area with its Cholesky factor, so
+ * the caller must rebuild XTX before every solve.
+ */
+double *ridge_normal_matrix_f64(ridge_normal_workspace_f64 *work);
+
+/* XTY is row-major XTY[120][6], and coefficients is row-major
+ * coefficients[120][6]. The function solves
+ *
+ *     (XTX + lambda*I) * coefficients = XTY
+ *
+ * using the XTX previously built in ridge_normal_matrix_f64(work), with one
+ * Cholesky factorization and six right-hand sides. XTY is preserved.
+ * coefficients is updated only after both LAPACK calls succeed.
+ */
+int ridge_solve_normal_f64(const double *xty, double lambda,
+                           double *coefficients,
+                           ridge_normal_workspace_f64 *work);
 
 #ifdef __cplusplus
 }
