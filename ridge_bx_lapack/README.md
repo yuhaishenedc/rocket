@@ -22,7 +22,7 @@ C = X*Y^T
 然后通过 Cholesky 分解求解 `A*B^T=C`，不会显式计算逆矩阵。
 
 - 单精度接口调用 `spotf2_` 和 `spotrs_`。
-- 双精度接口调用 `dpotf2_` 和 `dpotrs_`。
+- 双精度接口调用 packed LAPACK 的 `dpptrf_` 和 `dpptrs_`，仅存储下三角。
 
 ## 两个接口
 
@@ -45,6 +45,19 @@ B[rows][120]
 ```
 
 函数内部处理 LAPACK 的列优先布局，调用者不需要转置。`X`、`Y`、`B` 和工作区的内存不能重叠。返回值不是 `RIDGE_OK` 时不能使用 B。
+
+业务代码已经构造法方程时，可使用六右端接口：
+
+```c
+double *packedXTX = ridge_normal_packed_matrix_f64(&work);
+packedXTX[ridge_packed_lower_index(row, col)] = value;
+
+int status = ridge_solve_normal_f64(&XTY[0][0], lambda,
+                                    &coefficients[0][0], &work);
+```
+
+`packedXTX` 使用 LAPACK 下三角 packed 格式，共有
+`RIDGE_PACKED_SIZE=120*121/2=7260` 个双精度元素。求解函数会直接在该区域内进行 Cholesky 分解，因此每次求解前必须重新构建法方程矩阵。
 
 ## 调用示例
 
@@ -84,7 +97,7 @@ int status = ridge_solve_f64(&X[0][0], &Y[0][0], 3,
 
 ## 加入 IAR 9.40.1 工程
 
-将以下 20 个 `.c` 文件加入已有 Cortex-A7 工程：
+将以下 18 个 `.c` 文件加入已有 Cortex-A7 工程：
 
 ```text
 src/ridge.c
@@ -95,19 +108,17 @@ third_party/clapack/SRC/spotf2.c
 third_party/clapack/SRC/spotrs.c
 third_party/clapack/SRC/sisnan.c
 third_party/clapack/SRC/slaisnan.c
-third_party/clapack/SRC/dpotf2.c
-third_party/clapack/SRC/dpotrs.c
-third_party/clapack/SRC/disnan.c
-third_party/clapack/SRC/dlaisnan.c
+third_party/clapack/SRC/dpptrf.c
+third_party/clapack/SRC/dpptrs.c
 
 third_party/clapack/BLAS/SRC/sdot.c
 third_party/clapack/BLAS/SRC/sgemv.c
 third_party/clapack/BLAS/SRC/sscal.c
 third_party/clapack/BLAS/SRC/strsm.c
 third_party/clapack/BLAS/SRC/ddot.c
-third_party/clapack/BLAS/SRC/dgemv.c
 third_party/clapack/BLAS/SRC/dscal.c
-third_party/clapack/BLAS/SRC/dtrsm.c
+third_party/clapack/BLAS/SRC/dspr.c
+third_party/clapack/BLAS/SRC/dtpsv.c
 third_party/clapack/BLAS/SRC/lsame.c
 ```
 
@@ -137,7 +148,9 @@ NO_BLAS_WRAP
 | X | 57,600 字节 | 115,200 字节 |
 | Y | `480*m` 字节 | `960*m` 字节 |
 | B | `480*m` 字节 | `960*m` 字节 |
-| 工作区 | 约 59,052 字节 | 约 118,104 字节 |
+| 工作区 | 约 59,052 字节 | 约 60,024 字节 |
+
+六右端法方程工作区约为 64,824 字节，其中 packed Cholesky 矩阵占 58,080 字节，六个右端及 f2c 下标保护空间占其余部分。
 
 工作区和大矩阵应采用静态存储或放入已经初始化的 DDR，不要作为局部变量放入小栈中。实际应用只需要分配所调用接口对应的工作区。
 

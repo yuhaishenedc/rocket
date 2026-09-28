@@ -419,10 +419,9 @@ void testShip()
 #define DIM 6
 #define COL (WIN * DIM)
 
-	/*--------------------唯一的120×120法方程矩阵位于Cholesky工作区--------------------*/
+	/*--------------------法方程下三角以packed格式存储在Cholesky工作区--------------------*/
 	static ridge_normal_workspace_f64 ridgeWork;
-	double (*XTrainTXTrain)[RIDGE_N] =
-		(double (*)[RIDGE_N])ridge_normal_matrix_f64(&ridgeWork);
+	double *packedXTrainTXTrain = ridge_normal_packed_matrix_f64(&ridgeWork);
 
 	/*--------------------峰值法+周期法--------------------*/
 	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
@@ -694,19 +693,16 @@ void testShip()
             {
                 int bb = a + d;
                 
-                /*
-                    把当前6*6 blk写到真正的120*120矩阵G中
-                */
+				/*--------------------将当前6×6块写入法方程packed下三角--------------------*/
                 for(int p = 0; p < numFeatures; ++p)
                 {
                     for(int q = 0; q < numFeatures; ++q)
                     {
                         int row = a * numFeatures + p;
                         int col = bb * numFeatures + q;
-                        
-                        XTrainTXTrain[row][col] = blk[p][q];
-                        // 对称矩阵
-                        XTrainTXTrain[col][row] = blk[p][q];
+
+						packedXTrainTXTrain[ridge_packed_lower_index(
+							(size_t)row, (size_t)col)] = blk[p][q];
                     }
                 }
                 

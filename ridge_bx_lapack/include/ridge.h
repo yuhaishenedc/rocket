@@ -9,6 +9,7 @@ extern "C" {
 
 #define RIDGE_N 120
 #define RIDGE_NORMAL_RHS 6
+#define RIDGE_PACKED_SIZE (RIDGE_N * (RIDGE_N + 1) / 2)
 
 enum {
     RIDGE_OK = 0,
@@ -28,13 +29,13 @@ typedef struct {
 } ridge_workspace_f32;
 
 typedef struct {
-    double factor[RIDGE_N * RIDGE_N + RIDGE_N + 1];
+    double factor[RIDGE_PACKED_SIZE + 1];
     double rhs[2 * RIDGE_N + 1];
     long lapack_info;
 } ridge_workspace_f64;
 
 typedef struct {
-    double factor[RIDGE_N * RIDGE_N + RIDGE_N + 1];
+    double factor[RIDGE_PACKED_SIZE + 1];
     double rhs[RIDGE_N * RIDGE_NORMAL_RHS + RIDGE_N + 1];
     long lapack_info;
 } ridge_normal_workspace_f64;
@@ -52,19 +53,25 @@ int ridge_solve_f32(const float *x, const float *y, size_t rows,
 int ridge_solve_f64(const double *x, const double *y, size_t rows,
                     double lambda, double *b, ridge_workspace_f64 *work);
 
-/* Returns the row-major XTX[120][120] construction area owned by work.
- * ridge_solve_normal_f64 overwrites this area with its Cholesky factor, so
- * the caller must rebuild XTX before every solve.
+/* Returns the LAPACK lower-packed XTX construction area owned by work.
+ * ridge_solve_normal_f64 overwrites this area with its packed Cholesky
+ * factor, so the caller must rebuild XTX before every solve.
  */
-double *ridge_normal_matrix_f64(ridge_normal_workspace_f64 *work);
+double *ridge_normal_packed_matrix_f64(ridge_normal_workspace_f64 *work);
+
+/* Returns the zero-based LAPACK lower-packed index for a symmetric matrix.
+ * row and col may be supplied in either order and must both be below RIDGE_N.
+ */
+size_t ridge_packed_lower_index(size_t row, size_t col);
 
 /* XTY is row-major XTY[120][6], and coefficients is row-major
  * coefficients[120][6]. The function solves
  *
  *     (XTX + lambda*I) * coefficients = XTY
  *
- * using the XTX previously built in ridge_normal_matrix_f64(work), with one
- * Cholesky factorization and six right-hand sides. XTY is preserved.
+ * using the packed XTX previously built in
+ * ridge_normal_packed_matrix_f64(work), with one Cholesky factorization and
+ * six right-hand sides. XTY is preserved.
  * coefficients is updated only after both LAPACK calls succeed.
  */
 int ridge_solve_normal_f64(const double *xty, double lambda,

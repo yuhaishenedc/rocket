@@ -5,9 +5,9 @@
 extern int spotf2_(char *, integer *, real *, integer *, integer *);
 extern int spotrs_(char *, integer *, integer *, real *, integer *,
                   real *, integer *, integer *);
-extern int dpotf2_(char *, integer *, doublereal *, integer *, integer *);
-extern int dpotrs_(char *, integer *, integer *, doublereal *, integer *,
-                  doublereal *, integer *, integer *);
+extern int dpptrf_(char *, integer *, doublereal *, integer *);
+extern int dpptrs_(char *, integer *, integer *, doublereal *, doublereal *,
+                  integer *, integer *);
 
 typedef char ridge_float_must_be_32_bits[(sizeof(float) == 4) ? 1 : -1];
 typedef char ridge_double_must_be_64_bits[(sizeof(double) == 8) ? 1 : -1];
@@ -20,6 +20,19 @@ static int finite_f32(float value)
 static int finite_f64(double value)
 {
     return value == value && value <= DBL_MAX && value >= -DBL_MAX;
+}
+
+size_t ridge_packed_lower_index(size_t row, size_t col)
+{
+    size_t swap;
+
+    if (row < col) {
+        swap = row;
+        row = col;
+        col = swap;
+    }
+
+    return col * (2 * RIDGE_N - col + 1) / 2 + row - col;
 }
 
 int ridge_solve_f32(const float *x, const float *y, size_t rows,
@@ -96,7 +109,7 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
 {
     size_t r, p;
     int i, j, k;
-    integer n = RIDGE_N, nrhs = 1, info = 0;
+    integer n = RIDGE_N, nrhs = 1, ldb = RIDGE_N, info = 0;
     char lower = 'L';
     double sum;
     double *a, *rhs;
@@ -112,10 +125,10 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
     for (p = 0; p < rows * RIDGE_N; ++p)
         if (!finite_f64(y[p])) return RIDGE_ENUMERIC;
 
-    a = work->factor + RIDGE_N + 1;
+    a = work->factor + 1;
     rhs = work->rhs + RIDGE_N + 1;
 
-    /* Store the lower triangle of A=X*X^T+lambda*I in column-major layout. */
+    /* Store the lower triangle of A=X*X^T+lambda*I in packed layout. */
     for (j = 0; j < RIDGE_N; ++j) {
         for (i = j; i < RIDGE_N; ++i) {
             sum = 0.0;
@@ -123,19 +136,18 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
                 sum += x[i * RIDGE_N + k] * x[j * RIDGE_N + k];
             if (i == j) sum += lambda;
             if (!finite_f64(sum)) return RIDGE_ENUMERIC;
-            a[i + j * RIDGE_N] = sum;
+            a[ridge_packed_lower_index((size_t)i, (size_t)j)] = sum;
         }
     }
 
-    /* Factor A=L*L^T once with the double-precision LAPACK routine. */
-    dpotf2_(&lower, &n, a, &n, &info);
+    /* Factor A=L*L^T once with the packed double-precision LAPACK routine. */
+    dpptrf_(&lower, &n, a, &info);
     work->lapack_info = info;
     if (info > 0) return RIDGE_ENOTSPD;
     if (info < 0) return RIDGE_ELAPACK;
 
-    for (j = 0; j < RIDGE_N; ++j)
-        for (i = j; i < RIDGE_N; ++i)
-            if (!finite_f64(a[i + j * RIDGE_N])) return RIDGE_ENUMERIC;
+    for (p = 0; p < RIDGE_PACKED_SIZE; ++p)
+        if (!finite_f64(a[p])) return RIDGE_ENUMERIC;
 
     /* Solve A*B^T=X*Y^T one output row at a time. */
     for (r = 0; r < rows; ++r) {
@@ -147,7 +159,7 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
             rhs[i] = sum;
         }
 
-        dpotrs_(&lower, &n, &nrhs, a, &n, rhs, &n, &info);
+        dpptrs_(&lower, &n, &nrhs, a, rhs, &ldb, &info);
         work->lapack_info = info;
         if (info != 0) return RIDGE_ELAPACK;
 
@@ -160,16 +172,17 @@ int ridge_solve_f64(const double *x, const double *y, size_t rows,
     return RIDGE_OK;
 }
 
-double *ridge_normal_matrix_f64(ridge_normal_workspace_f64 *work)
+double *ridge_normal_packed_matrix_f64(ridge_normal_workspace_f64 *work)
 {
     if (!work) return (double *)0;
-    return work->factor + RIDGE_N + 1;
+    return work->factor + 1;
 }
 
 int ridge_solve_normal_f64(const double *xty, double lambda,
                            double *coefficients,
                            ridge_normal_workspace_f64 *work)
 {
+    size_t p;
     int i, j;
     integer n = RIDGE_N;
     integer nrhs = RIDGE_NORMAL_RHS;
@@ -184,17 +197,19 @@ int ridge_solve_normal_f64(const double *xty, double lambda,
         return RIDGE_EINVAL;
 
     work->lapack_info = 0;
-    factor = work->factor + RIDGE_N + 1;
+    factor = work->factor + 1;
     rhs = work->rhs + RIDGE_N + 1;
 
-    /* Pack the lower triangle in LAPACK column-major layout and regularize. */
-    for (j = 0; j < RIDGE_N; ++j) {
-        for (i = j; i < RIDGE_N; ++i) {
-            value = factor[i * RIDGE_N + j];
-            if (i == j) value += lambda;
-            if (!finite_f64(value)) return RIDGE_ENUMERIC;
-            factor[i + j * RIDGE_N] = value;
-        }
+    /* Validate the packed matrix before changing its diagonal. */
+    for (p = 0; p < RIDGE_PACKED_SIZE; ++p)
+        if (!finite_f64(factor[p])) return RIDGE_ENUMERIC;
+
+    /* Add ridge regularization directly to the packed diagonal. */
+    for (i = 0; i < RIDGE_N; ++i) {
+        p = ridge_packed_lower_index((size_t)i, (size_t)i);
+        value = factor[p] + lambda;
+        if (!finite_f64(value)) return RIDGE_ENUMERIC;
+        factor[p] = value;
     }
 
     /* Pack all six right-hand sides in LAPACK column-major layout. */
@@ -206,17 +221,15 @@ int ridge_solve_normal_f64(const double *xty, double lambda,
         }
     }
 
-    dpotf2_(&lower, &n, factor, &n, &info);
+    dpptrf_(&lower, &n, factor, &info);
     work->lapack_info = info;
     if (info > 0) return RIDGE_ENOTSPD;
     if (info < 0) return RIDGE_ELAPACK;
 
-    for (j = 0; j < RIDGE_N; ++j)
-        for (i = j; i < RIDGE_N; ++i)
-            if (!finite_f64(factor[i + j * RIDGE_N]))
-                return RIDGE_ENUMERIC;
+    for (p = 0; p < RIDGE_PACKED_SIZE; ++p)
+        if (!finite_f64(factor[p])) return RIDGE_ENUMERIC;
 
-    dpotrs_(&lower, &n, &nrhs, factor, &n, rhs, &n, &info);
+    dpptrs_(&lower, &n, &nrhs, factor, rhs, &n, &info);
     work->lapack_info = info;
     if (info != 0) return RIDGE_ELAPACK;
 
