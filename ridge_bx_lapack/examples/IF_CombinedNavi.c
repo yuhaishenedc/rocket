@@ -227,6 +227,9 @@ static void ShipUpdateTrainData(int logicalIndex)
 */
 void testShip()
 {
+	unsigned char sampleInserted = FALSE;
+	s_stShipPriv.bCalculated = FALSE;
+
 #if 1
     static int timeCounter = 0;
     timeCounter++;
@@ -244,30 +247,6 @@ void testShip()
         memcpy(s_stShipPriv.dAttangleStore, g_CombinedNaviInput.AttAngle_ship, sizeof(g_CombinedNaviInput.AttAngle_ship));
         s_stShipPriv.bUpdate100ms = TRUE;
 	}
-    
-    /*--------------------清除30s以前的数据--------------------*/
-	int removeCount = 0;
-	while (removeCount < s_stShipPriv.cnt && g_CombinedNaviInput.t_fly - ShipTimeAt(removeCount) > 30.0)
-	{
-		removeCount++;
-	}
-	if (removeCount > 0)
-	{
-		int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
-
-		s_stShipPriv.headPhysicalIndex = newHeadPhysicalIndex >= SHIP_WINDOW_SIZE_30S
-			? newHeadPhysicalIndex - SHIP_WINDOW_SIZE_30S : newHeadPhysicalIndex;
-		s_stShipPriv.cnt -= removeCount;
-		s_stShipPriv.method1StartLogicalIndex = s_stShipPriv.method1StartLogicalIndex > removeCount
-			? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
-
-		/*--------------------删除只改变新的左边界，右边界的邻接关系不变。--------------------*/
-		ShipUpdateAttangleDiff(0);		// 更新左边界三维角速度
-		for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 3; ++boundaryLogicalIndex)
-		{
-			ShipUpdateTrainData(boundaryLogicalIndex);
-		}
-	}
 
     /*--------------------数据降频，100ms数据更新一次--------------------*/
 	static int counter = 0;
@@ -278,6 +257,32 @@ void testShip()
 		/*--------------------数据存储及异常处理--------------------*/
 		if (TRUE == s_stShipPriv.bUpdate100ms)
 		{
+			/*--------------------仅在新样本入队前清除30s以前的数据--------------------*/
+			int removeCount = 0;
+			while (removeCount < s_stShipPriv.cnt &&
+				   s_stShipPriv.dTimeStore - ShipTimeAt(removeCount) > 30.0)
+			{
+				removeCount++;
+			}
+			if (removeCount > 0)
+			{
+				int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
+
+				s_stShipPriv.headPhysicalIndex = newHeadPhysicalIndex >= SHIP_WINDOW_SIZE_30S
+					? newHeadPhysicalIndex - SHIP_WINDOW_SIZE_30S : newHeadPhysicalIndex;
+				s_stShipPriv.cnt -= removeCount;
+				s_stShipPriv.method1StartLogicalIndex =
+					s_stShipPriv.method1StartLogicalIndex > removeCount
+					? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
+
+				/*--------------------删除数据后更新左边界差分和平滑值--------------------*/
+				ShipUpdateAttangleDiff(0);
+				for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 3; ++boundaryLogicalIndex)
+				{
+					ShipUpdateTrainData(boundaryLogicalIndex);
+				}
+			}
+
 			/*--------------------逻辑尾部通过一次条件减法转换为物理写入位置--------------------*/
 			int writePhysicalIndex = ShipLogicalToPhysicalIndex(s_stShipPriv.cnt);
 			int previousPhysicalIndex = -1;
@@ -316,12 +321,33 @@ void testShip()
 			{
 				s_stShipPriv.method1StartLogicalIndex++;
 			}
+
+			sampleInserted = TRUE;
 		}
 		s_stShipPriv.bUpdate100ms = FALSE;
 	}
 
 	/*--------------------数据个数不足，不进入后续判断--------------------*/
 	if (s_stShipPriv.cnt < 2)
+	{
+		s_stShipPriv.bUseCheck = FALSE;
+		s_stShipPriv.stPredResult.tDown1 = -1.0;
+		s_stShipPriv.stPredResult.tDown2 = -1.0;
+		return;
+	}
+
+	/*--------------------每20ms检查最新数据是否超时--------------------*/
+	if (g_CombinedNaviInput.t_fly - ShipTimeAt(s_stShipPriv.cnt - 1) > 1.0)
+	{
+		s_stShipPriv.bUseCheck = FALSE;
+		s_stShipPriv.poolCount = 0;
+		s_stShipPriv.stPredResult.tDown1 = -1.0;
+		s_stShipPriv.stPredResult.tDown2 = -1.0;
+		return;
+	}
+
+	/*--------------------没有新样本时复用上次预测结果--------------------*/
+	if (FALSE == sampleInserted)
 	{
 		return;
 	}
@@ -369,6 +395,9 @@ void testShip()
 	{
 		return;
 	}
+
+	/*--------------------标记本周期执行完整预测计算--------------------*/
+	s_stShipPriv.bCalculated = TRUE;
 
 	/*--------------------计算相位调整标志字--------------------*/
 	int tgoFlag = 1;
