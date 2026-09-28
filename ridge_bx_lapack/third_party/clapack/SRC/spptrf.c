@@ -1,4 +1,4 @@
-/* dpptrf.f -- translated by f2c (version 20061008).
+/* spptrf.f -- translated by f2c (version 20061008).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -16,31 +16,29 @@
 /* Table of constant values */
 
 static integer c__1 = 1;
-static doublereal c_b16 = -1.;
+static real c_b16 = -1.f;
 
-/* Subroutine */ int dpptrf_(char *uplo, integer *n, doublereal *ap, integer *
-	info)
+/* Subroutine */ int spptrf_(char *uplo, integer *n, real *ap, integer *info)
 {
     /* System generated locals */
     integer i__1, i__2;
-    doublereal d__1;
+    real r__1;
 
     /* Builtin functions */
     double sqrt(doublereal);
 
     /* Local variables */
     integer j, jc, jj;
-    doublereal ajj;
-    extern doublereal ddot_(integer *, doublereal *, integer *, doublereal *,
-	    integer *);
-    extern /* Subroutine */ int dspr_(char *, integer *, doublereal *,
-	    doublereal *, integer *, doublereal *), dscal_(integer *,
-	    doublereal *, doublereal *, integer *);
+    real ajj;
+    extern doublereal sdot_(integer *, real *, integer *, real *, integer *);
+    extern /* Subroutine */ int sspr_(char *, integer *, real *, real *,
+	    integer *, real *);
     extern logical lsame_(char *, char *);
+    extern /* Subroutine */ int sscal_(integer *, real *, real *, integer *);
     logical upper;
-    extern /* Subroutine */ int dtpsv_(char *, char *, char *, integer *,
-	    doublereal *, doublereal *, integer *),
-	    xerbla_(char *, integer *);
+    extern /* Subroutine */ int stpsv_(char *, char *, char *, integer *,
+	    real *, real *, integer *), xerbla_(char *
+, integer *);
 
 
 /*  -- LAPACK routine (version 3.2) -- */
@@ -55,7 +53,7 @@ static doublereal c_b16 = -1.;
 /*  Purpose */
 /*  ======= */
 
-/*  DPPTRF computes the Cholesky factorization of a real symmetric */
+/*  SPPTRF computes the Cholesky factorization of a real symmetric */
 /*  positive definite matrix A stored in packed format. */
 
 /*  The factorization has the form */
@@ -73,7 +71,7 @@ static doublereal c_b16 = -1.;
 /*  N       (input) INTEGER */
 /*          The order of the matrix A.  N >= 0. */
 
-/*  AP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2) */
+/*  AP      (input/output) REAL array, dimension (N*(N+1)/2) */
 /*          On entry, the upper or lower triangle of the symmetric matrix */
 /*          A, packed columnwise in a linear array.  The j-th column of A */
 /*          is stored in the array AP as follows: */
@@ -138,7 +136,7 @@ static doublereal c_b16 = -1.;
     }
     if (*info != 0) {
 	i__1 = -(*info);
-	xerbla_("DPPTRF", &i__1);
+	xerbla_("SPPTRF", &i__1);
 	return 0;
     }
 
@@ -162,15 +160,15 @@ static doublereal c_b16 = -1.;
 
 	    if (j > 1) {
 		i__2 = j - 1;
-		dtpsv_("Upper", "Transpose", "Non-unit", &i__2, &ap[1], &ap[
+		stpsv_("Upper", "Transpose", "Non-unit", &i__2, &ap[1], &ap[
 			jc], &c__1);
 	    }
 
 /*           Compute U(J,J) and test for non-positive-definiteness. */
 
 	    i__2 = j - 1;
-	    ajj = ap[jj] - ddot_(&i__2, &ap[jc], &c__1, &ap[jc], &c__1);
-	    if (ajj <= 0.) {
+	    ajj = ap[jj] - sdot_(&i__2, &ap[jc], &c__1, &ap[jc], &c__1);
+	    if (ajj <= 0.f) {
 		ap[jj] = ajj;
 		goto L30;
 	    }
@@ -188,7 +186,7 @@ static doublereal c_b16 = -1.;
 /*           Compute L(J,J) and test for non-positive-definiteness. */
 
 	    ajj = ap[jj];
-	    if (ajj <= 0.) {
+	    if (ajj <= 0.f) {
 		ap[jj] = ajj;
 		goto L30;
 	    }
@@ -200,10 +198,10 @@ static doublereal c_b16 = -1.;
 
 	    if (j < *n) {
 		i__2 = *n - j;
-		d__1 = 1. / ajj;
-		dscal_(&i__2, &d__1, &ap[jj + 1], &c__1);
+		r__1 = 1.f / ajj;
+		sscal_(&i__2, &r__1, &ap[jj + 1], &c__1);
 		i__2 = *n - j;
-		dspr_("Lower", &i__2, &c_b16, &ap[jj + 1], &c__1, &ap[jj + *n
+		sspr_("Lower", &i__2, &c_b16, &ap[jj + 1], &c__1, &ap[jj + *n
 			- j + 1]);
 		jj = jj + *n - j + 1;
 	    }
@@ -218,6 +216,6 @@ L30:
 L40:
     return 0;
 
-/*     End of DPPTRF */
+/*     End of SPPTRF */
 
-} /* dpptrf_ */
+} /* spptrf_ */

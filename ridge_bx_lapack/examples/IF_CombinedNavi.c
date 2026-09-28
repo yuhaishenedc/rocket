@@ -11,7 +11,7 @@
 #define		SHIP_MAX_TRACKED_POOLS	(4)
 typedef struct
 {
-	double predAngle[SHIP_WINDOW_SIZE_20S];
+	float predAngle[SHIP_WINDOW_SIZE_20S];
 	double tPred[SHIP_WINDOW_SIZE_20S];
 }PredResult;
 typedef struct
@@ -23,36 +23,36 @@ typedef struct
 {
 	/*--------------------每100ms是否更新判断--------------------*/
     double dTimeStore;                              	// 100ms内最近一次更新数据时间
-    double dAttangleStore[3];                       	// 100ms内最近一次更新船体姿态数据
+    float dAttangleStore[3];                        	// 100ms内最近一次更新船体姿态数据
     unsigned char bUpdate100ms;                     	// 100ms内数据是否更新过
 
 	/*--------------------30s内存储的原始数据（环形缓冲区）--------------------*/
 	int headPhysicalIndex;						    // 环形缓冲区最旧样本的物理索引
 	int cnt;										    // 已存储数据计数
 	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     	// 30s内存储的原始时间数据
-	double Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、偏航、俯仰）
-	double AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
-	double trainData[SHIP_WINDOW_SIZE_30S][6];	    	// 30s平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
+	float Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、偏航、俯仰）
+	float AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
+	float trainData[SHIP_WINDOW_SIZE_30S][6];	    	// 30s平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
 
     unsigned char bUseCheck;                        // 船姿数据启用标志字
     
     /*--------------------峰值+周期法--------------------*/
 	int method1StartLogicalIndex;
-	double detPitch[SHIP_WINDOW_SIZE_10S];			// 近10s内均值归零俯仰角数据
+	float detPitch[SHIP_WINDOW_SIZE_10S];			// 近10s内均值归零俯仰角数据
 	double dTCross[SHIP_WINDOW_SIZE_10S];		    // 近10s内穿越时间点
 	double validPeriod[SHIP_WINDOW_SIZE_10S];	    // 近10s内数据周期
 	
-	double MatrixB[120][6];
+	float MatrixB[120][6];
 	int ridgeSolveStatus;
-	double PredData[SHIP_WINDOW_SIZE_30S][6];
+	float PredData[SHIP_WINDOW_SIZE_30S][6];
     
-    double PredSlope[SHIP_WINDOW_SIZE_30S];
-	double dNeg[SHIP_WINDOW_SIZE_30S];
+	float PredSlope[SHIP_WINDOW_SIZE_30S];
+	float dNeg[SHIP_WINDOW_SIZE_30S];
 	int NegIdx[SHIP_WINDOW_SIZE_30S];
 	int valleyIdx[SHIP_MAX_OUTPUT_POOLS];
 	int breakPoints[SHIP_WINDOW_SIZE_30S];
 	int segEnds[SHIP_WINDOW_SIZE_30S];
-	double segSlopes[SHIP_WINDOW_SIZE_30S];
+	float segSlopes[SHIP_WINDOW_SIZE_30S];
 	double tzPredAll[SHIP_MAX_OUTPUT_POOLS];
 	double tzFiltered[SHIP_MAX_OUTPUT_POOLS];
 
@@ -123,7 +123,7 @@ static inline double ShipTimeAt(int logicalIndex)
 - @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
 - @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
 */
-static inline double *ShipAttangleAt(int logicalIndex)
+static inline float *ShipAttangleAt(int logicalIndex)
 {
 	return s_stShipPriv.Attangle30s[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
@@ -133,7 +133,7 @@ static inline double *ShipAttangleAt(int logicalIndex)
 - @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
 - @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
 */
-static inline double *ShipAttangleDiffAt(int logicalIndex)
+static inline float *ShipAttangleDiffAt(int logicalIndex)
 {
 	return s_stShipPriv.AttangleDiff30s[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
@@ -143,7 +143,7 @@ static inline double *ShipAttangleDiffAt(int logicalIndex)
 * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
 * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
 */
-static inline double *ShipTrainDataAt(int logicalIndex)
+static inline float *ShipTrainDataAt(int logicalIndex)
 {
 	return s_stShipPriv.trainData[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
@@ -180,8 +180,8 @@ static void ShipUpdateAttangleDiff(int logicalIndex)
 	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 	{
 		s_stShipPriv.AttangleDiff30s[targetPhysicalIndex][channelIndex] =
-			(s_stShipPriv.Attangle30s[rightPhysicalIndex][channelIndex] -
-			 s_stShipPriv.Attangle30s[leftPhysicalIndex][channelIndex]) / dt;
+			(float)((s_stShipPriv.Attangle30s[rightPhysicalIndex][channelIndex] -
+			 s_stShipPriv.Attangle30s[leftPhysicalIndex][channelIndex]) / dt);
 	}
 }
 
@@ -199,11 +199,11 @@ static void ShipUpdateTrainData(int logicalIndex)
 
 	int leftLogicalIndex = logicalIndex > 1 ? logicalIndex - 2 : 0;
 	int rightLogicalIndex = logicalIndex + 2 < s_stShipPriv.cnt ? logicalIndex + 2 : s_stShipPriv.cnt - 1;
-	double angleSum[3] = { 0.0 }, diffSum[3] = { 0.0 };
+	float angleSum[3] = { 0.0F }, diffSum[3] = { 0.0F };
 	for (int sampleLogicalIndex = leftLogicalIndex; sampleLogicalIndex <= rightLogicalIndex; sampleLogicalIndex++)
 	{
-		double *angle = ShipAttangleAt(sampleLogicalIndex);
-		double *diff = ShipAttangleDiffAt(sampleLogicalIndex);
+		float *angle = ShipAttangleAt(sampleLogicalIndex);
+		float *diff = ShipAttangleDiffAt(sampleLogicalIndex);
 
 		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 		{
@@ -212,8 +212,8 @@ static void ShipUpdateTrainData(int logicalIndex)
 		}
 	}
 
-	double scale = 1.0 / (rightLogicalIndex - leftLogicalIndex + 1);
-	double *train = ShipTrainDataAt(logicalIndex);
+	float scale = 1.0F / (float)(rightLogicalIndex - leftLogicalIndex + 1);
+	float *train = ShipTrainDataAt(logicalIndex);
 	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
 	{
 		train[channelIndex] = angleSum[channelIndex] * scale;
@@ -244,7 +244,11 @@ void testShip(void)
 	if (TRUE == g_CombinedNaviInput.bUpdate_ship)
 	{
         s_stShipPriv.dTimeStore = g_CombinedNaviInput.t_fly;
-        memcpy(s_stShipPriv.dAttangleStore, g_CombinedNaviInput.AttAngle_ship, sizeof(g_CombinedNaviInput.AttAngle_ship));
+		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
+		{
+			s_stShipPriv.dAttangleStore[channelIndex] =
+				(float)g_CombinedNaviInput.AttAngle_ship[channelIndex];
+		}
         s_stShipPriv.bUpdate100ms = TRUE;
 	}
 
@@ -301,8 +305,8 @@ void testShip(void)
 			{
 				/*--------------------异常数据剔除--------------------*/
 				if (previousPhysicalIndex >= 0
-					&& fabs(s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] -
-						s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex]) > 3.0)
+					&& fabsf(s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] -
+						s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex]) > 3.0F)
 				{
 					s_stShipPriv.Attangle30s[writePhysicalIndex][channelIndex] = s_stShipPriv.Attangle30s[previousPhysicalIndex][channelIndex];
 				}
@@ -402,7 +406,7 @@ void testShip(void)
 	int pitchSmallCount = 0;
 	for (int logicalIndex = 0; logicalIndex < s_stShipPriv.cnt; logicalIndex++)
 	{
-		if (fabs(ShipTrainDataAt(logicalIndex)[1]) < 0.5)
+		if (fabsf(ShipTrainDataAt(logicalIndex)[1]) < 0.5F)
 		{
 			pitchSmallCount++;
 		}
@@ -420,8 +424,8 @@ void testShip(void)
 
 
 	/*--------------------法方程下三角以packed格式存储在Cholesky工作区--------------------*/
-	static ridge_normal_workspace_f64 ridgeWork;
-	double *packedXTrainTXTrain = ridge_normal_packed_matrix_f64(&ridgeWork);
+	static ridge_normal_workspace_f32 ridgeWork;
+	float *packedXTrainTXTrain = ridge_normal_packed_matrix_f32(&ridgeWork);
 
 	/*--------------------峰值法+周期法--------------------*/
 	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
@@ -432,12 +436,12 @@ void testShip(void)
 		/*--------------------对10s内数据进行赋值--------------------*/
 		int Num10s = s_stShipPriv.cnt - method1StartLogicalIndex;		// 10s内数据总数
 		memset(s_stShipPriv.detPitch, 0, sizeof(s_stShipPriv.detPitch));
-		double SumPitch = 0;							// 10s内俯仰角和
+		float SumPitch = 0.0F;						// 10s内俯仰角和
 		for (int logicalIndex = method1StartLogicalIndex; logicalIndex < s_stShipPriv.cnt; logicalIndex++)
 		{
 			SumPitch += ShipTrainDataAt(logicalIndex)[1];
 		}
-		SumPitch /= Num10s;
+		SumPitch /= (float)Num10s;
 		for (int windowLogicalOffset = 0; windowLogicalOffset < Num10s; windowLogicalOffset++)
 		{
 			s_stShipPriv.detPitch[windowLogicalOffset] = ShipTrainDataAt(method1StartLogicalIndex + windowLogicalOffset)[1] - SumPitch;
@@ -531,8 +535,8 @@ void testShip(void)
 		if (Num10s >= 3)
 		{
 			/*--------------------计算峰峰值--------------------*/
-			double mx = ShipTrainDataAt(method1StartLogicalIndex)[1];
-			double mn = ShipTrainDataAt(method1StartLogicalIndex)[1];
+			float mx = ShipTrainDataAt(method1StartLogicalIndex)[1];
+			float mn = ShipTrainDataAt(method1StartLogicalIndex)[1];
 			for (int logicalIndex = method1StartLogicalIndex + 1;
 				 logicalIndex < s_stShipPriv.cnt;
 				 logicalIndex++)
@@ -546,20 +550,20 @@ void testShip(void)
 					mn = ShipTrainDataAt(logicalIndex)[1];
 				}
 			}
-			double pk2pk = mx - mn;
+			float pk2pk = mx - mn;
 
 			/*--------------------计算迟滞阈值--------------------*/
-			double HDiff = (pk2pk * 0.08 < 1E-3) ? 1E-3 : pk2pk * 0.08;
+			float HDiff = (pk2pk * 0.08F < 1E-3F) ? 1E-3F : pk2pk * 0.08F;
 
 			/*--------------------从后向前扫描（靠近当前时刻优先级最高）波峰条件：左侧显著上升，右侧显著下降--------------------*/
-			double found = 0;
+			int found = 0;
 			for (int logicalIndex = s_stShipPriv.cnt - 2;
 				 logicalIndex > method1StartLogicalIndex;
 				 logicalIndex--)
 			{
-				double diffLeft = ShipTrainDataAt(logicalIndex)[1] -
+				float diffLeft = ShipTrainDataAt(logicalIndex)[1] -
 					ShipTrainDataAt(logicalIndex - 1)[1];
-				double diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
+				float diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
 					ShipTrainDataAt(logicalIndex)[1];
 
 				if (diffLeft > HDiff && diffRight < -HDiff)
@@ -577,9 +581,9 @@ void testShip(void)
 					 logicalIndex > method1StartLogicalIndex;
 					 logicalIndex--)
 				{
-					double diffLeft = ShipTrainDataAt(logicalIndex)[1] -
+					float diffLeft = ShipTrainDataAt(logicalIndex)[1] -
 						ShipTrainDataAt(logicalIndex - 1)[1];
-					double diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
+					float diffRight = ShipTrainDataAt(logicalIndex + 1)[1] -
 						ShipTrainDataAt(logicalIndex)[1];
 
 					if (diffLeft > 0 && diffRight < 0)
@@ -594,7 +598,7 @@ void testShip(void)
 			/*--------------------退化2（若缓存单调（无任何波峰），退化为全局最大值索引）--------------------*/
 			if (0 == found)
 			{
-				double peakValTmp = ShipTrainDataAt(method1StartLogicalIndex)[1];
+				float peakValTmp = ShipTrainDataAt(method1StartLogicalIndex)[1];
 				peakLogicalIndex = method1StartLogicalIndex;
 				for (int logicalIndex = method1StartLogicalIndex;
 					 logicalIndex < s_stShipPriv.cnt;
@@ -653,7 +657,7 @@ void testShip(void)
         //////////////////////////////构建回归预测模型//////////////////////////////
         
 	    /*--------------------计算左项--------------------*/
-        static double blk[6][6];		// 这个6*6的矩阵每次需要进行计算
+        static float blk[6][6];		// 这个6*6的矩阵每次需要进行计算
         for(int d = 0; d < WIN; ++d)
         {
             memset(blk, 0, sizeof(blk));
@@ -661,13 +665,13 @@ void testShip(void)
             /*--------------------利用数据局部性，计算“对角线”上的第一个块--------------------*/
             for(int r = 0; r < numSamples; ++r)	// 这一层for循环表示最终120*120的矩阵的每个元素都需要numSamples次乘法
             {
-	            const double *x = ShipTrainDataAt(r);
-	            const double *y = ShipTrainDataAt(r + d);
+	            const float *x = ShipTrainDataAt(r);
+	            const float *y = ShipTrainDataAt(r + d);
                 
                 for(int p = 0; p < DIM; ++p)	// 这一层for循环表示numSamples次的每个对应元素相乘（没有显式展开120个元素）
                 {
-                    const double v = x[p];
-                    double *b = blk[p];
+                    const float v = x[p];
+                    float *b = blk[p];
                     b[0] += v * y[0];
                     b[1] += v * y[1];
                     b[2] += v * y[2];
@@ -708,16 +712,16 @@ void testShip(void)
 				...
 				|a_s1|a_s2|a_s3|a_s4|a_s5|a_s6|a_s7|a_s8|a_s9|a_s10|a_s11|a_s12|a_s13|a_s14|a_s15|a_s16|a_s17|a_s18|a_s19|a_s20|
 				*/
-	            const double *oldX = ShipTrainDataAt(a);				// 上一个窗口中离开的两个6维数组
-	            const double *oldY = ShipTrainDataAt(a + d);
-	            const double *newX = ShipTrainDataAt(a + numSamples);	// 新窗口最后进入的两个6维数组
-	            const double *newY = ShipTrainDataAt(a + numSamples + d);
+	            const float *oldX = ShipTrainDataAt(a);				// 上一个窗口中离开的两个6维数组
+	            const float *oldY = ShipTrainDataAt(a + d);
+	            const float *newX = ShipTrainDataAt(a + numSamples);	// 新窗口最后进入的两个6维数组
+	            const float *newY = ShipTrainDataAt(a + numSamples + d);
                 for(int p = 0; p < DIM; p++)
                 {
-                    const double oldV = oldX[p];
-                    const double newV = newX[p];
+                    const float oldV = oldX[p];
+                    const float newV = newX[p];
                     
-                    double *b = blk[p];
+                    float *b = blk[p];
                     
                     b[0] += newV * newY[0] - oldV * oldY[0];
                     b[1] += newV * newY[1] - oldV * oldY[1];
@@ -730,29 +734,29 @@ void testShip(void)
         }
         
         /*--------------------计算右项--------------------*/
-        static double XTrainTYTrain[120][6] = { 0 };
+        static float XTrainTYTrain[120][6] = { 0 };
 		memset(XTrainTYTrain, 0, sizeof(XTrainTYTrain));
 	    for(int r = 0; r < numSamples; r++)
 	    {
-	        const double *y = ShipTrainDataAt(r + WIN);
+	        const float *y = ShipTrainDataAt(r + WIN);
 
 	        /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
-	        const double y0 = y[0];
-	        const double y1 = y[1];
-	        const double y2 = y[2];
-	        const double y3 = y[3];
-	        const double y4 = y[4];
-	        const double y5 = y[5];
+	        const float y0 = y[0];
+	        const float y1 = y[1];
+	        const float y2 = y[2];
+	        const float y3 = y[3];
+	        const float y4 = y[4];
+	        const float y5 = y[5];
             
             for(int a = 0; a < WIN; ++a)
             {
-	            const double *x = ShipTrainDataAt(r + a);
-                double (*out)[6] = &XTrainTYTrain[a * DIM];
+	            const float *x = ShipTrainDataAt(r + a);
+                float (*out)[6] = &XTrainTYTrain[a * DIM];
                 
                 for(int p = 0; p < DIM; ++p)
                 {
-                    const double v = x[p];
-                    double *o = out[p];
+                    const float v = x[p];
+                    float *o = out[p];
                     
                     o[0] += v * y0;
                     o[1] += v * y1;
@@ -765,8 +769,8 @@ void testShip(void)
         }
 
 		/*--------------------Cholesky分解并直接求解六个右端项--------------------*/
-		const double ridgeLambda = 5.0;
-		s_stShipPriv.ridgeSolveStatus = ridge_solve_normal_f64(
+		const float ridgeLambda = 5.0F;
+		s_stShipPriv.ridgeSolveStatus = ridge_solve_normal_f32(
 			*XTrainTYTrain,
 			ridgeLambda,
 			*s_stShipPriv.MatrixB,
@@ -786,7 +790,7 @@ void testShip(void)
 		double dt = averageSampleInterval;
 
 		/*--------------------初始化最近20个时刻的历史数据--------------------*/
-		static double hist[WIN][DIM] = { 0 };
+		static float hist[WIN][DIM] = { 0 };
 		for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
 		{
 			memcpy(hist[historyLogicalIndex], ShipTrainDataAt(s_stShipPriv.cnt - WIN + historyLogicalIndex), sizeof(hist[historyLogicalIndex]));
@@ -797,23 +801,23 @@ void testShip(void)
 		for (int predictionIndex = 0; predictionIndex < dynamicPredLen; predictionIndex++)
 		{
 			/*--------------------使用6个独立累加器，尽量保存在VFP寄存器中--------------------*/
-			double y0 = 0.0;
-			double y1 = 0.0;
-			double y2 = 0.0;
-			double y3 = 0.0;
-			double y4 = 0.0;
-			double y5 = 0.0;
+			float y0 = 0.0F;
+			float y1 = 0.0F;
+			float y2 = 0.0F;
+			float y3 = 0.0F;
+			float y4 = 0.0F;
+			float y5 = 0.0F;
 
-			const double *coefficientRow = &s_stShipPriv.MatrixB[0][0];
+			const float *coefficientRow = &s_stShipPriv.MatrixB[0][0];
 			int historyPhysicalIndex = historyHeadPhysicalIndex;
 			for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
 			{
-				const double *history = hist[historyPhysicalIndex];
+				const float *history = hist[historyPhysicalIndex];
 
 				/*--------------------针对matrixB的六列，将History的20*6进行展开计算，这里一个循环计算了1*6--------------------*/
 				for (int featureIndex = 0; featureIndex < DIM; featureIndex++)
 				{
-					const double featureValue = history[featureIndex];
+					const float featureValue = history[featureIndex];
 
 					y0 += featureValue * coefficientRow[0];
 					y1 += featureValue * coefficientRow[1];
@@ -833,8 +837,8 @@ void testShip(void)
 			}
 
 			/*--------------------保存预测结果并覆盖最旧历史样本--------------------*/
-			double *prediction = s_stShipPriv.PredData[predictionIndex];
-			double *historyWrite = hist[historyHeadPhysicalIndex];
+			float *prediction = s_stShipPriv.PredData[predictionIndex];
+			float *historyWrite = hist[historyHeadPhysicalIndex];
 			prediction[0] = historyWrite[0] = y0;
 			prediction[1] = historyWrite[1] = y1;
 			prediction[2] = historyWrite[2] = y2;
@@ -851,7 +855,7 @@ void testShip(void)
 		/*--------------------在预测的俯仰角上寻找最快下降沿--------------------*/
 		
 		/*--------------------构建预测角序列--------------------*/
-		double currentAngle = ShipTrainDataAt(s_stShipPriv.cnt - 1)[1];
+		float currentAngle = ShipTrainDataAt(s_stShipPriv.cnt - 1)[1];
 		int fullPredLen = dynamicPredLen + 1;
 		s_stShipPriv.stPredResult.predAngle[0] = currentAngle;
 		for (int i = 0; i < dynamicPredLen; i++)
@@ -867,11 +871,11 @@ void testShip(void)
 		}
 
 		/*--------------------计算预测俯仰角的一阶导数--------------------*/
-		s_stShipPriv.PredSlope[0] = (s_stShipPriv.stPredResult.predAngle[1] - s_stShipPriv.stPredResult.predAngle[0]) / dt;
-		s_stShipPriv.PredSlope[fullPredLen - 1] = (s_stShipPriv.stPredResult.predAngle[fullPredLen - 1] - s_stShipPriv.stPredResult.predAngle[fullPredLen - 2]) / dt;
+		s_stShipPriv.PredSlope[0] = (float)((s_stShipPriv.stPredResult.predAngle[1] - s_stShipPriv.stPredResult.predAngle[0]) / dt);
+		s_stShipPriv.PredSlope[fullPredLen - 1] = (float)((s_stShipPriv.stPredResult.predAngle[fullPredLen - 1] - s_stShipPriv.stPredResult.predAngle[fullPredLen - 2]) / dt);
 		for (int i = 1; i < fullPredLen - 1; i++)
 		{
-			s_stShipPriv.PredSlope[i] = (s_stShipPriv.stPredResult.predAngle[i + 1] - s_stShipPriv.stPredResult.predAngle[i - 1]) / (2.0 * dt);
+			s_stShipPriv.PredSlope[i] = (float)((s_stShipPriv.stPredResult.predAngle[i + 1] - s_stShipPriv.stPredResult.predAngle[i - 1]) / (2.0 * dt));
 		}
 
 		/*--------------------寻找所有有效下降点--------------------*/
@@ -879,7 +883,7 @@ void testShip(void)
 		int interestNum = 2;
 		for (int i = 0; i < fullPredLen; i++)
 		{
-			s_stShipPriv.dNeg[i] = (s_stShipPriv.PredSlope[i] < 0) ? s_stShipPriv.PredSlope[i] : 0.0;
+			s_stShipPriv.dNeg[i] = (s_stShipPriv.PredSlope[i] < 0.0F) ? s_stShipPriv.PredSlope[i] : 0.0F;
 		}
 		int negCount = 0;
 		for (int i = 0; i < fullPredLen; i++)
@@ -924,7 +928,7 @@ void testShip(void)
 
 				/*--------------------找斜率最小（最负）的那个点--------------------*/
 				int minLocalIdx = 0;
-				double minVal = s_stShipPriv.segSlopes[0];
+				float minVal = s_stShipPriv.segSlopes[0];
 				for (int i = 0; i < segLen; i++)
 				{
 					if (s_stShipPriv.segSlopes[i] < minVal)
@@ -950,15 +954,15 @@ void testShip(void)
 			{
 				continue;
 			}
-			double y1 = s_stShipPriv.PredSlope[idx - 1];
-			double y2 = s_stShipPriv.PredSlope[idx];
-			double y3 = s_stShipPriv.PredSlope[idx + 1];
+			float y1 = s_stShipPriv.PredSlope[idx - 1];
+			float y2 = s_stShipPriv.PredSlope[idx];
+			float y3 = s_stShipPriv.PredSlope[idx + 1];
 			double t2 = s_stShipPriv.stPredResult.tPred[idx];
 
 			/*--------------------抛物线顶点公式求精确极值时间--------------------*/
-			double denominator = y1 - 2.0 * y2 + y3;
+			float denominator = y1 - 2.0F * y2 + y3;
 			double tExcat = t2;
-			if (fabs(denominator) > 1E-6)
+			if (fabsf(denominator) > 1E-6F)
 			{
 				tExcat = t2 - (dt / 2.0) * (y3 - y1) / denominator;
 			}

@@ -1,4 +1,4 @@
-/* dspr.f -- translated by f2c (version 20061008).
+/* sspr.f -- translated by f2c (version 20061008).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -13,15 +13,15 @@
 #include "f2c.h"
 #include "blaswrap.h"
 
-/* Subroutine */ int dspr_(char *uplo, integer *n, doublereal *alpha,
-	doublereal *x, integer *incx, doublereal *ap)
+/* Subroutine */ int sspr_(char *uplo, integer *n, real *alpha, real *x,
+	integer *incx, real *ap)
 {
     /* System generated locals */
     integer i__1, i__2;
 
     /* Local variables */
     integer i__, j, k, kk, ix, jx, kx, info;
-    doublereal temp;
+    real temp;
     extern logical lsame_(char *, char *);
     extern /* Subroutine */ int xerbla_(char *, integer *);
 
@@ -33,7 +33,7 @@
 /*  Purpose */
 /*  ======= */
 
-/*  DSPR    performs the symmetric rank 1 operation */
+/*  SSPR    performs the symmetric rank 1 operation */
 
 /*     A := alpha*x*x' + A, */
 
@@ -61,11 +61,11 @@
 /*           N must be at least zero. */
 /*           Unchanged on exit. */
 
-/*  ALPHA  - DOUBLE PRECISION. */
+/*  ALPHA  - REAL            . */
 /*           On entry, ALPHA specifies the scalar alpha. */
 /*           Unchanged on exit. */
 
-/*  X      - DOUBLE PRECISION array of dimension at least */
+/*  X      - REAL             array of dimension at least */
 /*           ( 1 + ( n - 1 )*abs( INCX ) ). */
 /*           Before entry, the incremented array X must contain the n */
 /*           element vector x. */
@@ -76,7 +76,7 @@
 /*           X. INCX must not be zero. */
 /*           Unchanged on exit. */
 
-/*  AP     - DOUBLE PRECISION array of DIMENSION at least */
+/*  AP     - REAL             array of DIMENSION at least */
 /*           ( ( n*( n + 1 ) )/2 ). */
 /*           Before entry with  UPLO = 'U' or 'u', the array AP must */
 /*           contain the upper triangular part of the symmetric matrix */
@@ -128,13 +128,13 @@
 	info = 5;
     }
     if (info != 0) {
-	xerbla_("DSPR  ", &info);
+	xerbla_("SSPR  ", &info);
 	return 0;
     }
 
 /*     Quick return if possible. */
 
-    if (*n == 0 || *alpha == 0.) {
+    if (*n == 0 || *alpha == 0.f) {
 	return 0;
     }
 
@@ -157,7 +157,7 @@
 	if (*incx == 1) {
 	    i__1 = *n;
 	    for (j = 1; j <= i__1; ++j) {
-		if (x[j] != 0.) {
+		if (x[j] != 0.f) {
 		    temp = *alpha * x[j];
 		    k = kk;
 		    i__2 = j;
@@ -174,7 +174,7 @@
 	    jx = kx;
 	    i__1 = *n;
 	    for (j = 1; j <= i__1; ++j) {
-		if (x[jx] != 0.) {
+		if (x[jx] != 0.f) {
 		    temp = *alpha * x[jx];
 		    ix = kx;
 		    i__2 = kk + j - 1;
@@ -196,7 +196,7 @@
 	if (*incx == 1) {
 	    i__1 = *n;
 	    for (j = 1; j <= i__1; ++j) {
-		if (x[j] != 0.) {
+		if (x[j] != 0.f) {
 		    temp = *alpha * x[j];
 		    k = kk;
 		    i__2 = *n;
@@ -213,7 +213,7 @@
 	    jx = kx;
 	    i__1 = *n;
 	    for (j = 1; j <= i__1; ++j) {
-		if (x[jx] != 0.) {
+		if (x[jx] != 0.f) {
 		    temp = *alpha * x[jx];
 		    ix = jx;
 		    i__2 = kk + *n - j;
@@ -232,6 +232,6 @@
 
     return 0;
 
-/*     End of DSPR  . */
+/*     End of SSPR  . */
 
-} /* dspr_ */
+} /* sspr_ */

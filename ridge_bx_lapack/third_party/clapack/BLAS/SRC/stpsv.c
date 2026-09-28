@@ -1,4 +1,4 @@
-/* dtpsv.f -- translated by f2c (version 20061008).
+/* stpsv.f -- translated by f2c (version 20061008).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -13,15 +13,15 @@
 #include "f2c.h"
 #include "blaswrap.h"
 
-/* Subroutine */ int dtpsv_(char *uplo, char *trans, char *diag, integer *n,
-	doublereal *ap, doublereal *x, integer *incx)
+/* Subroutine */ int stpsv_(char *uplo, char *trans, char *diag, integer *n,
+	real *ap, real *x, integer *incx)
 {
     /* System generated locals */
     integer i__1, i__2;
 
     /* Local variables */
     integer i__, j, k, kk, ix, jx, kx, info;
-    doublereal temp;
+    real temp;
     extern logical lsame_(char *, char *);
     extern /* Subroutine */ int xerbla_(char *, integer *);
     logical nounit;
@@ -34,7 +34,7 @@
 /*  Purpose */
 /*  ======= */
 
-/*  DTPSV  solves one of the systems of equations */
+/*  STPSV  solves one of the systems of equations */
 
 /*     A*x = b,   or   A'*x = b, */
 
@@ -85,7 +85,7 @@
 /*           N must be at least zero. */
 /*           Unchanged on exit. */
 
-/*  AP     - DOUBLE PRECISION array of DIMENSION at least */
+/*  AP     - REAL             array of DIMENSION at least */
 /*           ( ( n*( n + 1 ) )/2 ). */
 /*           Before entry with  UPLO = 'U' or 'u', the array AP must */
 /*           contain the upper triangular matrix packed sequentially, */
@@ -101,7 +101,7 @@
 /*           A are not referenced, but are assumed to be unity. */
 /*           Unchanged on exit. */
 
-/*  X      - DOUBLE PRECISION array of dimension at least */
+/*  X      - REAL             array of dimension at least */
 /*           ( 1 + ( n - 1 )*abs( INCX ) ). */
 /*           Before entry, the incremented array X must contain the n */
 /*           element right-hand side vector b. On exit, X is overwritten */
@@ -153,7 +153,7 @@
 	info = 7;
     }
     if (info != 0) {
-	xerbla_("DTPSV ", &info);
+	xerbla_("STPSV ", &info);
 	return 0;
     }
 
@@ -185,7 +185,7 @@
 	    kk = *n * (*n + 1) / 2;
 	    if (*incx == 1) {
 		for (j = *n; j >= 1; --j) {
-		    if (x[j] != 0.) {
+		    if (x[j] != 0.f) {
 			if (nounit) {
 			    x[j] /= ap[kk];
 			}
@@ -203,7 +203,7 @@
 	    } else {
 		jx = kx + (*n - 1) * *incx;
 		for (j = *n; j >= 1; --j) {
-		    if (x[jx] != 0.) {
+		    if (x[jx] != 0.f) {
 			if (nounit) {
 			    x[jx] /= ap[kk];
 			}
@@ -226,7 +226,7 @@
 	    if (*incx == 1) {
 		i__1 = *n;
 		for (j = 1; j <= i__1; ++j) {
-		    if (x[j] != 0.) {
+		    if (x[j] != 0.f) {
 			if (nounit) {
 			    x[j] /= ap[kk];
 			}
@@ -246,7 +246,7 @@
 		jx = kx;
 		i__1 = *n;
 		for (j = 1; j <= i__1; ++j) {
-		    if (x[jx] != 0.) {
+		    if (x[jx] != 0.f) {
 			if (nounit) {
 			    x[jx] /= ap[kk];
 			}
@@ -355,6 +355,6 @@
 
     return 0;
 
-/*     End of DTPSV . */
+/*     End of STPSV . */
 
-} /* dtpsv_ */
+} /* stpsv_ */

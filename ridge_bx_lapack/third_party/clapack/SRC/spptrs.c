@@ -1,4 +1,4 @@
-/* dpotrs.f -- translated by f2c (version 20061008).
+/* spptrs.f -- translated by f2c (version 20061008).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -15,22 +15,21 @@
 
 /* Table of constant values */
 
-static doublereal c_b9 = 1.;
+static integer c__1 = 1;
 
-/* Subroutine */ int dpotrs_(char *uplo, integer *n, integer *nrhs, 
-	doublereal *a, integer *lda, doublereal *b, integer *ldb, integer *
-	info)
+/* Subroutine */ int spptrs_(char *uplo, integer *n, integer *nrhs, real *ap,
+	real *b, integer *ldb, integer *info)
 {
     /* System generated locals */
-    integer a_dim1, a_offset, b_dim1, b_offset, i__1;
+    integer b_dim1, b_offset, i__1;
 
     /* Local variables */
+    integer i__;
     extern logical lsame_(char *, char *);
-    extern /* Subroutine */ int dtrsm_(char *, char *, char *, char *, 
-	    integer *, integer *, doublereal *, doublereal *, integer *, 
-	    doublereal *, integer *);
     logical upper;
-    extern /* Subroutine */ int xerbla_(char *, integer *);
+    extern /* Subroutine */ int stpsv_(char *, char *, char *, integer *,
+	    real *, real *, integer *), xerbla_(char *
+, integer *);
 
 
 /*  -- LAPACK routine (version 3.2) -- */
@@ -45,9 +44,9 @@ static doublereal c_b9 = 1.;
 /*  Purpose */
 /*  ======= */
 
-/*  DPOTRS solves a system of linear equations A*X = B with a symmetric */
-/*  positive definite matrix A using the Cholesky factorization */
-/*  A = U**T*U or A = L*L**T computed by DPOTRF. */
+/*  SPPTRS solves a system of linear equations A*X = B with a symmetric */
+/*  positive definite matrix A in packed storage using the Cholesky */
+/*  factorization A = U**T*U or A = L*L**T computed by SPPTRF. */
 
 /*  Arguments */
 /*  ========= */
@@ -63,14 +62,15 @@ static doublereal c_b9 = 1.;
 /*          The number of right hand sides, i.e., the number of columns */
 /*          of the matrix B.  NRHS >= 0. */
 
-/*  A       (input) DOUBLE PRECISION array, dimension (LDA,N) */
+/*  AP      (input) REAL array, dimension (N*(N+1)/2) */
 /*          The triangular factor U or L from the Cholesky factorization */
-/*          A = U**T*U or A = L*L**T, as computed by DPOTRF. */
+/*          A = U**T*U or A = L*L**T, packed columnwise in a linear */
+/*          array.  The j-th column of U or L is stored in the array AP */
+/*          as follows: */
+/*          if UPLO = 'U', AP(i + (j-1)*j/2) = U(i,j) for 1<=i<=j; */
+/*          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = L(i,j) for j<=i<=n. */
 
-/*  LDA     (input) INTEGER */
-/*          The leading dimension of the array A.  LDA >= max(1,N). */
-
-/*  B       (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS) */
+/*  B       (input/output) REAL array, dimension (LDB,NRHS) */
 /*          On entry, the right hand side matrix B. */
 /*          On exit, the solution matrix X. */
 
@@ -83,8 +83,6 @@ static doublereal c_b9 = 1.;
 
 /*  ===================================================================== */
 
-/*     .. Parameters .. */
-/*     .. */
 /*     .. Local Scalars .. */
 /*     .. */
 /*     .. External Functions .. */
@@ -98,9 +96,7 @@ static doublereal c_b9 = 1.;
 /*     Test the input parameters. */
 
     /* Parameter adjustments */
-    a_dim1 = *lda;
-    a_offset = 1 + a_dim1;
-    a -= a_offset;
+    --ap;
     b_dim1 = *ldb;
     b_offset = 1 + b_dim1;
     b -= b_offset;
@@ -114,14 +110,12 @@ static doublereal c_b9 = 1.;
 	*info = -2;
     } else if (*nrhs < 0) {
 	*info = -3;
-    } else if (*lda < max(1,*n)) {
-	*info = -5;
     } else if (*ldb < max(1,*n)) {
-	*info = -7;
+	*info = -6;
     }
     if (*info != 0) {
 	i__1 = -(*info);
-	xerbla_("DPOTRS", &i__1);
+	xerbla_("SPPTRS", &i__1);
 	return 0;
     }
 
@@ -135,32 +129,42 @@ static doublereal c_b9 = 1.;
 
 /*        Solve A*X = B where A = U'*U. */
 
-/*        Solve U'*X = B, overwriting B with X. */
+	i__1 = *nrhs;
+	for (i__ = 1; i__ <= i__1; ++i__) {
 
-	dtrsm_("Left", "Upper", "Transpose", "Non-unit", n, nrhs, &c_b9, &a[
-		a_offset], lda, &b[b_offset], ldb);
+/*           Solve U'*X = B, overwriting B with X. */
 
-/*        Solve U*X = B, overwriting B with X. */
+	    stpsv_("Upper", "Transpose", "Non-unit", n, &ap[1], &b[i__ *
+		    b_dim1 + 1], &c__1);
 
-	dtrsm_("Left", "Upper", "No transpose", "Non-unit", n, nrhs, &c_b9, &
-		a[a_offset], lda, &b[b_offset], ldb);
+/*           Solve U*X = B, overwriting B with X. */
+
+	    stpsv_("Upper", "No transpose", "Non-unit", n, &ap[1], &b[i__ *
+		    b_dim1 + 1], &c__1);
+/* L10: */
+	}
     } else {
 
 /*        Solve A*X = B where A = L*L'. */
 
-/*        Solve L*X = B, overwriting B with X. */
+	i__1 = *nrhs;
+	for (i__ = 1; i__ <= i__1; ++i__) {
 
-	dtrsm_("Left", "Lower", "No transpose", "Non-unit", n, nrhs, &c_b9, &
-		a[a_offset], lda, &b[b_offset], ldb);
+/*           Solve L*Y = B, overwriting B with X. */
 
-/*        Solve L'*X = B, overwriting B with X. */
+	    stpsv_("Lower", "No transpose", "Non-unit", n, &ap[1], &b[i__ *
+		    b_dim1 + 1], &c__1);
 
-	dtrsm_("Left", "Lower", "Transpose", "Non-unit", n, nrhs, &c_b9, &a[
-		a_offset], lda, &b[b_offset], ldb);
+/*           Solve L'*X = Y, overwriting B with X. */
+
+	    stpsv_("Lower", "Transpose", "Non-unit", n, &ap[1], &b[i__ *
+		    b_dim1 + 1], &c__1);
+/* L20: */
+	}
     }
 
     return 0;
 
-/*     End of DPOTRS */
+/*     End of SPPTRS */
 
-} /* dpotrs_ */
+} /* spptrs_ */
