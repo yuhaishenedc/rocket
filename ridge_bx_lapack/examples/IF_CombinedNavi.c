@@ -6,18 +6,19 @@
 #define		SHIP_WINDOW_SIZE_20S	(201)
 #define		SHIP_WINDOW_SIZE_10S	(101)
 #define		LOST_NUM			    (50)
+#define		SHIP_POOL_CAPACITY		(100)
+#define		SHIP_MAX_OUTPUT_POOLS	(2)
+#define		SHIP_MAX_TRACKED_POOLS	(4)
 typedef struct
 {
 	double tDown1;
 	double tDown2;
-	double predAngle[100];
-	int predLen;
-	double tPred[100];
-	int tLen;
+	double predAngle[SHIP_WINDOW_SIZE_20S];
+	double tPred[SHIP_WINDOW_SIZE_20S];
 }PredResult;
 typedef struct
 {
-	double pool[100];
+	double pool[SHIP_POOL_CAPACITY];
 	int poolSize;
 }ClusterPool;
 typedef struct
@@ -35,7 +36,6 @@ typedef struct
 	double AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
 	double trainData[SHIP_WINDOW_SIZE_30S][6];	    	// 30s平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
 
-    unsigned char bCalculated;                      // 本周期是否进行计算
     unsigned char bUseCheck;                        // 船姿数据启用标志字
     
     /*--------------------峰值+周期法--------------------*/
@@ -46,32 +46,31 @@ typedef struct
 	
 	double MatrixB[120][6];
 	int ridgeSolveStatus;
-	long ridgeLapackInfo;
 	double PredData[SHIP_WINDOW_SIZE_30S][6];
     
     double PredSlope[SHIP_WINDOW_SIZE_30S];
 	double dNeg[SHIP_WINDOW_SIZE_30S];
 	int NegIdx[SHIP_WINDOW_SIZE_30S];
-	int valleyIdx[SHIP_WINDOW_SIZE_30S];
+	int valleyIdx[SHIP_MAX_OUTPUT_POOLS];
 	int breakPoints[SHIP_WINDOW_SIZE_30S];
 	int segEnds[SHIP_WINDOW_SIZE_30S];
 	double segSlopes[SHIP_WINDOW_SIZE_30S];
-	double tzPredAll[SHIP_WINDOW_SIZE_30S];
-	double tzFiltered[SHIP_WINDOW_SIZE_30S];
+	double tzPredAll[SHIP_MAX_OUTPUT_POOLS];
+	double tzFiltered[SHIP_MAX_OUTPUT_POOLS];
 
 	PredResult stPredResult;
 
 	int poolCount;
-	ClusterPool activePools[100];
+	ClusterPool activePools[SHIP_MAX_TRACKED_POOLS];
 	
-	double currentTzPreds[SHIP_WINDOW_SIZE_30S];
-	int keepIdxArr[SHIP_WINDOW_SIZE_30S];
-	double timeToTargets[SHIP_WINDOW_SIZE_30S];
+	double currentTzPreds[SHIP_MAX_TRACKED_POOLS];
+	int keepIdxArr[SHIP_MAX_TRACKED_POOLS];
+	double timeToTargets[SHIP_MAX_TRACKED_POOLS];
 
-	int sortIdx[SHIP_WINDOW_SIZE_30S];
+	int sortIdx[SHIP_MAX_TRACKED_POOLS];
 
-	double closestTz[SHIP_WINDOW_SIZE_30S];
-	ClusterPool newPools[100];
+	double closestTz[SHIP_MAX_OUTPUT_POOLS];
+	ClusterPool newPools[SHIP_MAX_OUTPUT_POOLS];
 
 }ST_SHIP_PRIV;
 ST_SHIP_PRIV s_stShipPriv = { 0 };
@@ -228,7 +227,6 @@ static void ShipUpdateTrainData(int logicalIndex)
 void testShip()
 {
 	unsigned char sampleInserted = FALSE;
-	s_stShipPriv.bCalculated = FALSE;
 
 #if 1
     static int timeCounter = 0;
@@ -396,9 +394,6 @@ void testShip()
 		return;
 	}
 
-	/*--------------------标记本周期执行完整预测计算--------------------*/
-	s_stShipPriv.bCalculated = TRUE;
-
 	/*--------------------计算相位调整标志字--------------------*/
 	int tgoFlag = 1;
 	int pitchSmallCount = 0;
@@ -412,6 +407,10 @@ void testShip()
 	if (pitchSmallCount * 200 > s_stShipPriv.cnt * 199)	// 无需调整
 	{
 		tgoFlag = 0;
+	}
+	if (FALSE == tgoFlag)
+	{
+		return;
 	}
 
     /*--------------------30s后预测每周期预计算--------------------*/
@@ -535,7 +534,6 @@ void testShip()
 
 		/*--------------------默认退化到当前最新点--------------------*/
 		int peakLogicalIndex = Num10s;
-		double peakVal = s_stShipPriv.detPitch[Num10s - 1];
 		double peakTime = ShipTimeAt(s_stShipPriv.cnt - 1);
 
 		if (Num10s >= 3)
@@ -618,7 +616,6 @@ void testShip()
 				}
 			}
 
-			peakVal = ShipTrainDataAt(peakLogicalIndex)[1];
 			peakTime = ShipTimeAt(peakLogicalIndex);
 		}
 
@@ -793,7 +790,6 @@ void testShip()
 			ridgeLambda,
 			*s_stShipPriv.MatrixB,
 			&ridgeWork);
-		s_stShipPriv.ridgeLapackInfo = ridgeWork.lapack_info;
 		if (s_stShipPriv.ridgeSolveStatus != RIDGE_OK)
 		{
 			return;
@@ -802,6 +798,11 @@ void testShip()
         /*--------------------预测未来20s--------------------*/
 		double averageSampleInterval = (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0)) / (s_stShipPriv.cnt - 1);
 		int dynamicPredLen = (int)round(20.0 / averageSampleInterval);
+		if (dynamicPredLen > SHIP_WINDOW_SIZE_20S - 1)
+		{
+			dynamicPredLen = SHIP_WINDOW_SIZE_20S - 1;
+		}
+		double dt = averageSampleInterval;
 
 		/*--------------------初始化最近20个时刻的历史数据--------------------*/
 		static double hist[WIN][DIM] = { 0 };
@@ -866,8 +867,7 @@ void testShip()
 				historyHeadPhysicalIndex = 0;
 			}
 		}
-#if 0
-		//////////////////////////////在预测的俯仰角上寻找最快下降沿//////////////////////////////
+		/*--------------------在预测的俯仰角上寻找最快下降沿--------------------*/
 		
 		/*--------------------构建预测角序列--------------------*/
 		double currentAngle = ShipTrainDataAt(s_stShipPriv.cnt - 1)[1];
@@ -960,9 +960,7 @@ void testShip()
 				startSegIdx = end + 1;
 			}
 		}
-#endif
-#if 0
-		//////////////////////////////二次抛物线插值，计算极值时刻//////////////////////////////
+		/*--------------------二次抛物线插值，计算极值时刻--------------------*/
 		int tzCount = 0;
 		for (int k = 0; k < valleyCount; k++)
 		{
@@ -996,9 +994,7 @@ void testShip()
 				s_stShipPriv.tzFiltered[tzFilteredCount++] = s_stShipPriv.tzPredAll[i];
 			}
 		}
-#endif
-#if 0
-		//////////////////////////////构建原始聚类池//////////////////////////////
+		/*--------------------构建原始聚类池--------------------*/
 		for (int zi = 0; zi < tzFilteredCount; zi++)
 		{
 			double tz = s_stShipPriv.tzFiltered[zi];
@@ -1020,12 +1016,25 @@ void testShip()
 					foundMatch = 1;
 					if (poolMean - g_CombinedNaviInput.t_fly > 3)
 					{
-						s_stShipPriv.activePools[p].pool[s_stShipPriv.activePools[p].poolSize++] = tz;
+						ClusterPool *activePool = &s_stShipPriv.activePools[p];
+						if (activePool->poolSize < SHIP_POOL_CAPACITY)
+						{
+							activePool->pool[activePool->poolSize++] = tz;
+						}
+						else
+						{
+							/*--------------------聚类池满时保留最近结果--------------------*/
+							memmove(&activePool->pool[0], &activePool->pool[1],
+								(SHIP_POOL_CAPACITY - 1) * sizeof(activePool->pool[0]));
+							activePool->pool[SHIP_POOL_CAPACITY - 1] = tz;
+						}
 					}
 				}
 			}
 
-			if (!foundMatch && (tz - g_CombinedNaviInput.t_fly) > 0)
+			if (!foundMatch &&
+				(tz - g_CombinedNaviInput.t_fly) > 0 &&
+				s_stShipPriv.poolCount < SHIP_MAX_TRACKED_POOLS)
 			{
 				s_stShipPriv.activePools[s_stShipPriv.poolCount].pool[0] = tz;
 				s_stShipPriv.activePools[s_stShipPriv.poolCount].poolSize = 1;
@@ -1033,7 +1042,7 @@ void testShip()
 			}
 		}
 
-		//////////////////////////////提取聚类池有效目标并截断//////////////////////////////
+		/*--------------------提取聚类池有效目标并截断--------------------*/
 		int tzPredCount = 0;
 		for (int p = 0; p < s_stShipPriv.poolCount; p++)
 		{
@@ -1072,7 +1081,7 @@ void testShip()
 					}
 				}
 			}
-			int keepNum = (2 < tzPredCount) ? 2 : tzPredCount;
+			int keepNum = (SHIP_MAX_OUTPUT_POOLS < tzPredCount) ? SHIP_MAX_OUTPUT_POOLS : tzPredCount;
 			int newPoolCount = 0;
 			for (int i = 0; i < keepNum; i++)
 			{
@@ -1112,6 +1121,5 @@ void testShip()
 				s_stShipPriv.stPredResult.tDown2 = s_stShipPriv.closestTz[1];
 			}
 		}
-#endif
 	}
 }
