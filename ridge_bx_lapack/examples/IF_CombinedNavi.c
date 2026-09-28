@@ -11,8 +11,6 @@
 #define		SHIP_MAX_TRACKED_POOLS	(4)
 typedef struct
 {
-	double tDown1;
-	double tDown2;
 	double predAngle[SHIP_WINDOW_SIZE_20S];
 	double tPred[SHIP_WINDOW_SIZE_20S];
 }PredResult;
@@ -71,6 +69,10 @@ typedef struct
 
 	double closestTz[SHIP_MAX_OUTPUT_POOLS];
 	ClusterPool newPools[SHIP_MAX_OUTPUT_POOLS];
+
+	/*--------------------输出预测值--------------------*/
+	double tDown1;
+	double tDown2;
 
 }ST_SHIP_PRIV;
 ST_SHIP_PRIV s_stShipPriv = { 0 };
@@ -329,8 +331,8 @@ void testShip(void)
 	if (s_stShipPriv.cnt < 2)
 	{
 		s_stShipPriv.bUseCheck = FALSE;
-		s_stShipPriv.stPredResult.tDown1 = -1.0;
-		s_stShipPriv.stPredResult.tDown2 = -1.0;
+		s_stShipPriv.tDown1 = -1.0;
+		s_stShipPriv.tDown2 = -1.0;
 		return;
 	}
 
@@ -339,8 +341,8 @@ void testShip(void)
 	{
 		s_stShipPriv.bUseCheck = FALSE;
 		s_stShipPriv.poolCount = 0;
-		s_stShipPriv.stPredResult.tDown1 = -1.0;
-		s_stShipPriv.stPredResult.tDown2 = -1.0;
+		s_stShipPriv.tDown1 = -1.0;
+		s_stShipPriv.tDown2 = -1.0;
 		return;
 	}
 
@@ -629,14 +631,14 @@ void testShip(void)
 		}
 
 		/*--------------------计算两个下降时刻--------------------*/
-		double tDown1 = baseDownTime + nOffset * tAvg;
-		double tDown2 = baseDownTime + (nOffset + 1) * tAvg;
+		s_stShipPriv.tDown1 = baseDownTime + nOffset * tAvg;
+		s_stShipPriv.tDown2 = baseDownTime + (nOffset + 1) * tAvg;
 
 		/*--------------------确保输出的是未来时刻--------------------*/
-		if (tDown1 <= g_CombinedNaviInput.t_fly)
+		if (s_stShipPriv.tDown1 <= g_CombinedNaviInput.t_fly)
 		{
-			tDown1 += tAvg;
-			tDown2 += tAvg;
+			s_stShipPriv.tDown1 += tAvg;
+			s_stShipPriv.tDown2 += tAvg;
 		}
 	}
 	else
@@ -1088,15 +1090,15 @@ void testShip(void)
 			}
 
 			/*--------------------赋值输出--------------------*/
-			s_stShipPriv.stPredResult.tDown1 = -1;
-			s_stShipPriv.stPredResult.tDown2 = -1;
+			s_stShipPriv.tDown1 = -1;
+			s_stShipPriv.tDown2 = -1;
 			if (s_stShipPriv.poolCount >= 1)
 			{
-				s_stShipPriv.stPredResult.tDown1 = s_stShipPriv.closestTz[0];
+				s_stShipPriv.tDown1 = s_stShipPriv.closestTz[0];
 			}
 			if (s_stShipPriv.poolCount >= 2)
 			{
-				s_stShipPriv.stPredResult.tDown2 = s_stShipPriv.closestTz[1];
+				s_stShipPriv.tDown2 = s_stShipPriv.closestTz[1];
 			}
 		}
 	}
