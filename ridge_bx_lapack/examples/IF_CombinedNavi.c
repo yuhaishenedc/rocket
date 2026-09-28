@@ -9,6 +9,10 @@
 #define		SHIP_POOL_CAPACITY		(100)
 #define		SHIP_MAX_OUTPUT_POOLS	(2)
 #define		SHIP_MAX_TRACKED_POOLS	(4)
+#define		SHIP_REGRESSION_WIN		(20)
+#define		SHIP_SIGNAL_DIM			(6)
+typedef char ship_feature_count_must_match_ridge_n[
+	(SHIP_REGRESSION_WIN * SHIP_SIGNAL_DIM == RIDGE_N) ? 1 : -1];
 typedef struct
 {
 	float predAngle[SHIP_WINDOW_SIZE_20S];
@@ -42,8 +46,10 @@ typedef struct
 	double dTCross[SHIP_WINDOW_SIZE_10S];		    // 近10s内穿越时间点
 	double validPeriod[SHIP_WINDOW_SIZE_10S];	    // 近10s内数据周期
 	
-	float MatrixB[120][6];
+	float MatrixB[RIDGE_N][RIDGE_NORMAL_RHS];
 	int ridgeSolveStatus;
+	float normalMatrix[RIDGE_PACKED_SIZE];
+	float normalRhs[RIDGE_N][RIDGE_NORMAL_RHS];
 	float PredData[SHIP_WINDOW_SIZE_30S][6];
     
 	float PredSlope[SHIP_WINDOW_SIZE_30S];
@@ -92,10 +98,10 @@ IF_CombinedNavi g_CombinedNaviInput = { 0 };
 
 
 /*
-* @brief 将环形缓冲区的逻辑索引转换为物理数组索引
-* @param logicalIndex 相对于最旧有效样本的逻辑索引
-* @note 调用方必须保证逻辑索引位于有效样本范围内，写入尾部时允许等于cnt
-*/
+ * @brief 将环形缓冲区的逻辑索引转换为物理数组索引
+ * @param logicalIndex 相对于最旧有效样本的逻辑索引
+ * @note 调用方必须保证逻辑索引位于有效样本范围内，写入尾部时允许等于cnt
+ */
 static inline int ShipLogicalToPhysicalIndex(int logicalIndex)
 {
 	int physicalIndex = s_stShipPriv.headPhysicalIndex + logicalIndex;
@@ -109,50 +115,150 @@ static inline int ShipLogicalToPhysicalIndex(int logicalIndex)
 }
 
 /*
-- @brief 获取指定逻辑位置的采样时间
-- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
-- @note 函数只读取数据，不检查索引是否越界
-*/
+ * @brief 获取指定逻辑位置的采样时间
+ * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+ * @note 函数只读取数据，不检查索引是否越界
+ */
 static inline double ShipTimeAt(int logicalIndex)
 {
 	return s_stShipPriv.dTimeStore30s[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
 
 /*
-- @brief 获取指定逻辑位置的三维姿态数据
-- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
-- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
-*/
+ * @brief 获取指定逻辑位置的三维姿态数据
+ * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+ * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+ */
 static inline float *ShipAttangleAt(int logicalIndex)
 {
 	return s_stShipPriv.Attangle30s[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
 
 /*
-- @brief 获取指定逻辑位置的三维姿态角速度数据
-- @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
-- @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
-*/
+ * @brief 获取指定逻辑位置的三维姿态角速度数据
+ * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+ * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+ */
 static inline float *ShipAttangleDiffAt(int logicalIndex)
 {
 	return s_stShipPriv.AttangleDiff30s[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
 
 /*
-* @brief 获取指定逻辑位置的六维平滑训练数据
-* @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
-* @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
-*/
+ * @brief 获取指定逻辑位置的六维平滑训练数据
+ * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
+ * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
+ */
 static inline float *ShipTrainDataAt(int logicalIndex)
 {
 	return s_stShipPriv.trainData[ShipLogicalToPhysicalIndex(logicalIndex)];
 }
 
 /*
-* @brief 更新指定逻辑位置的三维姿态角速度
-* @param logicalIndex 待更新样本的逻辑索引
-* @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
-*/
+ * @brief 获取当前窗口内完整回归训练行数量
+ * @param 无
+ * @note 每条训练行由连续20个六维特征和后续一个六维目标组成
+ */
+static int ShipRegressionRowCount(void)
+{
+	return s_stShipPriv.cnt > SHIP_REGRESSION_WIN
+		? s_stShipPriv.cnt - SHIP_REGRESSION_WIN : 0;
+}
+
+/*
+ * @brief 向持久法方程增加或减去一条训练行贡献
+ * @param regressionRow 待处理训练行的逻辑索引
+ * @param scale 贡献方向，1表示加入，-1表示减去
+ * @note 同时更新packed格式的X转置X和六右端X转置Y
+ */
+static void ShipAccumulateRegressionRow(int regressionRow, float scale)
+{
+	float feature[RIDGE_N];
+	int featureIndex = 0;
+	int rowCount = ShipRegressionRowCount();
+
+	if (regressionRow < 0 || regressionRow >= rowCount)
+	{
+		return;
+	}
+
+	for (int historyIndex = 0; historyIndex < SHIP_REGRESSION_WIN; historyIndex++)
+	{
+		const float *history = ShipTrainDataAt(regressionRow + historyIndex);
+		for (int channelIndex = 0; channelIndex < SHIP_SIGNAL_DIM; channelIndex++)
+		{
+			feature[featureIndex++] = history[channelIndex];
+		}
+	}
+
+	const float *target = ShipTrainDataAt(regressionRow + SHIP_REGRESSION_WIN);
+	for (int row = 0; row < RIDGE_N; row++)
+	{
+		float scaledFeature = scale * feature[row];
+
+		for (int outputIndex = 0; outputIndex < RIDGE_NORMAL_RHS; outputIndex++)
+		{
+			s_stShipPriv.normalRhs[row][outputIndex] += scaledFeature * target[outputIndex];
+		}
+	}
+
+	/*--------------------按packed列连续更新X转置X的下三角--------------------*/
+	for (int col = 0; col < RIDGE_N; col++)
+	{
+		size_t packedIndex = ridge_packed_lower_index((size_t)col, (size_t)col);
+		float scaledFeature = scale * feature[col];
+		for (int row = col; row < RIDGE_N; row++)
+		{
+			s_stShipPriv.normalMatrix[packedIndex++] += scaledFeature * feature[row];
+		}
+	}
+}
+
+/*
+ * @brief 批量增加或减去连续回归训练行贡献
+ * @param firstRow 首个训练行逻辑索引
+ * @param lastRow 最后一个训练行逻辑索引
+ * @param scale 贡献方向，1表示加入，-1表示减去
+ * @note 输入范围会被限制在当前有效训练行范围内
+ */
+static void ShipAccumulateRegressionRows(int firstRow, int lastRow, float scale)
+{
+	int rowCount = ShipRegressionRowCount();
+
+	if (firstRow < 0)
+	{
+		firstRow = 0;
+	}
+	if (lastRow >= rowCount)
+	{
+		lastRow = rowCount - 1;
+	}
+
+	for (int regressionRow = firstRow; regressionRow <= lastRow; regressionRow++)
+	{
+		ShipAccumulateRegressionRow(regressionRow, scale);
+	}
+}
+
+/*
+ * @brief 更新包含指定平滑样本范围的全部训练行贡献
+ * @param firstTrainIndex 首个发生变化的平滑样本逻辑索引
+ * @param lastTrainIndex 最后一个发生变化的平滑样本逻辑索引
+ * @param scale 贡献方向，1表示加入，-1表示减去
+ * @note 一个平滑样本可能同时作为多个训练行的特征或目标
+ */
+static void ShipAccumulateRowsAffectedByTrainRange(int firstTrainIndex,
+	int lastTrainIndex, float scale)
+{
+	ShipAccumulateRegressionRows(firstTrainIndex - SHIP_REGRESSION_WIN,
+		lastTrainIndex, scale);
+}
+
+/*
+ * @brief 更新指定逻辑位置的三维姿态角速度
+ * @param logicalIndex 待更新样本的逻辑索引
+ * @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
+ */
 static void ShipUpdateAttangleDiff(int logicalIndex)
 {
 	if (logicalIndex < 0 || logicalIndex >= s_stShipPriv.cnt)
@@ -222,10 +328,10 @@ static void ShipUpdateTrainData(int logicalIndex)
 }
 
 /*
-- @brief 执行船姿数据采集、窗口维护、特征处理和预测计算
-- @param 无
-- @note 当前按20ms周期调用并每100ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
-*/
+ * @brief 执行船姿数据采集、窗口维护、特征处理和预测计算
+ * @param 无
+ * @note 当前按20ms周期调用并每100ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
+ */
 void testShip(void)
 {
 	unsigned char sampleInserted = FALSE;
@@ -270,6 +376,9 @@ void testShip(void)
 			}
 			if (removeCount > 0)
 			{
+				/*--------------------删除样本和修改左边界前减去全部受影响训练行--------------------*/
+				ShipAccumulateRegressionRows(0, removeCount + 2, -1.0F);
+
 				int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
 
 				s_stShipPriv.headPhysicalIndex = newHeadPhysicalIndex >= SHIP_WINDOW_SIZE_30S
@@ -285,7 +394,14 @@ void testShip(void)
 				{
 					ShipUpdateTrainData(boundaryLogicalIndex);
 				}
+
+				/*--------------------加入删除后左边界平滑数据对应的训练行--------------------*/
+				ShipAccumulateRowsAffectedByTrainRange(0, 2, 1.0F);
 			}
+
+			/*--------------------修改右边界平滑数据前减去其旧训练行贡献--------------------*/
+			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 3,
+				s_stShipPriv.cnt - 1, -1.0F);
 
 			/*--------------------逻辑尾部通过一次条件减法转换为物理写入位置--------------------*/
 			int writePhysicalIndex = ShipLogicalToPhysicalIndex(s_stShipPriv.cnt);
@@ -319,6 +435,10 @@ void testShip(void)
 			ShipUpdateTrainData(s_stShipPriv.cnt - 3);
 			ShipUpdateTrainData(s_stShipPriv.cnt - 2);
 			ShipUpdateTrainData(s_stShipPriv.cnt - 1);
+
+			/*--------------------加入右边界更新值和新增训练行贡献--------------------*/
+			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 4,
+				s_stShipPriv.cnt - 1, 1.0F);
 
 			/*--------------------更新method1近10s数据起始索引--------------------*/
 			while (s_stShipPriv.method1StartLogicalIndex < s_stShipPriv.cnt &&
@@ -648,130 +768,15 @@ void testShip(void)
 	}
 	else
 	{
-#define WIN 20
-#define DIM 6
-#define COL (WIN * DIM)
 
-		int numSamples = s_stShipPriv.cnt - WIN;
-
-        //////////////////////////////构建回归预测模型//////////////////////////////
-        
-	    /*--------------------计算左项--------------------*/
-        static float blk[6][6];		// 这个6*6的矩阵每次需要进行计算
-        for(int d = 0; d < WIN; ++d)
-        {
-            memset(blk, 0, sizeof(blk));
-            
-            /*--------------------利用数据局部性，计算“对角线”上的第一个块--------------------*/
-            for(int r = 0; r < numSamples; ++r)	// 这一层for循环表示最终120*120的矩阵的每个元素都需要numSamples次乘法
-            {
-	            const float *x = ShipTrainDataAt(r);
-	            const float *y = ShipTrainDataAt(r + d);
-                
-                for(int p = 0; p < DIM; ++p)	// 这一层for循环表示numSamples次的每个对应元素相乘（没有显式展开120个元素）
-                {
-                    const float v = x[p];
-                    float *b = blk[p];
-                    b[0] += v * y[0];
-                    b[1] += v * y[1];
-                    b[2] += v * y[2];
-                    b[3] += v * y[3];
-                    b[4] += v * y[4];
-                    b[5] += v * y[5];
-                }
-            }
-            
-			/*--------------------沿“对角线”方向计算全部6*6块--------------------*/
-            for(int a = 0; a < WIN - d; ++a)	// 这一层for循环表示需要沿“对角线”移动几次
-            {
-                int bb = a + d;
-                
-				/*--------------------先将当前6×6块写入法方程packed下三角--------------------*/
-                for(int p = 0; p < DIM; ++p)
-                {
-                    for(int q = 0; q < DIM; ++q)
-                    {
-                        int row = a * DIM + p;
-                        int col = bb * DIM + q;
-
-						packedXTrainTXTrain[ridge_packed_lower_index((size_t)row, (size_t)col)] = blk[p][q];
-                    }
-                }
-                
-                /*--------------------已经到写入了d的最后一个块，后面不再需要再更新blk--------------------*/
-                if(a == WIN - d - 1)
-                {
-                    break;
-                }
-                
-                /*--------------------滚动更新6*6的热点数据--------------------*/
-				/*
-				|a1|a2|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|
-				|a2|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|a21|
-				|a3|a4|a5|a6|a7|a8|a9|a10|a11|a12|a13|a14|a15|a16|a17|a18|a19|a20|a21|a22|
-				...
-				|a_s1|a_s2|a_s3|a_s4|a_s5|a_s6|a_s7|a_s8|a_s9|a_s10|a_s11|a_s12|a_s13|a_s14|a_s15|a_s16|a_s17|a_s18|a_s19|a_s20|
-				*/
-	            const float *oldX = ShipTrainDataAt(a);				// 上一个窗口中离开的两个6维数组
-	            const float *oldY = ShipTrainDataAt(a + d);
-	            const float *newX = ShipTrainDataAt(a + numSamples);	// 新窗口最后进入的两个6维数组
-	            const float *newY = ShipTrainDataAt(a + numSamples + d);
-                for(int p = 0; p < DIM; p++)
-                {
-                    const float oldV = oldX[p];
-                    const float newV = newX[p];
-                    
-                    float *b = blk[p];
-                    
-                    b[0] += newV * newY[0] - oldV * oldY[0];
-                    b[1] += newV * newY[1] - oldV * oldY[1];
-                    b[2] += newV * newY[2] - oldV * oldY[2];
-                    b[3] += newV * newY[3] - oldV * oldY[3];
-                    b[4] += newV * newY[4] - oldV * oldY[4];
-                    b[5] += newV * newY[5] - oldV * oldY[5];
-                }
-            }
-        }
-        
-        /*--------------------计算右项--------------------*/
-        static float XTrainTYTrain[120][6] = { 0 };
-		memset(XTrainTYTrain, 0, sizeof(XTrainTYTrain));
-	    for(int r = 0; r < numSamples; r++)
-	    {
-	        const float *y = ShipTrainDataAt(r + WIN);
-
-	        /*--------------------提前取出，让其驻留在VFP寄存器--------------------*/
-	        const float y0 = y[0];
-	        const float y1 = y[1];
-	        const float y2 = y[2];
-	        const float y3 = y[3];
-	        const float y4 = y[4];
-	        const float y5 = y[5];
-            
-            for(int a = 0; a < WIN; ++a)
-            {
-	            const float *x = ShipTrainDataAt(r + a);
-                float (*out)[6] = &XTrainTYTrain[a * DIM];
-                
-                for(int p = 0; p < DIM; ++p)
-                {
-                    const float v = x[p];
-                    float *o = out[p];
-                    
-                    o[0] += v * y0;
-                    o[1] += v * y1;
-                    o[2] += v * y2;
-                    o[3] += v * y3;
-                    o[4] += v * y4;
-                    o[5] += v * y5;
-                }
-            }
-        }
+		/*--------------------复制持续增量维护的法方程到Cholesky分解工作区--------------------*/
+		memcpy(packedXTrainTXTrain, s_stShipPriv.normalMatrix,
+			sizeof(s_stShipPriv.normalMatrix));
 
 		/*--------------------Cholesky分解并直接求解六个右端项--------------------*/
 		const float ridgeLambda = 5.0F;
 		s_stShipPriv.ridgeSolveStatus = ridge_solve_normal_f32(
-			*XTrainTYTrain,
+			*s_stShipPriv.normalRhs,
 			ridgeLambda,
 			*s_stShipPriv.MatrixB,
 			&ridgeWork);
@@ -790,10 +795,10 @@ void testShip(void)
 		double dt = averageSampleInterval;
 
 		/*--------------------初始化最近20个时刻的历史数据--------------------*/
-		static float hist[WIN][DIM] = { 0 };
-		for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
+		static float hist[SHIP_REGRESSION_WIN][SHIP_SIGNAL_DIM] = { 0 };
+		for (int historyLogicalIndex = 0; historyLogicalIndex < SHIP_REGRESSION_WIN; historyLogicalIndex++)
 		{
-			memcpy(hist[historyLogicalIndex], ShipTrainDataAt(s_stShipPriv.cnt - WIN + historyLogicalIndex), sizeof(hist[historyLogicalIndex]));
+			memcpy(hist[historyLogicalIndex], ShipTrainDataAt(s_stShipPriv.cnt - SHIP_REGRESSION_WIN + historyLogicalIndex), sizeof(hist[historyLogicalIndex]));
 		}
 
 		/*--------------------指向当前最旧样本，也是下一次预测结果的写入位置--------------------*/
@@ -810,12 +815,12 @@ void testShip(void)
 
 			const float *coefficientRow = &s_stShipPriv.MatrixB[0][0];
 			int historyPhysicalIndex = historyHeadPhysicalIndex;
-			for (int historyLogicalIndex = 0; historyLogicalIndex < WIN; historyLogicalIndex++)
+			for (int historyLogicalIndex = 0; historyLogicalIndex < SHIP_REGRESSION_WIN; historyLogicalIndex++)
 			{
 				const float *history = hist[historyPhysicalIndex];
 
 				/*--------------------针对matrixB的六列，将History的20*6进行展开计算，这里一个循环计算了1*6--------------------*/
-				for (int featureIndex = 0; featureIndex < DIM; featureIndex++)
+				for (int featureIndex = 0; featureIndex < SHIP_SIGNAL_DIM; featureIndex++)
 				{
 					const float featureValue = history[featureIndex];
 
@@ -826,11 +831,11 @@ void testShip(void)
 					y4 += featureValue * coefficientRow[4];
 					y5 += featureValue * coefficientRow[5];
 
-					coefficientRow += DIM;
+					coefficientRow += SHIP_SIGNAL_DIM;
 				}
 
 				historyPhysicalIndex++;
-				if (historyPhysicalIndex == WIN)
+				if (historyPhysicalIndex == SHIP_REGRESSION_WIN)
 				{
 					historyPhysicalIndex = 0;
 				}
@@ -847,7 +852,7 @@ void testShip(void)
 			prediction[5] = historyWrite[5] = y5;
 
 			historyHeadPhysicalIndex++;
-			if (historyHeadPhysicalIndex == WIN)
+			if (historyHeadPhysicalIndex == SHIP_REGRESSION_WIN)
 			{
 				historyHeadPhysicalIndex = 0;
 			}
