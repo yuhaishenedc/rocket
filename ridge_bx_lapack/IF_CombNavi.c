@@ -2,7 +2,7 @@
 #include <math.h>
 #include <string.h>
 
-#define RIDGE_N 60
+#define RIDGE_N 60				// 岭回归模型的输入特征总数，同时也是法方程矩阵维度
 #define RIDGE_NORMAL_RHS 3
 
 enum
@@ -208,8 +208,8 @@ typedef struct
 	
 	float MatrixB[RIDGE_N][RIDGE_NORMAL_RHS];
 	int ridgeSolveStatus;
-	float normalMatrix[RIDGE_N][RIDGE_N];
-	float normalRhs[RIDGE_N][RIDGE_NORMAL_RHS];
+	float normalMatrix[RIDGE_N][RIDGE_N];			// XT*X
+	float normalRhs[RIDGE_N][RIDGE_NORMAL_RHS];		// XT*Y
 	float PredData[SHIP_WINDOW_SIZE_30S][SHIP_SIGNAL_DIM];
     
 	float PredSlope[SHIP_WINDOW_SIZE_30S];
@@ -306,26 +306,23 @@ static inline float *ShipTrainDataAt(int logicalIndex)
 }
 
 /*
- * @brief 获取当前窗口内完整回归训练行数量
+ * @brief 计算当前窗口内能够构造多少条有效岭回归训练数据
  * @param 无
  * @note 每条训练行由连续20个三维特征和后续一个三维目标组成
  */
 static int ShipRegressionRowCount(void)
 {
-	return s_stShipPriv.cnt > SHIP_REGRESSION_WIN
-		? s_stShipPriv.cnt - SHIP_REGRESSION_WIN : 0;
+	return s_stShipPriv.cnt > SHIP_REGRESSION_WIN ? s_stShipPriv.cnt - SHIP_REGRESSION_WIN : 0;
 }
 
 /*
- * @brief 向持久法方程增加或减去一条训练行贡献
- * @param regressionRow 待处理训练行的逻辑索引
+ * @brief 向持久方程增加或减去一条训练行贡献
+ * @param regressionRow 待处理训练行的逻辑索引，取值范围[0,sampleNum-SHIP_REGRESSION_WIN)
  * @param scale 贡献方向，1表示加入，-1表示减去
- * @note 同时更新X转置X下三角和三个右端的X转置Y
+ * @note 同时更新XT*X下三角和XT*Y
  */
 static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 {
-	float feature[RIDGE_N];
-	int featureIndex = 0;
 	int rowCount = ShipRegressionRowCount();
 
 	if (regressionRow < 0 || regressionRow >= rowCount)
@@ -333,6 +330,9 @@ static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 		return;
 	}
 
+	/*--------------------把连续20个时刻的三维姿态角展开为1*60向量--------------------*/
+	float feature[RIDGE_N] = { 0 };
+	int featureIndex = 0;
 	for (int historyIndex = 0; historyIndex < SHIP_REGRESSION_WIN; historyIndex++)
 	{
 		const float *history = ShipTrainDataAt(regressionRow + historyIndex);
@@ -342,7 +342,11 @@ static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 		}
 	}
 
-	const float *target = ShipTrainDataAt(regressionRow + SHIP_REGRESSION_WIN);
+	/*--------------------增量更新岭回归方程XT*Y矩阵--------------------*/
+	/*
+		XT为60*m，Y为m*3，新增行或删除行对m进行加1或减1，因此可以按新增或删除直接更新其影响的所有60*3个元素
+	*/
+	const float *target = ShipTrainDataAt(regressionRow + SHIP_REGRESSION_WIN);	// 紧邻上面20个时刻的下一时刻
 	for (int row = 0; row < RIDGE_N; row++)
 	{
 		float scaledFeature = scale * feature[row];
@@ -353,7 +357,7 @@ static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 		}
 	}
 
-	/*--------------------按连续行更新X转置X的下三角--------------------*/
+	/*--------------------增量更新岭回归方程XT*X矩阵的下三角--------------------*/
 	for (int row = 0; row < RIDGE_N; row++)
 	{
 		float scaledFeature = scale * feature[row];
@@ -397,11 +401,15 @@ static void ShipAccumulateRegressionRows(int firstRow, int lastRow, float scale)
  * @param scale 贡献方向，1表示加入，-1表示减去
  * @note 一个平滑样本可能同时作为多个训练行的特征或目标
  */
-static void ShipAccumulateRowsAffectedByTrainRange(int firstTrainIndex,
-	int lastTrainIndex, float scale)
+static void ShipAccumulateRowsAffectedByTrainRange(int firstTrainIndex, int lastTrainIndex, float scale)
 {
-	ShipAccumulateRegressionRows(firstTrainIndex - SHIP_REGRESSION_WIN,
-		lastTrainIndex, scale);
+	/*
+		假设当前窗口内有m个平滑样本，逻辑索引为0~m-1，则训练行逻辑索引为0~m-SHIP_REGRESSION_WIN-1
+		对于任意一个平滑样本逻辑索引i，它可能作为训练行的特征出现在逻辑索引为i-SHIP_REGRESSION_WIN+1~i的训练行中
+		它也可能作为训练行的目标出现在逻辑索引为i-SHIP_REGRESSION_WIN的训练行中
+		因此，所有受影响的训练行逻辑索引范围为[firstTrainIndex-SHIP_REGRESSION_WIN,lastTrainIndex]
+	*/
+	ShipAccumulateRegressionRows(firstTrainIndex - SHIP_REGRESSION_WIN, lastTrainIndex, scale);
 }
 
 /*
@@ -478,15 +486,14 @@ void testShip(void)
 		{
 			/*--------------------仅在新样本入队前清除30s以前的数据--------------------*/
 			int removeCount = 0;
-			while (removeCount < s_stShipPriv.cnt &&
-				   s_stShipPriv.dTimeStore - ShipTimeAt(removeCount) > 30.0)
+			while (removeCount < s_stShipPriv.cnt && s_stShipPriv.dTimeStore - ShipTimeAt(removeCount) > 30.0)
 			{
 				removeCount++;
 			}
 			if (removeCount > 0)
 			{
-				/*--------------------删除样本和修改左边界前减去全部受影响训练行--------------------*/
-				ShipAccumulateRegressionRows(0, removeCount + 1, -1.0F);
+				/*--------------------减去随头部样本离开窗口的回归行贡献--------------------*/
+				ShipAccumulateRegressionRows(0, removeCount - 1, -1.0F);
 
 				int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
 
@@ -497,14 +504,7 @@ void testShip(void)
 					s_stShipPriv.method1StartLogicalIndex > removeCount
 					? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
 
-				/*--------------------删除数据后更新左边界平滑姿态角--------------------*/
-				for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 2; ++boundaryLogicalIndex)
-				{
-					ShipUpdateTrainData(boundaryLogicalIndex);
-				}
-
-				/*--------------------加入删除后左边界平滑数据对应的训练行--------------------*/
-				ShipAccumulateRowsAffectedByTrainRange(0, 1, 1.0F);
+				/*--------------------幸存样本保留删除前已计算的中心窗口平滑结果--------------------*/
 			}
 
 			/*--------------------修改右边界平滑数据前减去其旧训练行贡献--------------------*/
