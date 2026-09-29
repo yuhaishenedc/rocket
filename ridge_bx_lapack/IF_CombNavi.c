@@ -17,6 +17,7 @@ typedef struct
 {
 	float factor[RIDGE_N][RIDGE_N];
 	float rhs[RIDGE_N][RIDGE_NORMAL_RHS];
+	float inverseDiagonal[RIDGE_N];
 }ridge_normal_workspace_f32;
 
 typedef char ridge_float_must_be_32_bits[(sizeof(float) == 4) ? 1 : -1];
@@ -99,11 +100,18 @@ static int RidgeSolveNormal(const float *xtx, const float *xty, float lambda,
 				{
 					return RIDGE_ENOTSPD;
 				}
-				work->factor[row][col] = sqrtf(value);
+				float diagonal = sqrtf(value);
+				float inverseDiagonal = 1.0F / diagonal;
+				if (!RidgeFiniteF32(inverseDiagonal))
+				{
+					return RIDGE_ENUMERIC;
+				}
+				work->factor[row][col] = diagonal;
+				work->inverseDiagonal[row] = inverseDiagonal;
 			}
 			else
 			{
-				value /= work->factor[col][col];
+				value *= work->inverseDiagonal[col];
 				if (!RidgeFiniteF32(value))
 				{
 					return RIDGE_ENUMERIC;
@@ -123,7 +131,7 @@ static int RidgeSolveNormal(const float *xtx, const float *xty, float lambda,
 			{
 				value -= work->factor[row][inner] * work->rhs[inner][outputIndex];
 			}
-			value /= work->factor[row][row];
+			value *= work->inverseDiagonal[row];
 			if (!RidgeFiniteF32(value))
 			{
 				return RIDGE_ENUMERIC;
@@ -142,7 +150,7 @@ static int RidgeSolveNormal(const float *xtx, const float *xty, float lambda,
 			{
 				value -= work->factor[inner][row] * work->rhs[inner][outputIndex];
 			}
-			value /= work->factor[row][row];
+			value *= work->inverseDiagonal[row];
 			if (!RidgeFiniteF32(value))
 			{
 				return RIDGE_ENUMERIC;
@@ -500,18 +508,17 @@ void testShip(void)
 				s_stShipPriv.headPhysicalIndex = newHeadPhysicalIndex >= SHIP_WINDOW_SIZE_30S
 					? newHeadPhysicalIndex - SHIP_WINDOW_SIZE_30S : newHeadPhysicalIndex;
 				s_stShipPriv.cnt -= removeCount;
-				s_stShipPriv.method1StartLogicalIndex =
-					s_stShipPriv.method1StartLogicalIndex > removeCount
+				s_stShipPriv.method1StartLogicalIndex = s_stShipPriv.method1StartLogicalIndex > removeCount
 					? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
-
-				/*--------------------幸存样本保留删除前已计算的中心窗口平滑结果--------------------*/
 			}
 
 			/*--------------------修改右边界平滑数据前减去其旧训练行贡献--------------------*/
-			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 2,
-				s_stShipPriv.cnt - 1, -1.0F);
+			/*
+				s_stShipPriv.cnt - 2 和 s_stShipPriv.cnt - 1 在新加入数据后，平滑结果改变
+			*/
+			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 2, s_stShipPriv.cnt - 1, -1.0F);
 
-			/*--------------------逻辑尾部通过一次条件减法转换为物理写入位置--------------------*/
+			/*--------------------将逻辑尾部转换为物理写入位置--------------------*/
 			int writePhysicalIndex = ShipLogicalToPhysicalIndex(s_stShipPriv.cnt);
 			int previousPhysicalIndex = -1;
 			if (s_stShipPriv.cnt > 0)
@@ -560,17 +567,6 @@ void testShip(void)
 	/*--------------------数据个数不足，不进入后续判断--------------------*/
 	if (s_stShipPriv.cnt < 2)
 	{
-		s_stShipPriv.bUseCheck = FALSE;
-		s_stShipPriv.tDown1 = -1.0;
-		s_stShipPriv.tDown2 = -1.0;
-		return;
-	}
-
-	/*--------------------每20ms检查最新数据是否超时--------------------*/
-	if (g_CombinedNaviInput.t_fly - ShipTimeAt(s_stShipPriv.cnt - 1) > 1.0)
-	{
-		s_stShipPriv.bUseCheck = FALSE;
-		s_stShipPriv.poolCount = 0;
 		s_stShipPriv.tDown1 = -1.0;
 		s_stShipPriv.tDown2 = -1.0;
 		return;
@@ -644,9 +640,6 @@ void testShip(void)
 	{
 		return;
 	}
-
-    /*--------------------30s后预测每周期预计算--------------------*/
-
 
 	/*--------------------固定60维Cholesky分解和三右端求解工作区--------------------*/
 	static ridge_normal_workspace_f32 ridgeWork;
