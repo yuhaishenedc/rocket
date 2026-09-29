@@ -1,16 +1,177 @@
-#include "ridge.h"
+#include <float.h>
 #include <math.h>
 #include <string.h>
 
-#define		SHIP_WINDOW_SIZE_30S	(301)
-#define		SHIP_WINDOW_SIZE_20S	(201)
-#define		SHIP_WINDOW_SIZE_10S	(101)
+#define RIDGE_N 60
+#define RIDGE_NORMAL_RHS 3
+
+enum
+{
+	RIDGE_OK = 0,
+	RIDGE_EINVAL = -1,
+	RIDGE_ENUMERIC = -2,
+	RIDGE_ENOTSPD = -3
+};
+
+typedef struct
+{
+	float factor[RIDGE_N][RIDGE_N];
+	float rhs[RIDGE_N][RIDGE_NORMAL_RHS];
+}ridge_normal_workspace_f32;
+
+typedef char ridge_float_must_be_32_bits[(sizeof(float) == 4) ? 1 : -1];
+
+/*
+ * @brief 判断单精度数值是否为有限值
+ * @param value 待检查的单精度数值
+ * @note 不依赖平台特定的isfinite实现
+ */
+static int RidgeFiniteF32(float value)
+{
+	return value == value && value <= FLT_MAX && value >= -FLT_MAX;
+}
+
+/*
+ * @brief 使用单精度标量Cholesky求解三个右端的岭回归法方程
+ * @param xtx 按行存储的X转置X矩阵下三角
+ * @param xty 按行存储的X转置Y矩阵
+ * @param lambda 岭回归对角正则化系数
+ * @param coefficients 输出的60乘3回归系数矩阵
+ * @param work Cholesky分解和三右端求解工作区
+ * @note 仅在返回RIDGE_OK时发布新的回归系数
+ */
+static int RidgeSolveNormal(const float *xtx, const float *xty, float lambda,
+	float *coefficients,
+	ridge_normal_workspace_f32 *work)
+{
+	if (NULL == xtx || NULL == xty || NULL == coefficients || NULL == work ||
+		!RidgeFiniteF32(lambda) || lambda <= 0.0F)
+	{
+		return RIDGE_EINVAL;
+	}
+
+	/*--------------------复制法方程下三角并加入岭回归正则项--------------------*/
+	for (int row = 0; row < RIDGE_N; row++)
+	{
+		for (int col = 0; col <= row; col++)
+		{
+			float value = xtx[row * RIDGE_N + col];
+			if (row == col)
+			{
+				value += lambda;
+			}
+			if (!RidgeFiniteF32(value))
+			{
+				return RIDGE_ENUMERIC;
+			}
+			work->factor[row][col] = value;
+		}
+		for (int outputIndex = 0; outputIndex < RIDGE_NORMAL_RHS; outputIndex++)
+		{
+			float value = xty[row * RIDGE_NORMAL_RHS + outputIndex];
+			if (!RidgeFiniteF32(value))
+			{
+				return RIDGE_ENUMERIC;
+			}
+			work->rhs[row][outputIndex] = value;
+		}
+	}
+
+	/*--------------------原地计算完整矩阵下三角的Cholesky因子--------------------*/
+	for (int row = 0; row < RIDGE_N; row++)
+	{
+		for (int col = 0; col <= row; col++)
+		{
+			float value = work->factor[row][col];
+			for (int inner = 0; inner < col; inner++)
+			{
+				value -= work->factor[row][inner] * work->factor[col][inner];
+			}
+
+			if (!RidgeFiniteF32(value))
+			{
+				return RIDGE_ENUMERIC;
+			}
+
+			if (row == col)
+			{
+				if (value <= 0.0F)
+				{
+					return RIDGE_ENOTSPD;
+				}
+				work->factor[row][col] = sqrtf(value);
+			}
+			else
+			{
+				value /= work->factor[col][col];
+				if (!RidgeFiniteF32(value))
+				{
+					return RIDGE_ENUMERIC;
+				}
+				work->factor[row][col] = value;
+			}
+		}
+	}
+
+	/*--------------------对三个右端执行前向替代--------------------*/
+	for (int row = 0; row < RIDGE_N; row++)
+	{
+		for (int outputIndex = 0; outputIndex < RIDGE_NORMAL_RHS; outputIndex++)
+		{
+			float value = work->rhs[row][outputIndex];
+			for (int inner = 0; inner < row; inner++)
+			{
+				value -= work->factor[row][inner] * work->rhs[inner][outputIndex];
+			}
+			value /= work->factor[row][row];
+			if (!RidgeFiniteF32(value))
+			{
+				return RIDGE_ENUMERIC;
+			}
+			work->rhs[row][outputIndex] = value;
+		}
+	}
+
+	/*--------------------对三个右端执行回代--------------------*/
+	for (int row = RIDGE_N - 1; row >= 0; row--)
+	{
+		for (int outputIndex = 0; outputIndex < RIDGE_NORMAL_RHS; outputIndex++)
+		{
+			float value = work->rhs[row][outputIndex];
+			for (int inner = row + 1; inner < RIDGE_N; inner++)
+			{
+				value -= work->factor[inner][row] * work->rhs[inner][outputIndex];
+			}
+			value /= work->factor[row][row];
+			if (!RidgeFiniteF32(value))
+			{
+				return RIDGE_ENUMERIC;
+			}
+			work->rhs[row][outputIndex] = value;
+		}
+	}
+
+	for (int row = 0; row < RIDGE_N; row++)
+	{
+		for (int outputIndex = 0; outputIndex < RIDGE_NORMAL_RHS; outputIndex++)
+		{
+			coefficients[row * RIDGE_NORMAL_RHS + outputIndex] =
+				work->rhs[row][outputIndex];
+		}
+	}
+
+	return RIDGE_OK;
+}
+
+#define		SHIP_WINDOW_SIZE_30S	(151)
+#define		SHIP_WINDOW_SIZE_20S	(101)
+#define		SHIP_WINDOW_SIZE_10S	(51)
 #define		LOST_NUM			    (50)
 #define		SHIP_POOL_CAPACITY		(100)
 #define		SHIP_MAX_OUTPUT_POOLS	(2)
 #define		SHIP_MAX_TRACKED_POOLS	(4)
 #define		SHIP_REGRESSION_WIN		(20)
-#define		SHIP_SIGNAL_DIM			(6)
+#define		SHIP_SIGNAL_DIM			(3)
 typedef char ship_feature_count_must_match_ridge_n[
 	(SHIP_REGRESSION_WIN * SHIP_SIGNAL_DIM == RIDGE_N) ? 1 : -1];
 typedef struct
@@ -25,18 +186,17 @@ typedef struct
 }ClusterPool;
 typedef struct
 {
-	/*--------------------每100ms是否更新判断--------------------*/
-    double dTimeStore;                              	// 100ms内最近一次更新数据时间
-    float dAttangleStore[3];                        	// 100ms内最近一次更新船体姿态数据
-    unsigned char bUpdate100ms;                     	// 100ms内数据是否更新过
+	/*--------------------每200ms是否更新判断--------------------*/
+    double dTimeStore;                              	// 200ms内最近一次更新数据时间
+    float dAttangleStore[3];                        	// 200ms内最近一次更新船体姿态数据
+    unsigned char bUpdate200ms;                     	// 200ms内数据是否更新过
 
 	/*--------------------30s内存储的原始数据（环形缓冲区）--------------------*/
 	int headPhysicalIndex;						    // 环形缓冲区最旧样本的物理索引
 	int cnt;										    // 已存储数据计数
 	double dTimeStore30s[SHIP_WINDOW_SIZE_30S];     	// 30s内存储的原始时间数据
-	float Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、偏航、俯仰）
-	float AttangleDiff30s[SHIP_WINDOW_SIZE_30S][3];	// 30s内船角速度
-	float trainData[SHIP_WINDOW_SIZE_30S][6];	    	// 30s平滑后数据（滚转/偏航/俯仰角、滚转/偏航/俯仰角速度）
+	float Attangle30s[SHIP_WINDOW_SIZE_30S][3];		// 30s内船姿态（滚转、俯仰、偏航）
+	float trainData[SHIP_WINDOW_SIZE_30S][SHIP_SIGNAL_DIM];	// 30s平滑后姿态角数据（滚转/俯仰/偏航）
 
     unsigned char bUseCheck;                        // 船姿数据启用标志字
     
@@ -48,9 +208,9 @@ typedef struct
 	
 	float MatrixB[RIDGE_N][RIDGE_NORMAL_RHS];
 	int ridgeSolveStatus;
-	float normalMatrix[RIDGE_PACKED_SIZE];
+	float normalMatrix[RIDGE_N][RIDGE_N];
 	float normalRhs[RIDGE_N][RIDGE_NORMAL_RHS];
-	float PredData[SHIP_WINDOW_SIZE_30S][6];
+	float PredData[SHIP_WINDOW_SIZE_30S][SHIP_SIGNAL_DIM];
     
 	float PredSlope[SHIP_WINDOW_SIZE_30S];
 	float dNeg[SHIP_WINDOW_SIZE_30S];
@@ -94,6 +254,7 @@ IF_CombinedNavi g_CombinedNaviInput = { 0 };
 #define TRUE 1
 #define FALSE 0
 #define CONTROL_PERIOD 0.02
+#define SHIP_SAMPLE_INTERVAL_CYCLES 10
 #define PI 3.1415926
 
 
@@ -135,17 +296,7 @@ static inline float *ShipAttangleAt(int logicalIndex)
 }
 
 /*
- * @brief 获取指定逻辑位置的三维姿态角速度数据
- * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
- * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
- */
-static inline float *ShipAttangleDiffAt(int logicalIndex)
-{
-	return s_stShipPriv.AttangleDiff30s[ShipLogicalToPhysicalIndex(logicalIndex)];
-}
-
-/*
- * @brief 获取指定逻辑位置的六维平滑训练数据
+ * @brief 获取指定逻辑位置的三维平滑姿态角训练数据
  * @param logicalIndex 有效样本的逻辑索引，范围为0到cnt-1
  * @note 返回环形缓冲区内部存储地址，不得在对应样本被覆盖后继续使用
  */
@@ -157,7 +308,7 @@ static inline float *ShipTrainDataAt(int logicalIndex)
 /*
  * @brief 获取当前窗口内完整回归训练行数量
  * @param 无
- * @note 每条训练行由连续20个六维特征和后续一个六维目标组成
+ * @note 每条训练行由连续20个三维特征和后续一个三维目标组成
  */
 static int ShipRegressionRowCount(void)
 {
@@ -169,7 +320,7 @@ static int ShipRegressionRowCount(void)
  * @brief 向持久法方程增加或减去一条训练行贡献
  * @param regressionRow 待处理训练行的逻辑索引
  * @param scale 贡献方向，1表示加入，-1表示减去
- * @note 同时更新packed格式的X转置X和六右端X转置Y
+ * @note 同时更新X转置X下三角和三个右端的X转置Y
  */
 static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 {
@@ -202,14 +353,13 @@ static void ShipAccumulateRegressionRow(int regressionRow, float scale)
 		}
 	}
 
-	/*--------------------按packed列连续更新X转置X的下三角--------------------*/
-	for (int col = 0; col < RIDGE_N; col++)
+	/*--------------------按连续行更新X转置X的下三角--------------------*/
+	for (int row = 0; row < RIDGE_N; row++)
 	{
-		size_t packedIndex = ridge_packed_lower_index((size_t)col, (size_t)col);
-		float scaledFeature = scale * feature[col];
-		for (int row = col; row < RIDGE_N; row++)
+		float scaledFeature = scale * feature[row];
+		for (int col = 0; col <= row; col++)
 		{
-			s_stShipPriv.normalMatrix[packedIndex++] += scaledFeature * feature[row];
+			s_stShipPriv.normalMatrix[row][col] += scaledFeature * feature[col];
 		}
 	}
 }
@@ -255,46 +405,9 @@ static void ShipAccumulateRowsAffectedByTrainRange(int firstTrainIndex,
 }
 
 /*
- * @brief 更新指定逻辑位置的三维姿态角速度
+ * @brief 更新指定逻辑位置的三维平滑姿态角训练数据
  * @param logicalIndex 待更新样本的逻辑索引
- * @note 使用相邻样本时间差计算差分；索引或时间差无效时返回或将结果置零
- */
-static void ShipUpdateAttangleDiff(int logicalIndex)
-{
-	if (logicalIndex < 0 || logicalIndex >= s_stShipPriv.cnt)
-	{
-		return;
-	}
-
-	int targetPhysicalIndex = ShipLogicalToPhysicalIndex(logicalIndex);
-
-	if (s_stShipPriv.cnt < 2)
-	{
-		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
-		{
-			s_stShipPriv.AttangleDiff30s[targetPhysicalIndex][channelIndex] = 0.0;
-		}
-		return;
-	}
-
-	int leftLogicalIndex = logicalIndex > 0 ? logicalIndex - 1 : 0;
-	int rightLogicalIndex = logicalIndex + 1 < s_stShipPriv.cnt ? logicalIndex + 1 : s_stShipPriv.cnt - 1;
-	int leftPhysicalIndex = ShipLogicalToPhysicalIndex(leftLogicalIndex);
-	int rightPhysicalIndex = ShipLogicalToPhysicalIndex(rightLogicalIndex);
-	double dt = s_stShipPriv.dTimeStore30s[rightPhysicalIndex] - s_stShipPriv.dTimeStore30s[leftPhysicalIndex];
-
-	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
-	{
-		s_stShipPriv.AttangleDiff30s[targetPhysicalIndex][channelIndex] =
-			(float)((s_stShipPriv.Attangle30s[rightPhysicalIndex][channelIndex] -
-			 s_stShipPriv.Attangle30s[leftPhysicalIndex][channelIndex]) / dt);
-	}
-}
-
-/*
- * @brief 更新指定逻辑位置的六维平滑训练数据
- * @param logicalIndex 待更新样本的逻辑索引
- * @note 使用当前位置前后各最多两个样本计算姿态和角速度的滑动平均
+ * @note 使用当前位置前后各最多两个样本计算姿态角的滑动平均
  */
 static void ShipUpdateTrainData(int logicalIndex)
 {
@@ -305,32 +418,28 @@ static void ShipUpdateTrainData(int logicalIndex)
 
 	int leftLogicalIndex = logicalIndex > 1 ? logicalIndex - 2 : 0;
 	int rightLogicalIndex = logicalIndex + 2 < s_stShipPriv.cnt ? logicalIndex + 2 : s_stShipPriv.cnt - 1;
-	float angleSum[3] = { 0.0F }, diffSum[3] = { 0.0F };
+	float angleSum[SHIP_SIGNAL_DIM] = { 0.0F };
 	for (int sampleLogicalIndex = leftLogicalIndex; sampleLogicalIndex <= rightLogicalIndex; sampleLogicalIndex++)
 	{
 		float *angle = ShipAttangleAt(sampleLogicalIndex);
-		float *diff = ShipAttangleDiffAt(sampleLogicalIndex);
-
-		for (int channelIndex = 0; channelIndex < 3; channelIndex++)
+		for (int channelIndex = 0; channelIndex < SHIP_SIGNAL_DIM; channelIndex++)
 		{
 			angleSum[channelIndex] += angle[channelIndex];
-			diffSum[channelIndex] += diff[channelIndex];
 		}
 	}
 
 	float scale = 1.0F / (float)(rightLogicalIndex - leftLogicalIndex + 1);
 	float *train = ShipTrainDataAt(logicalIndex);
-	for (int channelIndex = 0; channelIndex < 3; channelIndex++)
+	for (int channelIndex = 0; channelIndex < SHIP_SIGNAL_DIM; channelIndex++)
 	{
 		train[channelIndex] = angleSum[channelIndex] * scale;
-		train[channelIndex + 3] = diffSum[channelIndex] * scale;
 	}
 }
 
 /*
  * @brief 执行船姿数据采集、窗口维护、特征处理和预测计算
  * @param 无
- * @note 当前按20ms周期调用并每100ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
+ * @note 当前按20ms周期调用并每200ms写入一次最新样本；测试信号代码启用时会覆盖外部输入
  */
 void testShip(void)
 {
@@ -355,17 +464,17 @@ void testShip(void)
 			s_stShipPriv.dAttangleStore[channelIndex] =
 				(float)g_CombinedNaviInput.AttAngle_ship[channelIndex];
 		}
-        s_stShipPriv.bUpdate100ms = TRUE;
+        s_stShipPriv.bUpdate200ms = TRUE;
 	}
 
-    /*--------------------数据降频，100ms数据更新一次--------------------*/
+    /*--------------------数据降频，200ms数据更新一次--------------------*/
 	static int counter = 0;
-	if (++counter >= 5)
+	if (++counter >= SHIP_SAMPLE_INTERVAL_CYCLES)
 	{
 		counter = 0;
 
 		/*--------------------数据存储及异常处理--------------------*/
-		if (TRUE == s_stShipPriv.bUpdate100ms)
+		if (TRUE == s_stShipPriv.bUpdate200ms)
 		{
 			/*--------------------仅在新样本入队前清除30s以前的数据--------------------*/
 			int removeCount = 0;
@@ -377,7 +486,7 @@ void testShip(void)
 			if (removeCount > 0)
 			{
 				/*--------------------删除样本和修改左边界前减去全部受影响训练行--------------------*/
-				ShipAccumulateRegressionRows(0, removeCount + 2, -1.0F);
+				ShipAccumulateRegressionRows(0, removeCount + 1, -1.0F);
 
 				int newHeadPhysicalIndex = s_stShipPriv.headPhysicalIndex + removeCount;
 
@@ -388,19 +497,18 @@ void testShip(void)
 					s_stShipPriv.method1StartLogicalIndex > removeCount
 					? s_stShipPriv.method1StartLogicalIndex - removeCount : 0;
 
-				/*--------------------删除数据后更新左边界差分和平滑值--------------------*/
-				ShipUpdateAttangleDiff(0);
-				for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 3; ++boundaryLogicalIndex)
+				/*--------------------删除数据后更新左边界平滑姿态角--------------------*/
+				for (int boundaryLogicalIndex = 0; boundaryLogicalIndex < 2; ++boundaryLogicalIndex)
 				{
 					ShipUpdateTrainData(boundaryLogicalIndex);
 				}
 
 				/*--------------------加入删除后左边界平滑数据对应的训练行--------------------*/
-				ShipAccumulateRowsAffectedByTrainRange(0, 2, 1.0F);
+				ShipAccumulateRowsAffectedByTrainRange(0, 1, 1.0F);
 			}
 
 			/*--------------------修改右边界平滑数据前减去其旧训练行贡献--------------------*/
-			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 3,
+			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 2,
 				s_stShipPriv.cnt - 1, -1.0F);
 
 			/*--------------------逻辑尾部通过一次条件减法转换为物理写入位置--------------------*/
@@ -428,16 +536,13 @@ void testShip(void)
 				}
 			}
 
-			/*--------------------加入数据后更新右边界差分和平滑值--------------------*/
-			ShipUpdateAttangleDiff(s_stShipPriv.cnt - 2);	// 倒数第二个角速度变为中心差分
-			ShipUpdateAttangleDiff(s_stShipPriv.cnt - 1);	// 倒数第一个角速度（新增）为右边界差分
-			ShipUpdateTrainData(s_stShipPriv.cnt - 4);		// 由于cnt-2的角速度发生变化，最大影响cnt-2-2的角速度平滑结果
+			/*--------------------加入数据后更新右边界平滑姿态角--------------------*/
 			ShipUpdateTrainData(s_stShipPriv.cnt - 3);
 			ShipUpdateTrainData(s_stShipPriv.cnt - 2);
 			ShipUpdateTrainData(s_stShipPriv.cnt - 1);
 
 			/*--------------------加入右边界更新值和新增训练行贡献--------------------*/
-			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 4,
+			ShipAccumulateRowsAffectedByTrainRange(s_stShipPriv.cnt - 3,
 				s_stShipPriv.cnt - 1, 1.0F);
 
 			/*--------------------更新method1近10s数据起始索引--------------------*/
@@ -449,7 +554,7 @@ void testShip(void)
 
 			sampleInserted = TRUE;
 		}
-		s_stShipPriv.bUpdate100ms = FALSE;
+		s_stShipPriv.bUpdate200ms = FALSE;
 	}
 
 	/*--------------------数据个数不足，不进入后续判断--------------------*/
@@ -543,9 +648,8 @@ void testShip(void)
     /*--------------------30s后预测每周期预计算--------------------*/
 
 
-	/*--------------------法方程下三角以packed格式存储在Cholesky工作区--------------------*/
+	/*--------------------固定60维Cholesky分解和三右端求解工作区--------------------*/
 	static ridge_normal_workspace_f32 ridgeWork;
-	float *packedXTrainTXTrain = ridge_normal_packed_matrix_f32(&ridgeWork);
 
 	/*--------------------峰值法+周期法--------------------*/
 	if (ShipTimeAt(s_stShipPriv.cnt - 1) - ShipTimeAt(0) < 29.5)
@@ -769,13 +873,10 @@ void testShip(void)
 	else
 	{
 
-		/*--------------------复制持续增量维护的法方程到Cholesky分解工作区--------------------*/
-		memcpy(packedXTrainTXTrain, s_stShipPriv.normalMatrix,
-			sizeof(s_stShipPriv.normalMatrix));
-
-		/*--------------------Cholesky分解并直接求解六个右端项--------------------*/
+		/*--------------------Cholesky分解并直接求解三个右端项--------------------*/
 		const float ridgeLambda = 5.0F;
-		s_stShipPriv.ridgeSolveStatus = ridge_solve_normal_f32(
+		s_stShipPriv.ridgeSolveStatus = RidgeSolveNormal(
+			*s_stShipPriv.normalMatrix,
 			*s_stShipPriv.normalRhs,
 			ridgeLambda,
 			*s_stShipPriv.MatrixB,
@@ -805,13 +906,10 @@ void testShip(void)
 		int historyHeadPhysicalIndex = 0;
 		for (int predictionIndex = 0; predictionIndex < dynamicPredLen; predictionIndex++)
 		{
-			/*--------------------使用6个独立累加器，尽量保存在VFP寄存器中--------------------*/
+			/*--------------------使用3个独立累加器计算三个姿态角--------------------*/
 			float y0 = 0.0F;
 			float y1 = 0.0F;
 			float y2 = 0.0F;
-			float y3 = 0.0F;
-			float y4 = 0.0F;
-			float y5 = 0.0F;
 
 			const float *coefficientRow = &s_stShipPriv.MatrixB[0][0];
 			int historyPhysicalIndex = historyHeadPhysicalIndex;
@@ -819,7 +917,7 @@ void testShip(void)
 			{
 				const float *history = hist[historyPhysicalIndex];
 
-				/*--------------------针对matrixB的六列，将History的20*6进行展开计算，这里一个循环计算了1*6--------------------*/
+				/*--------------------针对MatrixB的三列，将History的20*3进行展开计算--------------------*/
 				for (int featureIndex = 0; featureIndex < SHIP_SIGNAL_DIM; featureIndex++)
 				{
 					const float featureValue = history[featureIndex];
@@ -827,9 +925,6 @@ void testShip(void)
 					y0 += featureValue * coefficientRow[0];
 					y1 += featureValue * coefficientRow[1];
 					y2 += featureValue * coefficientRow[2];
-					y3 += featureValue * coefficientRow[3];
-					y4 += featureValue * coefficientRow[4];
-					y5 += featureValue * coefficientRow[5];
 
 					coefficientRow += SHIP_SIGNAL_DIM;
 				}
@@ -847,9 +942,6 @@ void testShip(void)
 			prediction[0] = historyWrite[0] = y0;
 			prediction[1] = historyWrite[1] = y1;
 			prediction[2] = historyWrite[2] = y2;
-			prediction[3] = historyWrite[3] = y3;
-			prediction[4] = historyWrite[4] = y4;
-			prediction[5] = historyWrite[5] = y5;
 
 			historyHeadPhysicalIndex++;
 			if (historyHeadPhysicalIndex == SHIP_REGRESSION_WIN)
