@@ -32,6 +32,44 @@
 5. 分数写成规范形式，例如 `\frac{4}{3}`，不要写成容易误读的 `\frac43`。
 6. 原文中公式编号如 `(1)`、`(2)`，应保留。
 
+## 表格处理
+
+1. 原文中承载数据或对照关系的正式表格使用 HTML 实现，不使用默认 Markdown 表格，以保证标题、列宽、对齐和分隔线的显示效果一致。
+2. 整张表格必须居中。不要把 <code>&lt;table&gt;</code> 设置为 <code>width: 100%</code>，也不要使用超过正文栏宽的固定宽度；这两种写法会使居中效果不明显或产生偏移。采用“居中的外层容器 + 自然宽度的行内块滚动容器 + 自然宽度表格”的结构。
+3. 表名位于表格上方并居中，格式为“表 x.x　表名”，使用适度加粗，不额外添加彩色背景。
+4. 表头全部居中，只使用浅灰色背景 <code>#f3f3f3</code> 和一条中性细分隔线 <code>#777</code>，不要使用过多颜色。
+5. 数据行之间使用 <code>1px solid #ddd</code> 的细分隔线；最后一行不加底部边线。不要在表格顶部或底部添加粗线。
+6. 分类、编号、区间长度等短字段通常居中；用于纵向比较的数值列右对齐。使用 <code>font-variant-numeric: tabular-nums</code> 使数字等宽排列。
+7. 表格宽度根据内容设置合适的 <code>min-width</code>，一般为 <code>500px</code> 或 <code>600px</code>；窄屏时由内层容器提供横向滚动。
+8. 单元格中的数学表达式继续使用行内公式，不要因为改用 HTML 表格而改写公式内容。
+9. 推荐模板如下：
+
+   ~~~html
+   <div align="center" style="width: 100%; margin: 1.2em 0; text-align: center;">
+     <div style="margin-bottom: 0.55em; text-align: center; font-weight: 600;">表 x.x　表名</div>
+     <div style="display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: top; text-align: left;">
+     <table style="display: table; width: auto; min-width: 600px; margin: 0; border-collapse: collapse; font-variant-numeric: tabular-nums;">
+       <thead>
+         <tr style="background-color: #f3f3f3; border-bottom: 1px solid #777;">
+           <th style="padding: 0.6em 1em; text-align: center; font-weight: 600;">表头一</th>
+           <th style="padding: 0.6em 1em; text-align: center; font-weight: 600;">表头二</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr style="border-bottom: 1px solid #ddd;">
+           <td style="padding: 0.5em 1em; text-align: center;">分类数据</td>
+           <td style="padding: 0.5em 1em; text-align: right;">数值数据</td>
+         </tr>
+         <tr>
+           <td style="padding: 0.5em 1em; text-align: center;">分类数据</td>
+           <td style="padding: 0.5em 1em; text-align: right;">数值数据</td>
+         </tr>
+       </tbody>
+     </table>
+     </div>
+   </div>
+   ~~~
+
 ## 定义框和法则框
 
 1. 使用已有蓝色边框样式：
