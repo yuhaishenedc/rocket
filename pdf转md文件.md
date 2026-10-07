@@ -308,3 +308,107 @@ $$
 ```
 
 注意区分字母 `O/o` 与数字 `0`。若原文是坐标系原点，应写作 `$O$` 或 `$o$`；若是单位矢量上标，可写作 `$\boldsymbol{x}^0$`、`$\boldsymbol{y}^0$`、`$\boldsymbol{z}^0$`，不要误写成 `x°`、`x。` 或 `x,`。
+
+## 教材逐段翻译与校对规范
+
+### 内容忠实性
+
+1. 翻译必须与原文逐段对应，不得压缩、概括或改写为提纲式讲义。
+2. 原文中的引言、例题、定义、定理、法则、证明、图注、旁注和补充说明均须保留。
+3. 原文为一句话的题干，在 Markdown 中也尽量保持一句话，不拆成多个互不连贯的段落。
+4. 例题编号必须与原文一致；发现漏译时，应补回缺失内容并修正后续编号。
+5. 解答过程应保留关键推导步骤、旁注及所用法则，不能只给最终结果。
+6. 默认只转换章节正文，不转换 Problem Set、Challenge Problems 等章末练习；仅供这些练习使用的图片也不提取。
+7. 不随意增加原文没有的标题、定义框、解释框、总结框或练习提示。确有必要补充概念时，应明确标注为补充内容，并注明原书正式介绍该概念的章、节位置。
+
+### 公式版式补充要求
+
+1. 原文为行内公式时继续使用行内公式，不擅自改成展示公式。
+2. 展示公式和多行推导使用 `$$ ... $$`；多行对齐使用 `aligned`。
+3. 原文把多个小题排在一行时，不使用 Markdown 表格，可在同一公式块中使用 `\text{(a)}`、`\text{(b)}` 等标号。
+4. `\qquad` 等 LaTeX 间距命令只能出现在数学环境中，不能裸露在普通 Markdown 正文里。
+5. 分数应写成明确的 `\frac{分子}{分母}` 形式，避免省略花括号造成误读。
+6. 原文公式编号必须保留；不得使用 `\boxed`，除非原 PDF 的公式本身确实带框。
+7. 多行公式中的各小题标号和主公式应左对齐；过长公式应合理换行，不能超出正文宽度。
+
+### 正式表格的 HTML 样式
+
+1. 承载数据或对照关系的正式表格使用 HTML，不使用默认 Markdown 表格。
+2. 使用居中的外层容器、自然宽度的行内块滚动容器和自然宽度表格；不要把 `<table>` 设置为 `width: 100%`，也不要设置超过正文栏宽的固定宽度。
+3. 表名置于表格上方并居中，格式为“表 x.x　表名”，适度加粗，不添加彩色背景。
+4. 表头居中，只使用浅灰背景 `#f3f3f3` 和一条 `1px solid #777` 的中性分隔线。
+5. 数据行之间使用 `1px solid #ddd`；最后一行不加底线，表格上下不添加额外粗线。
+6. 分类、编号和区间等短字段通常居中，数值列右对齐；使用 `font-variant-numeric: tabular-nums`。
+7. 表格可按内容设置 `500px` 或 `600px` 左右的 `min-width`，窄屏时由内层容器横向滚动。
+8. 单元格中的数学表达式使用行内公式。
+
+推荐模板：
+
+```html
+<div align="center" style="width: 100%; margin: 1.2em 0; text-align: center;">
+  <div style="margin-bottom: 0.55em; text-align: center; font-weight: 600;">表 x.x　表名</div>
+  <div style="display: inline-block; max-width: 100%; overflow-x: auto; vertical-align: top; text-align: left;">
+  <table style="display: table; width: auto; min-width: 600px; margin: 0; border-collapse: collapse; font-variant-numeric: tabular-nums;">
+    <thead>
+      <tr style="background-color: #f3f3f3; border-bottom: 1px solid #777;">
+        <th style="padding: 0.6em 1em; text-align: center; font-weight: 600;">表头一</th>
+        <th style="padding: 0.6em 1em; text-align: center; font-weight: 600;">表头二</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 0.5em 1em; text-align: center;">分类数据</td>
+        <td style="padding: 0.5em 1em; text-align: right;">数值数据</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5em 1em; text-align: center;">分类数据</td>
+        <td style="padding: 0.5em 1em; text-align: right;">数值数据</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+```
+
+### 原文定义框、定理框和法则框
+
+1. 只有原 PDF 中确实带框的内容才使用边框；普通正文不得擅自加框。
+2. 框内只放原框中的内容，紧随其后的说明、特殊情形或记号说明仍放在框外。
+3. 沿用简洁的蓝色细边框，不使用大面积色块或过多颜色：
+
+```html
+<div style="width: 100%; margin: 1em 0; overflow-x: auto;">
+  <div style="width: 100%; box-sizing: border-box; border: 1px solid #00a6df; padding: 0.7em 1em; text-align: left;">
+    <div style="font-weight: 700; color: #008fd3; margin-bottom: 0.45em;">标题</div>
+    <div>正文</div>
+  </div>
+</div>
+```
+
+### 图片提取、插入和尺寸
+
+1. 原文有图而本地缺失时，从 PDF 页面裁切生成；只截取图像本体，不把原书题注截入图片。
+2. 图片按原图号命名，保存到对应教材目录的 `images/` 中。
+3. Markdown 自行提供中文图注；图注忠实翻译原文，不额外发挥。
+4. 裁切后必须逐张查看，确认坐标轴、标签、曲线和图中说明没有被截断，也没有混入页眉、页码或正文。
+5. 图片显示宽度应接近其在 PDF 正文中的实际视觉尺寸，不默认铺满页面。过大的图要设置合理的 `width` 和 `max-width`。
+6. 原图由多个并列子图组成，而本地保存为多张图片时，使用横向弹性容器排列；窄屏允许换行，各子图尽量等高、对齐。
+7. 用于定位和裁切的整页渲染图属于临时文件，完成后清理，只保留最终图片。
+
+推荐插图格式：
+
+```html
+<div align="center">
+  <img src="images/3-10.png" alt="图 3.10 ……" style="display:block; width:min(100%, 700px); height:auto;">
+  <div style="font-style: italic; font-size: 0.92em; color: #666; margin-top: 0.35em;">图 3.10 ……</div>
+</div>
+```
+
+### 章节结构与复核流程
+
+1. 小节标题按原文层级和含义翻译，不自行增设原文没有的标题。
+2. 小节开头的引言必须完整翻译，不能用概括句代替。
+3. 定义、定理、例题、证明、图和说明应保持原书出现顺序。
+4. 修改前先对照 PDF 页面确认原文结构；文本提取有歧义时，以页面渲染图为准。
+5. 每完成一节，检查是否存在漏段、例题编号错位、重复内容、OCR 残片或被错误识别为正文的图内文字。
+6. 最终统一检查标题层级、公式配对、HTML 标签、图片路径、图片尺寸、术语一致性和章节边界，并进行实际渲染抽查。
