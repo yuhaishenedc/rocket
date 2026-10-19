@@ -1,0 +1,81 @@
+222   Chapter 4. Orthogonality
+It is no accident that those factors 1, 1, 1 and 0, 1, 2 in the derivatives of I IAx - bl 1
+2
+are the columns of   A.   Now cancel 2 from every term and collect all C's and all D's:
+The C derivative is zero:   30   +   3D   =   6
+[
+3   3
+]
+T
+The D derivative is zero:   30 + 5D   =   O
+This matrix
+3   5
+is A   A   (4)
+These equations are identical with   A
+T
+Ax   =   A
+T
+b. The best   C   and   D   are the components
+of x.   The equations from calculus are the same as the "normal equations" from linear
+algebra. These are the key equations of least squares:
+The   partial derivatives of   II
+Ax - bll
+2
+are zero when   A
+T
+Ax   =   ATb.
+The solution is C = 5 and D = -3. Therefore b = 5 - 3t is the best line-it comes
+closest to the three points.   At   t   = 0,   1, 2 this line goes through   p   = 5, 2, -1.
+It could not go through   b   = 6, 0, 0. The errors are 1, -2, 1. This is the vector el
+The Big Picture for Least Squares
+The key figure of this book shows the four subspaces and the true action of a matrix. The
+vector x on the left side of Figure 4.3 went to b =   Ax on the right side. In that figure x
+was split into   Xr   +   Xn.   There were   many   solutions to   Ax =   b.
+In this section the situation is just the opposite.   There are   no   solutions to Ax   =   b.
+Instead of splitting up x we are splitting up b   =   p   +   e.   Figure 4.7 shows the big picture
+for least squares. Instead of   Ax = b we solve   Ax =   p. The error   e   = b-p is unavoidable.
+solvable for   p
+row space   p is in the column space
+column space
+inside R
+m
+is all of R
+n
+Ax=p
+0
+---+------------------
+.,,
+-   p   =   Pb   is
+best   x
+A   _   b
+.,,
+.,,
+nearest to   b
+X-   .,-
+----------------�
+not solvable for   b   ,   b   =   p   +   e
+b   is not in the column space   \
+-
+\
+\
+\
+Independent columns
+Nullspace   =   {O}
+e   =   minimum error
+nullspace/
+of   A
+T
+Figure 4.7: The projection   p   =Ax is closest to   b,   so x minimizes E = llb   - Axll
+2
+.
+Notice how the nullspace   N(A)   is very small-just one point.   With independent
+columns, the only solution to Ax = 0 is x = 0. Then A
+T
+A is invertible. The equation
+A
+T
+Ax =A
+T
+b   fully determines the best vector x. The error has   A
+T
+e   = 0.

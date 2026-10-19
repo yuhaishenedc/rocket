@@ -1,0 +1,63 @@
+220   Chapter 4.   Orthogonality
+This 3 by 2 system has   no solution:   b   =   (6, 0, 0) is not a combination of the columns
+(1, 1, 1) and (0, 1, 2). Read off   A,   x, and   b   from those equations:
+A�   [t   !]   x�   [g]   b�   m   Ax�bisnotsolvable
+The same numbers were in Example 3 in the last section.   We computed   x   =   (5, -3).
+Those numbers are the best   C   and   D,   so   5 - 3t   will   be the best line for the 3 points.
+We must connect projections to least squares, by explaining why A
+T
+Ax= A
+T
+b.
+In practical problems, there could easily be m = 100 points instead of m = 3. They
+don't exactly match any straight line C   +   Dt. Our numbers 6, 0, 0 exaggerate the error so
+you can see   e1, e 2   ,   and   e3   in Figure 4.6.
+Minimizing the Error
+How do we make the error   e   =   b   -   Ax   as small as possible? This is an important question
+with a beautiful answer.   The best   x   (called x) can be found by geometry (the error
+e   meets the column space of A at 90
+°
+) and by algebra : A
+T
+Ax   =   A
+T
+b. Calculus gives the
+same x: the derivative of the error I   !Ax   - bl 1
+2
+is zero at   x.
+By geometry   Every   Ax   lies in the plane of the columns (1, 1, 1) and (0, 1, 2). In that
+plane, we look for the point closest to   b. The nearest point is the projection p.
+The best choice for Ax   is   p.   The smallest possible error is   e   =   b -   p,   perpendicular
+to the columns.   The three points at heights   (p 1,   p 2,   p 3)   do lie on a line,   because   p   is in the
+column space of   A.   In fitting a straight line, xis the best choice for (   C, D).
+By algebra   Every vector   b   splits into two parts.   The part in the column space is   p.
+The perpendicular part is   e.   There is an equation we cannot solve   (Ax   =   b).   There is an
+equation Ax=   p   we can and do solve (by removing   e   and solving A
+T
+Ax= A
+T
+b) :
+Ax   =   b   =   p   +   e   is impossible   Ax   =   p   is solvable
+The solution to Ax=   p   leaves the least possible error (which is e):
+Squared length for any x   IIAx - bll
+2
+= !!Ax - Pll
+2
++   llell
+2
+-   (2)
+This is the law c
+2
+=   a
+2
++   b
+2
+for a right triangle. The vector   Ax   - pin the column space
+is perpendicular to   e   in the left nullspace. We reduce   Ax   -   p   to   zero   by choosing   x   =   x.
+That leaves the smallest possible error   e   = (   e1, e 2   , e3)   which we can't reduce.
+Notice what "smallest" means. The   squared length   of   Ax   -   b   is minimized:
+The least squares solution   x   makes E   =   11   Ax   -   b 11
+2
+as small as possible.
+Figure 4.6a shows the closest line.   It misses by distances   e1, e 2   , e3   =   1, -2, 1.
+Those are vertical distances.   The least squares line minimizes   E   =   ei   +   e�   +   e�.

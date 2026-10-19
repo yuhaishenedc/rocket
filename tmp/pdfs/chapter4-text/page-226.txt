@@ -1,0 +1,85 @@
+216   Chapter 4.   Orthogonality
+Questions 11-20 ask for projections, and projection matrices, onto subspaces.
+11   Project b onto the column space of A by solving A
+T
+Ax= A
+T
+b and   p   = Ax:
+(a) A�
+[�   i l   and   b �   m   (b)   A�   [i :   l   a
+nd   b �
+m
+Find e   =   b   -   p.   It should be perpendicular to the columns of A.
+12   Compute the projection matrices A and P 2   onto the column spaces in Problem 11.
+Verify that Ab gives the first projection p
+1
+.   Also verify   P}   = P2   .
+13   (Quick and Recommended) Suppose A is the 4 by 4 identity matrix with its last
+column removed.   A   is 4 by 3. Project   b   = (1, 2, 3, 4) onto the column space of A.
+What shape is the projection matrix   P   and what is   P?
+14   Suppose   b   equals 2 times the first column of   A.   What is the projection of   b   onto
+the column space of   A?   Is   P   =   I   for sure in this case? Compute   p   and   P   when
+b   = (0, 2, 4) and the columns of   A   are (0, 1, 2) and (1, 2, 0).
+15   If A is doubled, then P= 2A(4A
+T
+A)-
+1
+2A
+T
+_ This is the same as A(A
+T
+A)-
+1
+A
+T
+.
+The column space of 2A is the same as __ . Is   x   the same for A and 2A?
+16   What linear combination of (1, 2, -1) and (1, 0, 1) is closest to   b   = (2, 1, 1)?
+17   (Important)   If P
+2
+=   P   show that   (I   - P )
+2
+=   I   -   P.   When   P   projects onto the
+column space of   A, I   -   P   projects onto the __ .
+18   (a) If Pis the 2 by 2 projection matrix onto the line through (1, 1), then   I   - Pis
+the projection matrix onto __ .
+(b) If Pis the 3 by 3 projection matrix onto the line through (1, 1, 1), then   I   -   P
+is the projection matrix onto __ .
+19   To find the projection matrix onto the plane   x   -   y   - 2z   =   0, choose two vectors in
+that plane and make them the columns of A. The plane will be the column space of
+A! Then compute P = A(A
+T
+A)-
+1
+A
+T
+.
+20   To find the projection matrix   P   onto the same plane   x   -   y   - 2z = 0, write down a
+vector e that is perpendicular to that plane. Compute the projection   Q   = ee T/   e Te
+and then   P =   I   -   Q.
+Questions21-26show that projection matrices satisfy   P
+2
+=   P   and p
+T
+=   P.
+21   Multiply the matrix P   A(A
+T
+A)-
+1
+A
+T
+by itself. Cancel to prove that P
+2
+= P .
+Explain why   P(Pb)   always equals   Pb:   The vector   Pb   is in the column space of   A
+so its projection onto that column space is __   .
+22   Prove that P = A(A
+T
+A)-
+1
+A
+T
+is symmetric by computing p
+T
+_ Remember that the
+inverse of a symmetric matrix is symmetric.

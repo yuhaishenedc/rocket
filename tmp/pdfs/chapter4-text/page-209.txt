@@ -1,0 +1,33 @@
+4.1. Orthogonality of the Four Subspaces   199
+dim   r   dim   r
+all combinations
+of the rows
+all combinations
+Ax, = b
+b
+of the,
+x,,.,�========����=;:\-   columns
+Ax= b
+all vectors
+orthogonal
+dimn-r
+to the rows
+Ax
+n
+=   O
+Figure 4.3:   This update of Figure 4.2 shows the true action of   A   on x
+Row space vector   Xr   to column space, nullspace vector   Xn   to zero.
+Xr   +   Xn-
+Drawing the Big Picture
+I don't know the best way to draw the four subspaces in Figures 4.2 and 4.3.   This big
+picture has to show the orthogonality of those subspaces. I can see a possible way to do
+it when a line meets a plane-maybe Figure 4.4 also shows that those spaces are infinite,
+more clearly than the rectangles in Figure 4.3. But how do I draw a pair of two-dimensional
+subspaces in R
+4
+,   to show they are orthogonal to each other? Good ideas are welcome.
+direction (1, O, -1)
+orthogonal to rows
+nullspace of   A
+A-[:   j:]
+Figure 4.4: Row space of   A   =   plane. Nullspace   =   orthogonal line. Dimensions 2   +   1   =   3.

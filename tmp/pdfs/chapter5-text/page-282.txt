@@ -1,0 +1,16 @@
+272   Chapter 5. Determinants
+34   This problem shows in two ways that det A= 0 (the x's are any numbers):
+X   X   X   X   X
+X   X   X   X   X
+A=   0   0   0   x   x
+0   Q   O   X   X
+Q   O   O   X   X
+(a) How do you know that the rows are linearly dependent?
+(b) Explain why all 120 terms are zero in the big formula for det   A.
+35   If ldet(A)I > 1, prove that the powers A
+n
+cannot stay bounded. But if ldet(A)I :S 1,
+show that some entries of A
+n
+might still grow large. Eigenvalues will give the right
+test for stability, determinants tell us only one number.

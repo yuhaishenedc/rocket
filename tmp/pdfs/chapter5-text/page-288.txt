@@ -1,0 +1,25 @@
+278   Chapter 5. Determinants
+Dotted area = Solid area =   A   +   A'
+Full area   =   tA
+(0,0)   (0, 0)
+Figure 5.3: Areas obey the rule of linearity in side 1 (keeping the side (x 2,   y 2)   constant).
+Figure 5.4 shows a three-dimensional box-whose edges are not at right angles.   The
+volume equals the absolute value of   <let   A.   Our proof checks again that rules 1-3 for
+determinants are also obeyed by volumes.   When an edge is stretched by a factor   t,   the
+volume is multiplied by   t.   When edge 1 is added to edge l', the volume is the sum of the
+two original volumes. This is Figure 5.3b lifted into three dimensions or n dimensions. I
+would draw the boxes but this paper is only two-dimensional.
+z
+X
+volume of box
+=ldeterminantl
+Figure 5.4: Three-dimensional box formed from the three rows of   A.
+The unit cube has volume= 1, which is det   I.   Row exchanges or edge exchanges leave
+the same box and the same absolute volume. The determinant changes sign, to indicate
+whether the edges are a   right-handed triple   (det   A   > 0) or a   left-handed triple   (det   A<   0).
+The box volume follows the rules for determinants, so volume of det   A   = absolute value.
+Example 5   Suppose a rectangular box (90
+°
+angles) has side lengths   r, s,   and   t.   Its
+volume is   r   times   s   times   t.   The diagonal matrix   A   with entries   r, s,   and   t   produces those
+three sides. Then det   A   also equals the volume   rs   t.

@@ -1,0 +1,70 @@
+280   Chapter 5. Determinants
+Property 3   The cross product of any vector with itself (two equal rows) is u x   u=   0.
+When u and v are parallel, the cross product is zero. When u and v are perpendicular, the
+dot product is zero. One involves sin0 and the other involves cos 0:
+llu xvii=   llull llvll I sin01   and   lu ·vi=   !lull !Iv!! I cos 01.   (12)
+Example 7   u= (3, 2, 0) and v= (1, 4, 0) are in the   xy   plane, u xv goes up the z axis:
+i
+J
+k
+u x   v= 3   2   0 =   10k.   The cross product is u x   v= (0, 0, 10).
+1   4   0
+The length of   u X v   equals the area of the parallelogram with sides   u   and   v. This will
+be important: In this example the area is 10.
+Example 8   The cross product of u= (1, 1, 1) and v= (1, 1, 2) is (1, -1, 0):
+i
+j
+k
+·
+1
+1   1
+1
+·
+1
+1   1
+1   1
+1
+�   �   �
+=
+'I,   1   2
+-
+J   1   2   +
+k
+1
+1
+1
+.   .
+1
+=
+'I,
+-
+J
+.
+This vector (   1, -1, 0) is perpendicular to (   1, 1, 1) and (1, 1, 2) as predicted. Area= )2.
+Example 9   The cross product of i= (1, 0, 0) and   j = (0, 1, 0) obeys the   right hand rule.
+That cross product   k =   i x
+j
+goes up not down:
+i
+j
+k
+1   0   0
+0   1   0
+=k
+i   X   j   =   k
+vl-
+u   = l   =   J
+Rule   u   x v points along
+your right thumb when the
+fingers curl from   u   to v.
+Thus i x   j= k.   The right hand rule also gives j x   k =   i and   k   x i=   j. Note the cyclic
+order. In the opposite order (anti-cyclic) the thumb is reversed and the cross product goes
+the other way:   k   x   j= -i and i x   k = -j and j x   i=   -k.   You see the three plus signs
+and three minus signs from a 3 by 3 determinant.
+The definition of u x   v can be based on vectors instead of their components:
+DEFINITION   The   cross product   is a vector with length !lull !!vii I sin01.   Its direction
+is perpendicular to u and v. It points "up" or "down" by the right hand rule.
+This definition appeals to physicists, who hate to choose axes and coordinates. They see
+(   u 1,   u2, u3) as the position of a mass and (F x   , F
+y
+, F z   ) as a force acting on it.   If F is

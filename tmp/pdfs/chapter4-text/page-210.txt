@@ -1,0 +1,47 @@
+200   Chapter 4. Orthogonality
+Combining Bases from Subspaces
+What follows are some valuable facts about bases. They were saved until now-when we
+are ready to use them. After a week you have a clearer sense of what a basis is   (linearly
+independent   vectors that   span the space).   Normally we have to check both properties.
+When the count is right, one property implies the other :
+Any n independent vectors in   R
+n
+must span   R
+n
+.   So they are a basis.
+Any   n   vectors that span   R
+n
+must be independent. So they are a basis.
+Starting with the correct number of vectors, one property of a basis produces the other.
+This is true in any vector space, but we care most about   R
+n
+.   When the vectors go into the
+columns of an   n   by   n square   matrix   A,   here are the same two facts:
+If the n columns of A are independent, they span   R
+n
+.   So Ax   =   b   is solvable.
+If the   n   columns span R
+n
+, they are independent. So Ax   =   b   has only one solution.
+Uniqueness implies existence and existence implies uniqueness.   Then   A   is   invertible.   If
+there are no free variables, the solution x is unique.   There must be n pivot columns.
+Then back substitution solves Ax   =   b   (the solution exists).
+Starting in the opposite direction, suppose that Ax   =   b   can be solved for every   b
+(existence of   solutions).   Then elimination produced no zero rows. There are   n   pivots and
+no free variables. The nullspace contains only   x   =   0   (uniqueness   of solutions).
+With bases for the row space and the nullspace, we have   r   + (   n   -   r)   =   n   vectors.
+This is the right number. Those n vectors are independent.
+2
+Therefore they span R
+n
+.
+Each x is the sum X r   +   X n   of a row space vector X r   and a nullspace vector X n   ,
+The splitting in Figure 4.3 shows the key point of orthogonal complements-the dimen
+sions add to n and all vectors are fully accounted for.
+Example 5   For   A   = [   ! � ]   split x   = [   ! ]   into X r   +   X n   = [ � ]   + [ _   � ] .
+The vector (2, 4) is in the row space. The orthogonal vector (2, -1) is in the nullspace.
+The next section will compute this splitting for any   A   and x, by a projection.
+2
+If a combination of all n vectors gives x r   + x n   = 0, then x r   = -x n   is in both subspaces.
+So X r   = x n   = 0. All coefficients of the row space basis and of the nullspace basis must be zero.
+This proves independence of the n vectors together.

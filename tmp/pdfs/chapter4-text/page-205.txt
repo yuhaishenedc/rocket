@@ -1,0 +1,50 @@
+4.1.   Orthogonality of the Four Subspaces   195
+The subspaces fit together to show the hidden reality of   A   times   x.   The 90
+°
+angles
+between subspaces are new-and we can say now what those right angles mean.
+The row space is perpendicular to the nullspace.   Every row of   A   is perpendicular to
+every solution of   Ax   = 0. That gives the 90
+°
+angle on the left side of the figure. This
+perpendicularity of subspaces is Part 2 of the Fundamental Theorem of Linear Algebra.
+The column space is perpendicular to the nullspace of A
+T
+.   When   b   is outside the
+column space-when we want to solve   Ax   = band can't do it-then this nullspace of
+A
+T
+comes into its own. It contains the error   e   =   b   -   Ax   in the "least-squares" solution.
+Least squares is the key application of linear algebra in this chapter.
+Part 1 of the Fundamental Theorem gave the dimensions of the subspaces. The row
+and column spaces have the same dimension   r   (they are drawn the same size). The two
+nullspaces have the remaining dimensions   n   -   r   and   m   -   r.   Now we will show that
+the row space and nullspace are orthogonal subspaces inside R
+n
+.
+DEFINITION   Two subspaces   V   and   W   of a vector space are   orthogonal   if every vector
+v in V is perpendicular to every vector   w   in W:
+Orthogonal subspaces   v   T   w   =   0   for all v in V and all w in W.
+Example 1   The floor of your room (extended to infinity) is a subspace   V.   The line where
+two walls meet is a subspace   W   (one-dimensional).   Those subspaces are orthogonal.
+Every vector up the meeting line of the walls is perpendicular to every vector in the floor.
+Example 2   Two walls look perpendicular but those two subspaces are not orthogonal!
+The meeting line is in both V and W -and this line is not perpendicular to itself. Two
+planes (dimensions 2 and 2 in R
+3
+) cannot be orthogonal subspaces.
+When a vector is in two orthogonal subspaces, it   must   be zero. It is perpendicular to
+itself. It is   v   and it is   w,   so   v   T   v   = 0. This has to be the zero vector.
+V
+I
+I
+w
+orthogonal plane   V   and line   W
+V
+non-orthogonal planes
+Figure 4.1: Orthogonality is impossible when dim   V   +   dim   W   >   dim (whole space).
+The crucial examples for linear algebra come from the four fundamental subspaces.
+Zero is the only point where the nullspace meets the row space.   More than that, the
+nullspace and row space of   A   meet at 90
+°
+.   This key fact comes directly from   Ax   =   0:

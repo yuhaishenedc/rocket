@@ -1,0 +1,78 @@
+206   Chapter 4.   Orthogonality
+4.2   Projections
+1 The projection of a vector   b   onto the line through   a   is the closest point   p   =   a(   a
+T
+b/ a Ta).
+2   The error   e   =   b   -pis perpendicular to a: Right triangle   b p e   has I IPI l
+2
++ I lei l
+2
+= I Jbl l
+2
+.
+3   The   projection   of   b   onto a subspace Sis the closest vectorpin   S; b   -pis orthogonal to   S.
+4   A
+T
+A   is invertible (and symmetric) only if   A   has independent columns :   N(A
+T
+A)= N(A).
+5   Then the projection of   b   onto the column space of   A   is the vector   p   =   A(A
+T
+A)-
+1
+A
+T
+b.
+6   The   projection matrix   onto   C(A)   is IP=   A(A
+T
+A)-
+1
+A
+T
+.   I It hasp=   Pb   and   P
+2
+=P   =   p
+T
+_
+May we start this section with two questions?   (In addition to that one.)   The first
+question aims to show that projections are easy to visualize. The second question is about
+"projection matrices"-symmetric matrices with P
+2
+=   P. The projection of bis Pb.
+1   What are the projections of   b   = (2, 3, 4) onto the z axis and the   xy   plane?
+2 What matrices A and P2 produce those projections onto a line and a plane?
+When   b   is projected onto a line,   its projection pis the part of b along that line.
+If   b   is projected onto a plane,   p   is the part in that plane.   The projection   pis Pb.
+The projection matrix   P   multiplies   b   to give   p.   This section finds   p   and also   P.
+The projection onto the z axis we call p
+1
+.   The second projection drops straight down to
+the   xy   plane. The picture in your mind should be Figure 4.5.   Start with   b   = (2, 3, 4).
+The projection across gives p
+1
+=   (0, 0, 4).   The projection down gives p
+2
+=   (2, 3, 0).
+Those are the parts of   b   along the z axis and in the   xy   plane.
+The projection matrices A and P 2   are 3 by 3.   They multiply   b   with 3 components
+to produce   p   with 3 components. Projection onto a line comes from a rank one matrix.
+Projection onto a plane comes from a rank two matrix:
+Projection matrix
+Onto the z axis:
+Onto the   xy   plane:   -
+p.2 �
+[
+1
+�
+0
+�
+0
+�
+]
+A picks out the z component of every vector. P 2   picks out the x and y components.
+To find the projections   p
+1
+and   p
+2
+of   b,   multiply   b   by A and P 2   (small p   for the vector,
+capital   P   for the matrix that produces it):

@@ -1,0 +1,39 @@
+188   Chapter 3.   Vector Spaces and Subspaces
+Rank One Matrices (Review)
+Suppose every row is a multiple of the first row. Here is a typical example:
+[
+2   3   7   8   l   [ll
+2a   3a   7 a   8a   =   a   [   2   3   7   8]   =   uv   T
+2b   3b   7b   8b   b
+On the left is a matrix with three rows.   But its row   space   only has dimension   =   1.
+The row vector   v   T   = [   2   3   7   8] tells us a basis for that row space.   The row rank is   l.
+Now look at the columns.   "The column rank equals the row rank which is l."
+All columns of the matrix must be multiples of one column.   Do you see that this key
+rule of linear algebra is true? The column vector   u   =   (l,   a,   b)   is multiplied by 2, 3, 7, 8.
+That nonzero vector u is a basis for the column space.   The column rank   is also   l.
+Every rank one matrix is one column times one row   A=   uv
+T
+Rank Two Matrices   =   Rank One plus Rank One
+Here is a matrix   A   of rank r   =   2.   We can't see r immediately from   A.   So we reduce
+the matrix by row operations to   R   =   rref(A). Some elimination matrix   E   simplifies   A   to
+EA= R.   Then the inverse matrix   C   =   E-
+1
+connects   R   back to   A= CR.
+You know the main point already:   R   has the same row space as   A.
+Rank
+two
+(4)
+The row space of R clearly has two basis vectors v'f = [ 1   0   3] and v! = [ 0   1   4].
+So the (same!) row space of   A   also has this basis:   row rank=   2. Multiplying   C   times   R
+says that row 3 of A is 4v'f   +   2vJ.
+Now look at columns.   The pivot columns of   R   are clearly (1, 0, 0) and (0, 1, 0).
+Then the pivot columns of   A   are also in columns 1 and 2: u1 = (1, 1, 4) and u2 = (0, 1, 2).
+Notice that Chas those same first two columns! That was guaranteed since multiplying
+by two columns of the identity matrix (in R) won't change the pivot columns u1 and u2.
+When you put in letters for the columns and rows, you see   rank 2   =   rank   1   +   rank   1.
+Matrix   A
+Rank two
+Did you see that last step?   I multiplied the matrices using   columns times rows.
+That was perfect for this problem.   Every rank r matrix is a sum of r rank one matrices:
+Pivot columns of   A   times nonzero rows of   R.   The row [ 0   0   0] simply disappeared.
+The pivot columns u 1   and u 2   are a basis for the column space, which you knew.

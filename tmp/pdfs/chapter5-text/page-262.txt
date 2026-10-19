@@ -1,0 +1,101 @@
+252   Chapter 5.   Determinants
+9   The determinant of AB   is   det   A times   det   B:   I   AB   I   =   I   A 11 BI,
+Product rule
+I
+a   b
+11
+p   q
+I   =   I
+ap   +   b   r aq   +   b   s
+I
+·
+e   d   r   s   ep   +   dr   eq   +   ds
+When the matrix   B   is   A-1, this rule says that the determinant of   A-
+1
+is 1   / det   A:
+A   times   A-
+1
+AA-
+1
+=   I   so   (   det   A)(   det   A   - l)   =   det   I   =   l.
+This product rule is the most intricate so far. Even the 2 by 2 case needs some algebra:
+IAI IBI   =   (ad   -   b   c)(p s   -   qr)= (ap   +   b   r)( eq   +   ds)   -   (aq   +   b   s)(ep   +   dr)   =   IABI.
+For then by   n   case, here is a snappy proof that IABI = IAI IBI. When IBI is not zero,
+consider the ratio   D(A)   =   IABI/IBI.   Check that this ratio   D(A)   has properties   1,2,3.
+Then   D (A)   has to be the determinant and we have I AB I/IBI = I A   1-   Good.
+Property 1   (Determinant of I)   If   A=   I   then the ratio   D(A)   becomes IBI/IBI   =   1.
+Property 2   (Sign reversal)   When two rows of   A   are exchanged, so are the same two
+rows of   AB.   Therefore IABI changes sign and so does the ratio IABI/IBI.
+Property 3   (Linearity)   When row 1 of   A   is multiplied by   t,   so is row 1 of   AB.   This
+multiplies the determinant IABI by   t.   So the ratio IABI/IBI is multiplied by   t.
+Add row 1 of   A   to row 1 of   A'.   Then row 1 of   AB   adds to row 1 of   A'B.
+By rule 3, determinants add. After dividing by IBI, the ratios add-as desired.
+Conclusion   This ratio IABI/IBI has the same three properties that define IAI. Therefore
+it equals IAI. This proves the product rule IABI   =   IAI IBI. The case IBI   =   0 is separate
+and easy, because   AB   is singular when   Bis   singular. Then IABI   =   IAI IBI is O   =   0.
+10   The transpose A
+T
+has the same determinant as A.
+Transpose
+I
+a
+e   d
+b
+1--1
+a
+b d
+e
+I
+since both sides equal
+ad
+-   b   e.
+The equation IA
+T
+I   =   IAI becomes O   =   0 when   A   is singular (we know that   A
+T
+is also
+singular).   Otherwise   A   has the usual factorization   PA   =   LU.   Transposing both sides
+gives   A
+T
+p
+T
+=   U
+T
+L
+T
+_   The proof of IAI   =   IA
+T
+I comes by using rule 9 for products:
+Compare   det   P   det   A   =   det   L   det   U   with   det   A
+T
+det   p
+T
+=   det   U
+T
+det   L
+T
+.
+First, det   L   =   det   L
+T
+=   1 (both have 1   's on the diagonal). Second, det   U   =   det   U
+T
+(those
+triangular matrices have the same diagonal). Third, det   P   =   det   p
+T
+(permutations have
+p
+T
+P   =   I,   so IP
+T
+I IPI   =   1 by rule 9; thus IPI and IP
+T
+I both equal 1 or both equal -1).
+So   L, U, P   have the same determinants as   L
+T
+, U
+T
+, p
+T
+and this leaves det   A   = det   A
+T
+.

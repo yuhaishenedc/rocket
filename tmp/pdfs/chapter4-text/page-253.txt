@@ -1,0 +1,87 @@
+4.4.   Orthonormal Bases and Gram-Schmidt
+7   If Q has orthonormal columns, what is the least squares solution x to Qx   =   b?
+243
+8   If q
+1
+and   q
+2
+are orthonormal vectors in R.
+5
+,   what combination __ q 1
++ __   q
+2
+is closest to a given vector   b?
+9   (a) Compute   P   =   QQ
+T
+when q
+1
+=   (.8, .6, 0) and   q
+2
+=   (-.6, .8, 0). Verify that
+p
+2
+=P.
+(b) Prove that always (QQ
+T
+)
+2
+=   QQ
+T
+by using Q
+T
+Q   =   I.   Then   P   =   QQ
+T
+is
+the projection matrix onto the column space of   Q.
+10   Orthonormal vectors are automatically linearly independent.
+(a) Vector proof: When c 1   q
+1
++c 2   q
+2
++c 3   q
+3
+=   0, what dot product leads to c 1   =   O?
+Similarly c 2   = 0 and c 3   = 0. Thus the q's are independent.
+(b) Matrix proof: Show that Qx = 0 leads to x = 0. Since Q may be rectangular,
+you can use Q
+T
+but not Q�
+1
+.
+11   (a) Gram-Schmidt: Find orthonormal vectors q
+1
+and q
+2
+in the plane spanned by
+a=   (1, 3, 4, 5, 7) and b   =   (-6, 6, 8, 0, 8).
+(b) Which vector in this plane is closest to (1, 0, 0, 0, 0)?
+12   If a 1   , a 2,   a 3   is a basis for R
+3
+,   any vector b can be written as
+or
+(a) Suppose the a's are orthonormal. Show that x 1   =   afb.
+(b) Suppose the a's are orthogonal. Show that x1   =   afb/afa 1   .
+(c) If the a's are independent, x 1   is the first component of __ times   b.
+Problems   13-25   are about the Gram-Schmidt process and   A= QR.
+13   What multiple of a   = [   i ]   should be subtracted from   b   = [   6] to make the result   B
+orthogonal to   a?   Sketch a figure to show   a, b,   and   B.
+14   Complete the Gram-Schmidt process in Problem 13 by computing q
+1
+=   a/ llall and
+q
+2
+=
+B /IIBII and factoring into
+QR:
+[
+l   4
+]   =
+[   ]
+[
+ilall
+1   0
+q
+l
+q
+2
+0

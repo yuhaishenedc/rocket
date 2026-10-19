@@ -1,0 +1,61 @@
+3.5. Dimensions of the Four Subspaces   185
+Right reason:   The   same   combinations of the columns are zero ( or nonzero) for   A   and   R.
+Dependent in   A   ¢c;,   dependent in   R.   Say that another way:   Ax   = 0   exactly when   Rx   = 0.
+The column spaces are different, but their   dimensions   are the same-equal to   r.
+Conclusion   The   r   pivot columns of   A   are a basis for   its   column space   C(A).
+3   A has the same nullspace as R   Same dimension   n   -   r   and same basis.
+Reason:   The elimination steps don't change the solutions. The special solutions are a ba
+sis for this nullspace (as we always knew). There are   n   -   r   free variables, so the dimension
+of the nullspace is   n   -   r.   This is the   Counting Theorem   :   r   + (   n   -   r)   equals   n.
+(   dimension of column space)   + ( dimension of nullspace)   =   dimension of   R
+n
+.
+4   The left nullspace of A   (the nullspace of   A
+T
+)   has dimension   m   -   r.
+Reason:   A
+T
+is just as good a matrix as   A.   When we know the dimensions for every   A,
+we also know them for   A
+T
+.   Its column space was proved to have dimension   r.   Since   A
+T
+is   n   by   m,   the "whole space" is now R
+m
+. The counting rule for   A   was   r   + (   n   -   r)   =   n.
+The counting rule for   A
+T
+is   r   + (   m   -   r)   =   m.   We now have all details of a big theorem:
+Fundamental Theorem of   Linear Algebra,   Part 1
+The column space and row space both have dimension r.
+The nullspaces have dimensions   n   -   r and m   -   r.
+By concentrating on   spaces   of vectors, not on individual numbers or vectors, we get these
+clean rules. You will soon take them for granted-eventually they begin to look obvious.
+But if you write down an 11 by 17 matrix with 187 nonzero entries, I don't think most
+people would see why these facts are true:
+1\vo key facts
+dimension of   C(A)   = dimension of   C(A
+T
+)   = rank of   A
+dimension of   C(A)   +   dimension of   N(A)   = 17.
+Example 1   A = [ 1   2   3] has m = 1 and n = 3 and rank r = 1.
+The row space is a line in R
+3
+.   The nullspace is the plane   Ax=   x 1   +   2x2   +   3x3   =   0. This
+plane has dimension 2 (which is 3 - 1). The dimensions add to 1   +   2 = 3.
+The columns of this 1 by 3 matrix are in R
+1
+! The column space is all of R
+1
+.   The left
+nullspace contains only the zero vector. The only solution to   A
+T
+y   = 0 is   y   = 0, no other
+multiple of [ 1   2   3] gives the zero row. Thus   N(A
+T
+)   is Z, the zero space with dimension
+0 (which ism -   r).   In R
+m
+the dimensions of   C(A)   and   N(A
+T
+)   add to 1   +   0   =   1.

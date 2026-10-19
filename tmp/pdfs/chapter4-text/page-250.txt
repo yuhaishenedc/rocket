@@ -1,0 +1,68 @@
+240   Chapter 4.   Orthogonality
+Least squares   (10)
+Instead of solving Ax =   b,   which is impossible, we solve   Rx   = Q
+T
+bby back substitu
+tion-which is very fast. The real cost is the mn
+2
+multiplications in the Gram-Schmidt pro
+cess, which are needed to construct the orthogonal Q and the triangular R with A   =   QR.
+Below is an informal code. It executes equations (11) for   j   = 1 then   j   = 2 and eventually
+j   = n. The important lines 4-5 subtract fromv = a, its projection onto each q
+i
+,i <   j.
+The last line of that code normalizesv(divides by r jj   = 11 v11) to get the unit vector   q {
+Starting from a,   b,   c = a1,a 2   ,a3 this code will construct q
+1
+, then B, q
+2
+, then C, q
+3
+:
+Q1
+= ai/llaill
+B = a 2   - (q'fa 2   )q1
+Q 2
+= B/IIBII
+C*   = a3 - (q'fa 3   )q
+1
+C   =   C*   - (q'JC*)q
+2
+q
+3
+= C/IICII
+Equation (11) subtracts   one projection at a time   as in   C*   and   C.   That change is called
+modified Gram-Schmidt.   This code is numerically more stable than equation (8) which
+subtracts all projections at once.
+for j   = 1 :n
+V   = A(:,j);
+for i   =   1 :j-1
+R(i,j) = Q(:,i)'*v;
+v   =   v-R(i,j)*Q(:,i);
+end
+R(j,j)   =   norm(v );
+Q(:,j) = v/R(j,j);
+end
+%   modified Gram-Schmidt
+%   v   begins as column   j   of the original   A
+% columns q
+1
+to %-l are already settled in   Q
+% compute   Rij   =   q;   a
+1
+which is   q;   v
+%   subtract the projection   (q;v)q
+i
+%vis now perpendicular to all of q
+1
+,... ,   %-l
+% the diagonal entries   R
+11
+are lengths
+% divide   v   by its length to get the next %
+% the "for   j   = 1 :   n   loop" produces all of the %
+To recover column j of   A,   undo the last step and the middle steps of the code:
+j-1
+R(j,j)Qj =   (vminus itsprojections)   = (column jofA ) - LR(i,j)qi.   (12)
+i=l
+Moving the sum to the   far left, this   is   column   j   in the multiplication QR   =   A.

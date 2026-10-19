@@ -1,0 +1,67 @@
+226   Chapter 4.   Orthogonality
+Fitting by a Parabola
+If we throw a ball, it would be crazy to fit the path by a straight line.   A parabola   b   =
+C   +   Dt   +   Et
+2
+allows the ball to go up and come down again   (bis   the height at time t).
+The actual path is not a perfect parabola, but the whole theory of projectiles starts with that
+approximation.
+When Galileo dropped a stone from the Leaning Tower of Pisa,   it accelerated.
+The distance contains a quadratic term ½gt
+2
+.   (Galileo's point was that the stone's mass is
+not involved.)   Without that t
+2
+term we could never send a satellite into its orbit.
+But even with a nonlinear function like t
+2
+,   the unknowns   C, D, E   still appear linearly!
+Fitting points by the best parabola is still a problem in linear algebra.
+Problem   Fit heights b 1, ...   ,   b m   at times t 1, ...   ,   t m   by a parabola   C   +   Dt   +   Et
+2
+•
+Solution   With   m   > 3 points, the   m   equations for an exact fit are generally unsolvable:
+C   +   Dt m   +   Et;,,   =   b m
+is   Ax= b   with
+the   m   by 3 matrix
+(10)
+Least   squares   The closest parabola   C   +   Dt   +   Et
+2
+chooses x   =   ( C, D, E)   to
+satisfy the three normal equations A
+T
+Ax = A
+T
+b.
+May I ask you to convert this to a problem of projection? The column space of   A   has
+dimension __ .   The projection of b is   p   = Ax, which combines the three columns
+using the coefficients   C, D, E.   The error at the first data point is e 1   = b 1   -   C   -   Dt i   -   Etr.
+The total squared error is   er   + __ .   If you prefer to minimize by calculus, take the
+partial derivatives of   E   with respect to __ , __ , __ . These three derivatives will
+be zero when x = (   C, D, E) solves the 3 by 3 system of equations A
+T
+Ax = A
+T
+b.
+Section 10.5 has more least squares applications.   The big one is Fourier series
+approximating functions instead of vectors. The function to be minimized changes from a
+sum of squared errors   er   + ... +   e�   to an integral of the squared error.
+Example 3   For a parabola   b   =   C   +   Dt   +   Et
+2
+to go through the three heights   b   = 6, 0, 0
+when   t   =0, 1, 2, the equations for   C, D, E   are
+C   +   D ·0   +   E ·0
+2
+= 6
+C+D·l+E-1
+2
+=0
+C   +   D ·2   +   E ·   2
+2
+=0.
+(11)
+This is   Ax   =   b.   We can solve it exactly. Three data points give three equations and
+a square matrix. The solution is   x   =   (C, D, E)   = (6, -9, 3). The parabola through the
+three points in Figure 4.8a is   b   =   6 - 9t   +   3t
+2
+.

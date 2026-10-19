@@ -1,0 +1,46 @@
+248   Chapter 5.   Determinants
+Multiply those matrices to get   I.   When the determinant is   ad   -   be   = 0, we are asked to
+divide by zero and we can't-then   A   has no inverse. (The rows are parallel when   a/   e =
+b   /   d.   This gives   ad   =   be   and   det   A   =   0.)   Dependent rows always lead to   det   A   = 0.
+The determinant is also connected to the pivots. For a 2 by 2 matrix the pivots are   a
+and   d   - (e/   a)b. The product of   the pivots is the determinant:
+Product of pivots   a   (   d   -   ;;b)   =   ad   -   be   which is   det   A.
+After a row exchange the pivots change to e and b -   (a/   e)d.Those new pivots multiply to
+give   be   -   ad.   The row exchange to [ � �] reversed the sign of the determinant.
+Looking ahead   The determinant of an   n   by   n   matrix can be found in three ways:
+1 Multiply the   n   pivots (times 1 or -1)
+2 Add up n! terms (times 1 or -1)
+3 Combine   n   smaller determinants (times 1 or -1)
+This is the   pivot formula.
+This is the "big"   formula.
+This is the   cofactor formula.
+You see that   plus or minus signs-the   decisions between   1 and -1-play a big part in
+determinants.That comes from the following rule for   n   by   n   matrices:
+The determinant changes sign when two rows ( or two columns)   are exchanged.
+The identity matrix has determinant   +   1.   Exchange two rows and   det   P   = -1.   Exchange
+two more rows and the new permutation has   det   P   =   +   1. Half of all permutations are
+even   (   det   P   = 1) and half are   odd   (   det   P   = -1).Starting from   I,   half of the   P's   involve
+an even number of exchanges and half require an odd number.In the 2 by 2 case,   ad   has a
+plus sign and   be   has minus-coming from the row exchange:
+det [ �   �]   =   1   and   det [ �   �]   = -1.
+The other essential rule is linearity-but a warning comes first.Linearity does not mean
+that   det(A   +   B) =   det   A+   det   B. This is absolutely false.   That kind of linearity is not
+even true when   A= I   and   B   =I.The false rule would say that   det(J   +   I) =   1   +   1 = 2.
+The true rule is   det   2J = 2
+n
+. Determinants are multiplied by 2
+n
+(not just by 2) when
+matrices are multiplied by 2.
+We don't intend to define the determinant by its formulas. It is better to start with
+its properties-sign   reversal and linearity.   The properties are simple (Section 5.1).   They
+prepare for the formulas (Section 5.2).Then come the applications, including these three:
+(1)   Determinants give   A-
+1
+and   A-
+1
+b   (this formula is called   Cramer's Rule).
+(2)   When the edges of a box are the rows of   A,   the   volume   is I
+det   Al.
+(3)   For   n   special numbers .\, called   eigenvalues,   the determinant of   A   -   >-I   is zero.
+This is a truly important application and it fills Chapter 6.

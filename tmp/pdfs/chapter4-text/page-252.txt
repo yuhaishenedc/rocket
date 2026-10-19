@@ -1,0 +1,94 @@
+242   Chapter 4.   Orthogonality
+Solution   H 4   can be built from H   2   just as   Hs   is built from H4:
+has orthogonal columns.
+Then   Q   =   H /2 has orthonormal columns. Dividing by 2 gives unit vectors in   Q.   A 5 by
+5 Hadamard matrix is impossible because the dot product of columns would have five 1's
+and/or -1's and could not add to zero.   H 8   has orthogonal columns of length Js.
+T
+[
+H
+T
+H
+T
+] [
+H   H
+]   [
+2H
+T
+H   O
+]   [
+SJ   O
+]
+Hs
+H
+s
+Hs =
+H
+T   -
+H
+T
+H   -H
+=
+0   2H
+T
+H
+=
+0   8I
+.   Qs =
+Js
+4.4 B   What is the key point of orthogonal columns?   Answer: A
+T
+A is diagonal and
+easy to invert.   We can project onto lines and just add.   The axes are orthogonal.
+Add   p's   Projection p
+1
+,
+2
+onto a plane equals p
+1
++   p
+2
+onto orthogonal lines.
+Problem Set 4.4
+Problems 1-12 are about orthogonal vectors and orthogonal matrices.
+1   Are these pairs of vectors orthonormal or only orthogonal or only independent?
+(a) [�] and   [-n   (b)   [:�] and[
+-
+:!]   (c)   [
+c� s0
+] and [
+-   s in 0
+]
+_
+sm0   cos0
+Change the second vector when necessary to produce orthonormal vectors.
+2   The vectors (2, 2, -1) and ( -1, 2, 2) are orthogonal. Divide them by their lengths to
+find orthonormal vectors q
+1
+and q
+2
+. Put those into the columns ofQ and multiply
+Q
+T
+Q andQQ
+T   _
+3   (a) If A has three orthogonal columns each of length 4, what is A
+T
+A?
+(b) If A has three orthogonal columns of lengths 1, 2, 3, what is A
+T
+A?
+4   Give an example of each of the following:
+(a) A matrixQ that has orthonormal columns butQQ
+T
+=/- I.
+(b) Two orthogonal vectors that are not linearly independent.
+(c) An orthonormal basis for R
+3
+,   including the vector q
+1   = (1, 1, 1)/v3.
+5   Find two orthogonal vectors in the plane x   +   y   +   2z = 0. Make them orthonormal.
+6   If   Q   1   and   Q   2   are orthogonal matrices, show that their product   Q   1 Q   2   is also an or
+thogonal matrix. (UseQ
+T
+Q = I.)

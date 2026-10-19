@@ -1,0 +1,73 @@
+4.3. Least Squares Approximations   229
+Those zeros in   A
+T
+A   mean that column 2 of   A   is orthogonal to columns 1 and 3. We
+see this directly in   A   (the times -2, -1, 0, 1, 2 are symmetric). The best   C, D, E   in the
+parabola   C   +   Dt   +   Et
+2
+come from   A
+T
+Ax= A
+T
+b,   and Dis uncoupled from   C   and E:
+[
+5   0   10   l
+0   10   0
+10   0   34
+Problem Set 4.3
+[�] [�]
+leads to
+C   = 34/70
+D   = 0 as predicted
+E   = -10/70
+Problems 1-11 use four data points   b   = (0, 8, 8, 20)   to bring out the key ideas.
+t
+2
+=   1   t
+3
+=   3   t
+4
+=   4
+b   = (0, 8, 8, 20)
+'
+'
+'
+e '
+'
+'
+/p-Ca,+Da,
+a2   =   (0, 1, 3, 4)
+Figure 4.9:   Problems 1-11:   The closest line   C   +   Dt   matches   Ca 1   +   Da 2   in   R
+4
+.
+1   With b   =   0, 8, 8, 20 at   t   =   0, 1, 3, 4, set up and solve the normal equations
+A
+T
+Ax   =   A
+T
+b.   For the best straight line in Figure 4.9a, find its four heights   Pi
+and four errors   ei.   What is the minimum value   E   =   ei   +   e�   +   e�   +   e�?
+2   (Line   C   +   Dt   does go through p's) With   b   = 0, 8, 8, 20 at times   t   = 0, 1, 3, 4,
+write down the four equations Ax =   b   (unsolvable). Change the measurements to
+p   = 1, 5, 13, 17 and find an exact solution to   Ax   =   p.
+3   Check that   e   =   b   -   p   = (   -1, 3, -5, 3) is perpendicular to both columns of the
+same matrix   A.   What is the shortest distance llell from   b   to the column space of   A?
+4   (By calculus) Write down E = II   Ax - bll
+2
+as a sum of four squares-the last one
+is (C   +   4D -   20)
+2
+.   Find the derivative equations   8E/8C   = 0 and   8E/8D   = 0.
+Divide by 2 to obtain the normal equations   A
+T
+Ax= A
+T
+b.
+5   Find the height   C   of the best   horizantal line   to fit   b   = (0, 8, 8, 20). An exact fit
+would solve the unsolvable equations   C   = 0,   C   = 8,   C   = 8,   C   = 20. Find the
+4 by 1 matrix   A   in these equations and solve   A
+T
+Ax   =   A
+T
+b.   Draw the horizontal
+line at height x =   C   and the four errors in e.

@@ -1,0 +1,103 @@
+5.3. Cramer's Rule, Inverses, and Volumes   283
+The cofactors along the other   rows   of   A,   divided by det   A,   give the other   columns   of A-
+1
+:
+C
+T   l
+[
+-18   18   4   l
+A-
+1
+=
+d   A
+=
+-
+10   -10   -2   .   Multiply to check   AA-
+1
+= I
+et   2
+-11   12   2
+The box from the columns of   A   has volume= det   A = 2. The box from the rows also has
+volume 2, since IA
+T
+I   = IAI. The box from the rows of A-
+1
+has volume 1/IAI   = ½-
+Problem Set 5.3   C °'\\ 0,1.., \ ( \
+"1 \
+01.1   '0 1   ,)   0   \)
+Problems 1-5 are about Cramer's Rule for x   =   A-
+1
+b.
+( O   �\   ( lA,(\
+I   Lo   1-   , � ::-   L(/-.
+1,
+\   >
+1
+2
+3
+() --\
+0
+'v
+Solve these linear equations by Cramer's Rule   x
+1
+= det B
+1
+/ det A:
+0 ,1   \ 0   ,1.   _
+111
+·"\   0
+(\ri(   -'\lo-1.L_-i/1\0   1. �   1.1--
+(a)
+2x1   +   5x2   =   1
+X1   +   4X2   =   2
+(b)
+2X1   +   x2   =   1   L
+O-
+v _,
+X1   +   2x2   +   X3   =   0
+(
+0 '\
+X2   +   2X3   =   0.
+Use Cramer's Rule to solve for y (only). Call the 3 by 3 determinant D:
+""CA\,-\ 0,�
+'11 cJ. 1_.
+\"'°o"'� ,,,
+(a)
+ax+ by   =   1
+ex+ dy   =   0
+0'
+ax+ by+ cz = 1
+(
+q ,,   C{h   /   \
+)
+(b)   dx   +   ey   +   f   z = 0
+'-', \   Q n   }   '-
+"'-'   ::::-
+gx   +   hy   +   iz = 0.
+( ().   \   \   .,,p,   \ 'lfl
+Cramer's Rule breaks down when det   A   = 0.   Example (a) has no solution while   o.._
+(b) has infinitely many. What are the ratios   x
+1
+= det   B
+1
+/ det   A   in these two cases?
+-i\ \-1"10,H
+2x1   +   3x2= 1
+(a)
+4   6   1
+(parallel lmes)
+X1   +   X2=
+(b)
+2x1   +   3x2= 1   .
+'
+4   6   2
+(same lme)
+X1   +   X2=
+4   Quick proof   of Cramer's rule.   The determinant is a linear function of column 1. It is
+zero if two columns are equal. When   b =   Ax   = x1   a1   +   x2a2   +   x3a3 goes into the   \
+first column of   A,   the determinant of this matrix B 1   is
+(a) What formula for x 1   comes from left side= right side?
+(b) What steps lead to the middle equation?
+5   If the right side   b   is the first column of   A,   solve the 3 by 3 system   Ax   =   b.   How
+does each determinant in Cramer's Rule lead to this solution   x?

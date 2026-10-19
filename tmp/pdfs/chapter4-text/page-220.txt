@@ -1,0 +1,54 @@
+210   Chapter 4.   Orthogonality
+The matrix   I   - P   should be a projection too. It produces the other side   e   of the triangle
+the perpendicular part of   b.   Note that   (I   -   P)b   equals   b- p   which is   e   in the left nullspace.
+When   P   projects onto one subspace,   I   -   P   projects onto the perpendicular subspace.
+Here   I   -   P   projects onto the plane perpendicular to   a.
+Now we move beyond projection onto a line.   Projecting onto an n-dimensional
+subspace of R
+m
+takes more effort.   The crucial formulas will be collected in equations
+(5)-(6)-(7). Basically you need to remember those three equations.
+Projection Onto a Subspace
+Start with   n   vectors a 1, ... ,   a n   in R
+m
+. Assume that these   a's   are linearly independent.
+Problem: Find the combination p   =   x 1   a 1   + · · · +   X n   a n   closest to a given vector b.
+We are projecting each bin R
+m
+onto the subspace spanned by the   a's.
+With   n   =   l (one vector a 1)   this is projection onto a line. The line is the column space
+of   A,   which has just one column. In general the matrix   A   has   n   columns a 1, ... ,   a n .
+The combinations in R
+m
+are the vectors   Ax   in the column space. We are looking for
+the particular combination   p   =   Ax (the projection)   that is closest to   b.   The hat over   x
+indicates the   best   choice   x,   to give the closest vector in the column space. That choice is
+x   =   a
+T
+b/   a
+T
+a   when   n   =   l. For   n   > l, the best   x   =   (x 1, ...   ,   x n )   is to be found now.
+We compute projections onto n-dimensional subspaces in three steps as before:
+Find the vector x, find the projection p   =   Ax, find the projection matrix P.
+The key is in the geometry! The dotted line in Figure 4.6 goes from   b   to the nearest
+point   Ax   in the subspace.   This error vector b   -   Ax is perpendicular to the subspace.
+The error   b   -   Ax   makes a right angle with all the vectors a 1   , . . . ,   a n   in the base.
+The n right angles give the n equations for   x:
+aT(b-Ax)   =   0
+or   (4)
+aJ(b-Ax)=O
+The matrix with those rows   a;   is   A
+T
+.   The   n   equations are exactly   A
+T
+(b   -   Ax)   =   0.
+Rewrite   A
+T
+(b   -   Ax)   = O in its famous form   A
+T
+Ax   =   A
+T
+b.   This is the equation
+for   x,   and the coefficient matrix is   A
+T
+A.   Now we can find   x   and   p   and   P,   in that order.

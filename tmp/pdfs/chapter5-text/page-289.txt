@@ -1,0 +1,41 @@
+5.3.   Cramer's Rule, Inverses, and Volumes   279
+Example 6   In calculus, the box is infinitesimally small! To integrate over a circle, we
+might change   x   and   y   to   r   and   0.   Those are polar coordinates:   x =   r   cos   0   and   y =   r   sin   0.
+The area of a "polar box" is a determinant   J   times   dr d0:
+Area   r dr d0   in calculus   J= l
+ox/or   ox/80
+1   = l
+cos0   -rsin0
+1   =r
+oy   / or   oy   /   ae   sin   e   r   cos   e
+This determinant is the   r   in the small area   dA =   r dr d0.   The stretching factor   J   goes into
+double integrals just as   dx   / du   goes into an ordinary integral   J   dx   =   J   ( dx/du) du.   For
+triple integrals the Jacobian matrix   J   with nine derivatives will be 3 by 3.
+The Cross Product
+The   cross product   is an extra (and optional) application, special for three dimensions. Start
+with vectors u   = (u 1,   u 2,   u 3
+)   and v = (v 1,   v 2,   v 3
+).   Unlike the dot product, which is a
+number,   the cross product is a vector-also   in three dimensions. It is written u x v and
+pronounced "u cross   v." The components of this cross product are   2   by   2   cofactors.   We
+will explain the properties that make   u   x   v   useful in geometry and physics.
+This time we bite the bullet, and write down the formula before the properties.
+DEFINITION   The   cross product   of u= (u 1,   u2, u3) and   v = ( v1,   v2, v3) is a vector
+ux v
+i   j   k
+U1   U2   U3   =   (u2V3 - U3V2)i + (u3V1 - u1v3)j + (u1V2 - u2v1)k.
+V1   V2   V3
+(10)
+This vector   u   x   v is   perpendicular to   u   and   v.   The cross product   v   x   u   is -( u   x   v).
+Comment   The 3 by 3 determinant is the easiest way to remember   uxv.   It is not especially
+legal, because the first row contains vectors i,   j,   k   and the other rows contain numbers.
+In the determinant, the vector i = (1, 0, 0) multiplies u2v3 and -u3v2.   The result is
+( u 2 v 3   -   u 3 v 2,   0, 0), which displays the first component of the cross product.
+Notice the cyclic pattern of the subscripts: 2 and 3 give component 1 of   u   x   v,   then 3
+and 1 give component 2, then 1 and 2 give component 3. This completes the definition of
+u   x   v.   Now we list the properties of the cross product:
+Property 1   v   x   u   reverses rows 2 and 3 in the determinant so it equals -( u   x   v).
+Property 2   The cross product   u   x   v   is perpendicular to   u   (and also to   v).   The direct proof
+is to watch terms cancel, producing a zero dot product:
+u. (u Xv)= u1(u2V3 - U3V2) + u2(u3V1 - U1v3) + U3(U1V2 - U2V1)   =   0.   (11)
+The determinant for   u·(   u   x   v)   has rows   u, u   and   v   (2 equal rows) so it is zero.

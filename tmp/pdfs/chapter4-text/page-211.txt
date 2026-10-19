@@ -1,0 +1,53 @@
+4.1. Orthogonality of the Four Subspaces
+•   REVIEW OF THE KEY IDEAS   •
+201
+1. Subspaces   V   and Ware orthogonal if every   v   in Vis orthogonal to every   win   W.
+2.   V   and   W   are "orthogonal complements" if   W   contains   all   vectors perpendicular to
+V   (and vice versa). Inside   R
+n
+,   the dimensions of complements   V   and   W   add   ton.
+3.   The nullspace   N(A)   and the row space   C(A
+T
+)   are orthogonal complements, with
+dimensions   (n   -   r)   +   r   =   n.   Similarly   N(A
+T
+)   and   C(A)   are orthogonal comple
+ments with (m -   r)   +   r   =   m.
+4.   Any   n   independent vectors in R
+n
+span   R
+n
+.   Any   n   spanning vectors are independent.
+•   WORKED EXAMPLES   •
+4.1 A   Suppose   S   is a six-dimensional subspace of nine-dimensional space   R
+9
+.
+(a) What are the possible dimensions of subspaces orthogonal to S?
+(b) What are the possible dimensions of the orthogonal complement S
+J_
+of S?
+(c) What is the smallest possible size of a matrix A that has row space S?
+(d) What is the smallest possible size of a matrix B that has nullspace S
+J_
+?
+Solution
+(a) If Sis six-dimensional in R
+9
+,   subspaces orthogonal to Scan have dimensions 0, 1, 2, 3.
+(b) The complement S
+J_
+is the largest orthogonal subspace, with dimension 3.
+(c) The smallest matrix   A   is 6 by 9 (its six rows will be a basis for S).
+(d) This is the same as question (c) !
+If a new row 7 of   B   is a combination of the six rows of   A,   then   B   has the same row
+space as   A.   It also has the same nullspace. The special solutions s   1,   s 2,   s 3   to   Ax   = 0.
+will be the same for   Bx   =   0. Elimination will change row 7 of   B   to all zeros.
+4.1 B   The equation   x   -   3y   -   4z   =   0 describes a plane Pin   R
+3
+(actually a subspace).
+(a) The plane Pis the nullspace   N(A)   of what 1 by   3 matrix   A?   Ans:   A=   [1 -3 - 4].
+(b) Find a basis s   1,   s 2   of special solutions of   x   -   3y   -   4z   =   0 (these would be the
+columns of the nullspace matrix N).   Answer:   s 1   =   (3, 1, 0) and s 2   =   (4, 0, 1).
+(c) Find a basis for the line P
+J_
+that is perpendicular to   P.   Answer:   (1, -3, -4)!

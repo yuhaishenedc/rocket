@@ -1,0 +1,66 @@
+4.2. Projections
+2   Draw   the projection of   b   onto   a   and also compute it from   p   =   xa:
+(a) b=   [:�:!]   and   a=[�]   (b)   b   =   [ �]   and   a   =   [_ �]   .
+215
+3   In Problem 1, find the projection matrix P   =   aa
+T
+ja
+T
+a onto the line through each
+vector a. Verify in both cases that P
+2
+=   P. Multiply Pb in each case to compute
+the projection   p.
+4   Construct the projection matricesA and P2 onto the lines through the a's in Prob
+lem 2. Is it true that (A   +   P 2   )
+2
+=   A   +   P 2   ?   This   would   be true if   AP 2   =   0.
+5   Compute the projection matrices   aa T/   a
+T
+a onto the lines through a 1   = ( -1,2,2)
+and a 2   =   (2,2, -1). Multiply those projection matrices and explain why their prod
+uctAA is what it is.
+6   Project b   =   (1, 0, 0) onto the lines through a 1   and a 2   in Problem 5 and also onto
+a 3   =   (2, -1,2). Add up the three projections p
+1
++   p
+2
++   p
+3.
+7   Continuing Problems 5-6, find the projection matrix P 3   onto a 3   =   (2, -1,2). Verify
+that   A   +   P2   +   P 3   =   I. This is because the basis a 1,   a 2,   a 3   is orthogonal!
+a3
+= [-�]
+[-1]
+2
+a 1   =   2
+a,   =   [   j]
+Questions 5-6-7: orthogonal
+P1P2a1
+a2   = [;]
+b
+=
+[!]
+Questions 8-9-10: not orthogonal
+8   Project the vector   b   =   (1,1) onto the lines through a 1   =   (1, 0) and   a 2   =   (1,2).
+Draw the projections p
+1
+and p
+2
+and add p
+1
++   p
+2
+.   The projections do not add to   b
+because the   a's   are not orthogonal.
+9   In Problem 8, the projection of   b   onto the   plane   of a 1   and   a 2   will equal   b.   Find
+P=A(A
+T
+A)-
+1
+A
+T
+forA= [a 1   a 2]   =   [H]   =   invertible matrix.
+10   Project a 1   =   (1, 0) onto a 2   =   (1,2). Then project the result back onto a 1.
+Draw
+these projections and multiply the projection matricesAP2   :   Is this a projection?

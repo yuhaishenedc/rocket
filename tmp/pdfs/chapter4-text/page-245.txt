@@ -1,0 +1,105 @@
+4.4.   Orthonormal Bases and Gram-Schmidt   235
+Inve,se= t,anspose,
+[[   �   �
+l [;]   m   o
+nd
+[�   �]   [   �   l   [:]
+Every permutation matrix is an orthogonal matrix.
+Example 3   (Reflection)   If   u is any unit vector, set Q =   I   - 2uu T.   Notice that
+uu T is a matrix while u
+T
+uis the number
+llull
+2
+= 1. ThenQ
+T
+andQ-
+1
+both equalQ:
+Q
+T
+=   I -2uu
+T
+= Q   and   Q
+T
+Q =   I -4uu
+T
++4uu
+T
+uu
+T
+=   I.   (2)
+Reflection matrices   I -2uu T are symmetric and also orthogonal. If you square them, you
+get the identity matrix:   Q
+2
+=   Q
+T
+Q   = I. Reflecting twice through a mirror brings back the
+original, like (-1 )
+2
+= 1. Notice u
+T
+u   = l inside 4uu T uuT in equation (2).
+j
+0
+s m 0
+Qi= j
+u
+Reflect
+/
+,'
+)"
+mirror
+Qj
+= [-:�::]
+�
+i   =
+[
+c? s0
+]
+Rotate by   0
+0   .
+I   uto-u ----- Qj =
+i
+Figure 4.10: Rotation byQ = [ � - �] and reflection across 45   ° byQ   = [ �   i]   .
+As example choose the direction u   = (-l/   v12,   1/   v12).   Compute 2uu T (column times
+row) and subtract from   I   to get the reflection matrixQin the direction of   u:
+Reflection   Q   =   I -2
+[_:   �
+-
+: �
+]
+=
+[�   �]
+and
+[�   �]   [:]   [;]
+.
+When   (x,   y) goes to   (y,   x), a vector like (3,3) doesn't move. It is on the mirror line.
+Rotations preserve the length of every vector. So do reflections. So do permutations.
+So does multiplication by any orthogonal matrix   Q-lengths and angles don't change.
+Proof
+11Qxll
+2
+equals
+llxll
+2
+because (Qx)
+T
+(Qx)   =   x
+T
+Q
+T
+Qx =   x
+T
+Jx =   x
+T
+x .
+If   Q   has orthonormal columns   (   Q
+T
+Q   =   I),   it   leaves lengths unchanged:
+Same length forQx
+II
+Qxll
+=
+llxllfor every vector
+x.   (3)

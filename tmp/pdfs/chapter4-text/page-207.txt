@@ -1,0 +1,63 @@
+4.1. Orthogonality of the Four Subspaces
+dimension
+=r
+row
+space
+of   A
+goo
+nullspace
+of A
+dimension
+=   n-r
+lumn
+space
+r
+o
+w space to co
+�
+Axrow
+=
+b
+Axnull = 0
+nullspace to
+0
+column
+space
+of A
+=m-r
+197
+dimension
+=   r
+Figure 4.2: Two pairs of orthogonal subspaces. The dimensions add to   n   and add to   m.
+This is the Big Picture-two   subspaces in   R
+n
+and two subspaces in R
+m
+.
+Orthogonal Complements
+Important   The   fundamental   subspaces   are   more   than just   orthogonal   (in   pairs).
+Their dimensions are also right. Two lines could be perpendicular in   R
+3
+,   but those lines
+could not be   the row space and nullspace of a 3 by 3 matrix.   The lines have dimensions
+1 and 1, adding to 2. But the correct dimensions rand   n   -   r   must add   ton=   3.
+The fundamental subspaces of a 3 by 3 matrix have dimensions 2 and 1, or 3 and 0.
+Those pairs of subspaces are not only orthogonal, they are   orthogonal complements.
+DEFINITION   The   orthogonal complement   of a subspace   V   contains   every   vector that is
+perpendicular to V. This orthogonal subspace is denoted by V
+J..
+(pronounced "V perp").
+By this definition, the nullspace is the orthogonal complement of the row space.
+Every x   that is perpendicular to the rows satisfies   Ax   =   0, and lies in the nullspace.
+The reverse is also true.   If v is orthogonal to the nullspace, it must be in the row
+space.   Otherwise we could add this   v   as an extra row of the matrix, without changing its
+nullspace. The row space would grow, which breaks the law   r   + ( n   -   r)   =   n.   We conclude
+that the nullspace complement N(A)
+J..
+is exactly the row space C(A
+T
+).
+In the same way, the left nullspace and column space are orthogonal in R
+m
+, and they
+are orthogonal complements. Their dimensions   r   and   m   -   r   add to the full dimension   m.

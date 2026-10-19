@@ -1,0 +1,65 @@
+284   Chapter 5.   Determinants
+Problems 6-15 are about A-
+1
+=   C
+T
+/ det   A.   Remember to transpose   C.
+6   Find   A -
+1
+from the cofactor formula   C
+T
+/   <let   A.   Use symmetry in part (b).
+7   If all the cofactors are zero, how do you know that   A   has no inverse? If none of the
+cofactors are zero, is   A   sure to be invertible?
+8   Find the cofactors of   A   and multiply   AC
+T
+to find <let A:
+and
+If you change that 4 to 100, why is <let   A   unchanged?
+and   AC
+T
+=
+9   Suppose <let   A=   1 and you know all the cofactors in   C.   How can you find   A?
+10   From the formula   AC
+T
+= (<let   A)I   show that <let   C   = (<let   A r-
+1
+.
+11   If all entries of   A   are integers, and det   A   = 1 or -1, prove that all entries of   A -
+1
+are integers. Give a 2 by 2 example with no zero entries.
+12   If all entries of   A   and   A -
+1
+are integers, prove that <let   A   =   1   or   -1.   Hint: What is
+det   A   times <let A-
+1
+?
+13   Complete the calculation of A-
+1
+by cofactors that was started in Example 5.
+14   L   is lower triangular and   S   is symmetric. Assume they are invertible:
+To invert
+triangular   L
+symmetric   S
+S   =   b   C   e
+[a   b   d
+l
+d   e   f
+(a) Which three cofactors of L are zero? Then L-
+1
+is also lower triangular.
+(b) Which three pairs of cofactors of Sare equal? Then   s-
+1
+is also symmetric.
+(c) The cofactor matrix   C   of an orthogonal   Q   will be __ .   Why?
+15   For   n   = 5 the matrix   C   contains __ cofactors. Each 4 by 4 cofactor contains
+__ terms and each term needs __ multiplications. Compare with 5
+3
+= 125
+for the Gauss-Jordan computation of A-
+1
+in Section 2.4.
+Problems 16-26 are about area and volume by determinants.
+16   (a) Find the area of the parallelogram with edges   v   = (3, 2) and w = (1, 4).
+(b) Find the area of the triangle with sides v,   w,   and v   +   w.   Draw it.
+(c) Find the area of the triangle with sides   v, w,   and   w   -   v.   Draw it.

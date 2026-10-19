@@ -1,0 +1,75 @@
+286   Chapter 5. Determinants
+28   Spherical coordinates P, cp, 0 satisfy x =
+p
+s in¢ co s   0 and y =
+p
+s in¢   s in   0 and
+z   =
+p
+co s   ¢. Find the 3 by 3 matrix of partial derivatives: ax/   8P, ax/   acp, ax/   80 in
+row 1. Simplify its determinant to   1 =   p
+2
+s in¢. Then   dV   in spherical coordinates is
+p
+2
+s in ¢ d
+p
+dcpd0, the volume of an infinitesimal "coordinate box".
+29   The matrix that connects   r,   0 to   x, y   is in Problem 27. Invert that 2 by 2 matrix:
+1-
+1
+= I
+or I   ax   or I   ay
+I = I
+co s   e   ?
+I =?
+ae   /   ax   ae   /   ay   ?   ?
+·
+It is surprising that or/   ax= ax/   or   (Calculus,   Gilbert Strang, p. 501). Multiplying
+the matrices 1 and 1-
+1
+gives the chain rule
+ax
+=
+ax Br
++
+ax ae
+=
+l
+.
+ax   or ax   80   OX
+30   The triangle with corners (0, 0), (6, 0), and (1, 4) has area ___. When you rotate
+it by 0   =   60
+°
+the area is ___. The determinant of the rotation matrix is
+1 = I
+c
+?
+s   0   -   s in   0
+1 = I
+½
+s m0   co s   0   ?
+?
+I=?
+?
+Problems 31-38 are about t he t riple product (u x v) · win   t   hree dimensions.
+31   A box has base area llu xvii- Its perpendicular height is llwll co s   0.   Base area times
+height= volume= llu xvii llwll co s   0 which is   (u   xv) ·   w.   Compute base area,
+height, and volume for u= (2, 4, 0), v= (-1, 3, 0),   w = (1, 2, 2).
+32   The volume of the same box is given more directly by a 3 by 3 determinant. Evaluate
+that determinant.
+33   Expand the 3 by 3 determinant in equation (13) in cofactors of its row u 1,   u 2,   u 3.
+This expansion is the dot product of   u   with the vector __ .
+34   Which of the triple products ( u   x   w) ·   v   and (w x   u) ·   v   and ( v   x   w) ·   u   are the
+same as (u xv)·   w?   Which orders of the rows u, v,   w   give the correct determinant?
+35   Let   P   = (1, 0, -1) and   Q   = (1, 1, 1) and   R   = (2, 2, 1). Choose   S   so that   PQRS
+is a parallelogram and compute its area. Choose   T, U, V   so that   OPQRSTUV   is a
+tilted box and compute its volume.
+36   Suppose   (x,   y,   z) and (1, 1, 0) and (1, 2, 1) lie on a plane through the origin. What
+determinant is zero? What equation does this give for the plane?
+37   Suppose ( x, y,   z) is a linear combination of (2, 3, 1) and (1, 2, 3). What determinant
+is zero? What equation does this give for the plane of all combinations?
+38   (a) Explain from volumes why det   2A =   2
+n
+det   A   for n by n matrices.
+(b) For what size matrix is the false statement det   A   + det   A = det ( A   + A) true?

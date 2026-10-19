@@ -1,0 +1,74 @@
+224   Chapter 4.   Orthogonality
+The line C   +   Dt minimizes   d   + · · · +   e;,, = II A x- bll
+2
+when   A
+T
+Ax= A
+T
+b:
+[
+m   I;   t i   l [   C]   [   I;   b i   l
+I;   t i   I;   t;
+D
+-   I;   t i   b i
+.   (8)
+The vertical errors at the   m   points on the line are the components of   e   =   b   -   p.   This
+error vector (the   residual)   b   - Ax is perpendicular to the columns of A (geometry). The
+error is in the nullspace of   A
+T
+(linear algebra). The best x   =   (C, D)   minimizes the total
+error   E,   the sum of squares (calculus):
+E(x) = II A x- bll
+2
+= (C   +   Dt1 - b1)
+2
++ · · · +   (C   +   Dt m   - b m )
+2
+,
+Calculus sets the derivatives 8E/8C and 8E/8D to zero, and produces A
+T
+Ax= A
+T
+b.
+Other least squares problems have more than two unknowns. Fitting by the best parabola
+has n =   3 coefficients C, D, E (see below).   In general we are fitting m data points
+by   n   parameters x 1, ...   ,   Xn.   The matrix   A   has   n   columns and   n   <   m.   The derivatives
+of II   Ax   - bll
+2
+give   then   equations   A
+T
+Ax= A
+T
+b.   The derivative of a square is linear.
+This is why the method of least squares is so popular.
+Example 2   A   has   orthogonal columns   when the measurement times t i   add to zero.
+Suppose   b   = 1,2, 4 at times   t   =   -2, 0,2.   Those times add to zero.   The columns of   A   have
+zero dot product:   (1,1,1) is orthogonal to (-2, 0,2):
+C   +   D(-2)   =   1
+C   +   D(O)   =   2
+C   +   D(2) = 4
+or
+When the columns of   A   are orthogonal,   A
+T
+A   will be a diagonal matrix:
+is   (9)
+Main point:   Since   A
+T
+A is diagonal,   we can solve separately for   C   =   f   and   D   =   i.   The
+zeros in   A
+T
+A   are dot products of perpendicular columns in   A.   The diagonal matrix   A
+T
+A,
+with entries   m   = 3 and   tr   +   t�   +   t� = 8, is virtually as good as the identity matrix.
+Orthogonal columns are so helpful that it is worth   shifting the times by subtracting the
+average time   t   = (   ti   + · · · +   t m ) /   m.   If the original times were1, 3, 5 then their average is
+t = 3. The shifted times   T   = t-   t = t- 3 add up to zero!
+T 1   = 1- 3   =   -2
+T2 = 3- 3   =   0
+T3   = 5- 3   =   2
+T   [3 0]
+Anew A new =
+0   8   ·
+Now   C   and   D   come from the easy equation (9). Then the best straight line uses   C   +   DT
+which is C   +   D(t- t) = C   +   D(t- 3). Problem 30 even gives a formula for C and D.

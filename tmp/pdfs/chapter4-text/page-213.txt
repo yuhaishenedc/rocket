@@ -1,0 +1,50 @@
+4.1.   Orthogonality of the Four Subspaces   203
+8   In Figure 4.3, how do we know that Ax r   is equal to Ax? How do we know that this
+vector is in the column space? If A   = [ �   i]   and x   = [   5]   what is X r   ?
+9   If A
+T
+Ax   =   0 then Ax   =   0. Reason: Ax is in the nullspace of A
+T
+and also in the
+__ of A and those spaces are __ .   Conclusion:   A
+T
+A   has the same nullspace
+as   A.   This key   fact is repeated in the next section.
+10   Suppose A is a symmetric matrix (A
+T
+=   A).
+(a) Why is its column space perpendicular to its nullspace?
+(b) If Ax   =   0 and Az   =   5z, which subspaces contain these "eigenvectors" x
+and   z?   Symmetric matrices have perpendicular eigenvectors x
+T
+z   =   0.
+11   (Recommended)   Draw Figure 4.2 to show each subspace correctly for
+A   = [   ! �]   and   B   = [   ! �] .
+12   Find the pieces   Xr   and   Xn   and draw Figure 4.3 properly if
+[
+1   -l
+i A=   �   �   and   x= [�] .
+Questions   13-23   are   about orthogonal   subspaces.
+13   Put bases for the subspaces   V   and   W   into the columns of matrices   V   and   W.   Ex
+plain why the test for orthogonal subspaces can be written V
+T
+W   =   zero matrix.
+This matches v   T   w   =   0 for orthogonal vectors.
+14   The floor   V   and the wall   W   are not orthogonal subspaces, because they share a
+nonzero vector (along the line where they meet). No planes V and Win R
+3
+can be
+orthogonal! Find a vector in the column spaces of both matrices:
+and
+This will be a vector Ax and also Bx. Think 3 by 4 with the matrix [ A B ]   .
+15   Extend Problem 14 to a p-dimensional subspace V and a q-dimensional subspace
+W   of   R
+n
+.   What inequality on p   +   q guarantees that   V   intersects Win a nonzero
+vector? These subspaces cannot be orthogonal.
+16   Prove that every y in N(A
+T
+) is perpendicular to every Ax in the column space,
+using the matrix shorthand of equation (2). Start from A
+T
+y   =   0.

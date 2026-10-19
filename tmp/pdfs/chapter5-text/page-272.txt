@@ -1,0 +1,37 @@
+262   Chapter 5.   Determinants
+The 3 by 3 case has three products "down to the right" (see Problem 28) and three
+products "down to the left". Warning: Many people believe they should follow this pattern
+in the 4 by 4 case. They only take 8 products-but we need 24.
+Example 3   (Determinant of   U)   When   U   is upper triangular, only one of the n! products
+can be nonzero. This one term comes from the diagonal: det   U   =   +u 11   u 22 · · ·   Unn·   All
+other column orderings pick at least one entry below the diagonal, where U has zeros. As
+soon as we pick a number like u 21   =   0, that term in equation (8) is sure to be zero.
+Of course det   I=   1. The only nonzero term is +(1)(1) · · · (1) from the diagonal.
+Example 4   Suppose   Z   is the identity matrix except for column 3. Then
+1   0   a   0
+The determinant of   Z   =
+0   1   b   0
+(9)
+0   0   0
+IS   C.
+C
+0   0   d   1
+The term (l)(l)(c)(l) comes from the main diagonal with a plus sign. There are 4!   =   24
+products (choosing one factor from each row and column) but the other 23 products are
+zero. Reason: If we pick   a, b,   or   d   from column 3, that column is used up. Then the only
+available choice from row 3 is zero.
+Here is a different reason for the same answer. If c   =   0, then   Z   has a row of zeros and
+det   Z   = c = 0 is correct. If c is not zero,   use elimination.   Subtract multiples of row 3 from
+the other rows, to knock out   a, b, d.   That leaves a diagonal matrix and det   Z   =   c.
+This example will soon be used for "Cramer's Rule". If we move   a, b,   c,   d   into the first
+column of   Z,   the determinant is det   Z   =   a. (Why?)   Changing one column of   I   leaves   Z
+with an easy determinant, coming from its main diagonal only.
+Example 5   Suppose   A   has l's just above and below the main diagonal. Here   n   =   4:
+and   have   determinant   1.
+The only nonzero choice in the first row is column 2. The only nonzero choice in row 4 is
+column 3. Then rows 2 and 3   must   choose columns 1 and 4. In other words det   P   =   det   A.
+The determinant of Pis +1 (two exchanges to reach 2, 1, 4, 3). Therefore det   A   =   +1.
+Determinant by Cofactors
+Formula (8) is a direct definition of the determinant.   It gives you everything at once
+but you have to digest it.   Somehow this sum of n! terms must satisfy rules 1-2-3 (then
+all the other properties 4-10 will follow).   The easiest is detJ   =   1, already checked.

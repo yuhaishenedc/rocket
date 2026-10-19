@@ -1,0 +1,60 @@
+4.3. Least Squares Approximations   227
+What does this mean for projection? The matrix has three columns, which span the
+whole space R
+3
+.   The projection matrix is the identity. The projection of   b   is   b.   The error
+is zero. We didn't need A
+T
+Ax = A
+T
+b, because we solved Ax =   b.   Of course we could
+multiply by A
+T
+, but there is no reason to do it.
+Figure 4.8 also shows a fourth point   b 4   at time   t 4.   If that falls on the parabola, the new
+Ax =   b   (four equations) is still solvable. When the fourth point is not on the parabola, we
+tum to A
+T
+Ax = A
+T
+b. Will the least squares parabola stay the same, with all the error at
+the fourth point? Not likely!
+Least squares balances the four errors to get three equations for   C, D, E.
+6
+Figure 4.8: An exact fit of the parabola at   t   = 0, 1, 2 means that p = b and   e   = 0. The
+fourth point @ off the parabola makes   m   >   n   and we need least squares: project   b   on
+C   (A).   The figure on the right shows b-not a combination of the three columns of   A.
+•
+REVIEW OF THE KEY IDEAS
+•
+1. The least squares solution x minimizes   11   Ax - b   11
+2
+= x
+T
+A
+T
+Ax - 2x
+T
+A
+T
+b   +   b
+T
+b.
+This is   E,   the sum of squares of the errors in the   m   equations (   m   >   n).
+2. The best x comes from the normal equations A
+T
+Ax   =   A
+T
+b.   E is a minimum.
+3. To fit   m   points by a line   b   =   C   +   Dt,   the normal equations give   C   and   D.
+4. The heights of the best line are p = (p 1, ... ,   P m   ).   The vertical distances to the data
+points are the errors e   =   (e 1, ...   ,   e m   ), A key equation is A
+T
+e   =   0.
+5. If we try to fit   m   points by a combination of   n   <   m   functions, the   m   equations
+Ax = b are generally unsolvable. Then equations A
+T
+Ax = A
+T
+b give the least
+squares solution-the combination with smallest MSE (mean square error).

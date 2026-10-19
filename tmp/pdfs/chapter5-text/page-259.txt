@@ -1,0 +1,81 @@
+5.1.   The Properties of Determinants   249
+The Properties of the Determinant
+Determinants have three basic properties (rules 1, 2, 3).   By using those rules we can
+compute the determinant of any square matrix   A.   This number is written in two ways,
+<let   A and   IAI. Notice: Brackets for the matrix, straight bars for its determinant. When
+A   is a 2 by 2 matrix, the rules 1, 2, 3 lead to the answer we expect:
+The determinant of
+[:   !
+]   is
+I
+:   !   I
+=   ad   -   be.
+From rules 1-3 we will reach rules 4-10. The last two are det(   AB)   = (   det   A)   (   det   B)   and
+det   A
+T
+= det   A.   We will check all rules with the 2 by 2 formula, but do not forget: The
+rules apply to any n by n matrix   A.
+Rule 1 (the easiest) matches det   I=   l with volume= 1 for a unit cube.
+1   The determinant of the n by n identity matrix is   1.
+1
+I
+�   �
+I
+= 1   and   = l.
+1
+2   The determinant changes sign when two rows are exchanged   (sign reversal):
+Check·.
+I   a
+e   d
+b   1-- -   I
+a
+e   d
+b
+I
+(b   h   ·ct   1   b   d) ot   s1 es equa   e   -   a   .
+Because of this rule, we can find det   P   for any permutation matrix. Just exchange rows
+of   I   until you reach   P.   Then det   P   = +l for an   even   number of row exchanges and
+det   P = -l for an   odd   number.
+The third rule has to make the big jump to the determinants of all matrices.
+3   The determinant is a linear function of each row separately   (all other rows stay fixed).
+If the first row is multiplied by   t,   the determinant is multiplied by   t.   If first rows are added,
+determinants are added. This rule only applies when the other rows do not change! Notice
+how   e   and   d   stay the same:
+multiply row   1   by any number   t
+<let   is multiplied by   t
+add row 1 of A to row 1 of A':
+then determinants add
+I
+t
+;
+t
+:
+I
+=
+t
+I
+:
+: I
+I
+a
+:
+a'
+b   :   b'
+I
+=
+I
+:
+: I
++
+I�   � I
+.
+In the first case, both sides are
+t
+ad   -
+t
+be.   Then   t   factors out. In the second case, both sides
+are   ad   +   a ' d   -   be   -   b'   e. These rules still apply when   A   is   n   by   n,   and   one row changes   .   .
+4   8   8   1   2   2   4   8   8   4   0   0   0   8   8
+A=   0   1   1   =4   0   1   1   and   0   1   1 =   0   1   1   +   0   1   1
+0   0   1   0   0   1   0   0   1   0   0   1   0   0   1
+By itself, rule 3 does not say what those determinants are (det   A   is 4).

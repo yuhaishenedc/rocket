@@ -1,0 +1,41 @@
+264   Chapter 5.   Determinants
+The determinant is the dot product of any row i of   A   with its cofactors using other rows:
+COFACTOR FORMULA   (12)
+Each cofactor Ci
+j
+(order   n   - l, without row i and column j) includes its correct sign:
+Cofactor
+A determinant of order   n   is a combination of determinants of order   n   - l.   A recursive
+person would keep going. Each subdeterminant breaks into determinants of order   n   - 2.
+We could define all determinants via equation   (12). This rule goes from order   n ton   - l
+ton   - 2 and eventually to order 1. Define the 1 by 1 determinant !al to be the number   a.
+Then the cofactor method is complete.
+We preferred to construct det A from its properties (linearity, sign reversal, det I = l).
+The big formula (8) and the cofactor formulas (10)-(12) follow from those rules.
+One last formula comes from the rule that det   A   = det   A
+T
+.   We can expand in cofactors,
+down a column   instead of across a row. Down column   j   the entries are   a 1j   to   anj.   The
+cofactors are C 1j   to C nj
+. The determinant is the dot product:
+Cofactors down column   j   (13)
+Cofactors are useful when matrices have many zeros-as   in the next examples.
+Example 6   The -1, 2, -1 matrix has only two nonzeros in its first row. So only two
+cofactors C 1 1   and C 12   are involved in the determinant. I will highlight C 12   :
+2   -1
+2   -1   -1   -1
+-1   2   -1
+=2   -1   2   -1   - (-1)   2   -1   (14)
+-1   2   -1
+-1   2
+-1   2   -1   2
+You see 2 times C 11   first on the right, from crossing out row 1 and column 1. This cofactor
+C 1   1   has exactly the same -1, 2, -1 pattern as the original   A-but   one size smaller.
+To compute the boldface C 12   ,   use cofactors down its first column.   The only nonzero
+is at the top. That contributes another -1 (so we are back to minus). Its cofactor is the
+-1, 2, -1 determinant which is 2 by 2,   two sizes smaller   than the original   A.
+Summary   Each determinant   D n   of   order   n   comes   from   D n   -l   and   D n   - 2   :
+and generally   (15)
+Direct calculation gives D 2   = 3 and D 3   = 4. Equation (14) has D 4   = 2(4) - 3 = 5.
+These determinants 3, 4, 5 fit the formula   D n   =   n   +   1. Then D n   equals 2n - (n - 1).
+That "special tridiagonal answer" also came from the product of pivots in Example 2.

@@ -1,0 +1,49 @@
+238
+Subtract the
+projection p
+togetB   = b -   p
+lf
+B
+A=ab
+A
+C=c-p
+B1
+I
+'   I
+C
+projectionp
+Chapter 4.   Orthogonality
+Unitvectors
+Figure 4.11: First project   b   onto the line through   a   and find the orthogonal   B   as   b   -   p.
+Then project c onto the   AB   plane and find   C   as   c   -   p.   Divide by IIA II, IIBII, IIC II-
+At the end,   or immediately when each one   is   found,   divide the orthogonal vectors   A, B,
+C, D   by their lengths. The resulting vectors q
+1
+,   q
+2
+,   q
+3
+,   q
+4
+are orthonormal.
+Example of Gram-Schmidt   Suppose the independent non-orthogonal vectors   a, b,   c are
+Then A   =   a   has A
+T
+A   =   2 and A
+T
+b   =   2. Subtract from   b   its projection p along A:
+First step
+Check: A
+T
+B   =   0 as required. Now subtract the projections of c on A and B to get C:
+Next step
+Check:   C   =   (1, 1, 1) is perpendicular to both   A   and   B.   Finally convert   A, B, C   to
+unit vectors (length 1, orthonormal). The lengths of   A, B, C   are v'2 and v'6 and \/'3.
+Divide by those lengths, for an orthonormal basis:
+Usually   A, B,   C   contain fractions. Almost always q
+1
+,   q
+2
+,   q
+3
+contain square roots.

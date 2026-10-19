@@ -1,0 +1,49 @@
+5   .1. The Properties of Determinants   253.
+Important comment on columns   Every rule for the rows can apply to the columns (just
+by transposing, since IAI   =   IA
+T
+I)- The determinant changes sign when two columns are
+exchanged.   A zero column or two equal columns will make the determinant zero.   If a
+column is multiplied by   t,   so is the determinant. The determinant is a linear function of
+each column separately.
+It is time to stop. The list of properties is long enough. Next we find and use an explicit
+formula for the determinant.
+•   REVIEW OF THE KEY IDEAS   •
+1. The determinant is defined by det   I   =   1, sign reversal, and linearity in each row.
+2. After elimination det   A   is   ±   (product of the pivots).
+3. The determinant is zero exactly when   A   is not invertible.
+4. Two remarkable properties are det   AB=   (detA)(det   B)   and det   A
+T
+=   det   A.
+•   WORKED EXAMPLES   •
+5.1 A   Apply these operations to   A   and find the determinants of M 1,   M 2,   M 3,   M 4:
+In M 1   ,   multiplying each   aij   by (-l)i+j gives a checkerboard sign pattern.
+In M 2   ,   rows 1, 2, 3 of   A   are   subtracted   from rows 2, 3, 1.
+In   M 3,   rows 1, 2, 3 of   A   are   added   to rows 2, 3, 1.
+How are the determinants of M1, M2, M3 related to the determinant of A?
+[
+au   -a12   a13
+] -a21   a22   -a23
+a31   -a32   a33
+[
+row 1 -row 3
+] row 2 -row 1
+row 3 -row 2
+[
+row 1   +   row 3
+] row 2   +   row 1
+row 3   +   row 2
+Solution   The three determinants are det   A,   0, and 2 det   A.   Here are reasons:
+M 1   =   [
+l
+-1   l [:�� :�� :�:]   [
+l
+-1   l   so det   M 1   = (- l   )(detA)(-1).
+1   a31   a32   a33   1
+M 2   is singular because its rows add to the zero row. Its determinant is zero.
+M 3   can be split into   eight matrices   by Rule 3 (linearity in each row separately):
+row 1 + row3   row 1   row3   row 1   row3
+row2 + row   1   =   row2   +   row2   +   row 1   + · · · +   row   1
+row3 + row3   row3   row3   row3   row2
+All but the first and last have repeated rows and zero determinant. The first is   A   and the
+last has   two   row exchanges. So det   M3   = det   A+   det   A.   (Try   A= I.)

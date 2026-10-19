@@ -1,0 +1,58 @@
+4.4.   Orthonormal Bases and Gram-Schrnidt
+22   Find orthogonal vectors   A, B, C   by Gram-Schmidt from
+245
+23   Find q
+1
+,   q
+2
+,   q
+3
+(orthonormal) as combinations of   a,   b,   c   (independent columns).
+Then write A as   QR:
+24   (a) Find a basis for the subspace Sin R
+4
+spanned by all solutions of
+(b) Find a basis for the orthogonal complement S
+J_
+.
+(c) Find b 1   in Sand b 2   in S
+J_
+so that b 1
++   b 2   = b = (1, 1, 1, 1).
+25   If   ad   -   be>   0, the entries in   A= QR   are
+[
+a
+b]   [: -:] [ a
+2
+;
+c
+2
+:: �
+�!]
+C   d   - ._/a 2   +   c
+2   ._/ a2   +   c
+2
+.
+Write   A   =   QR   when   a, b,   c,   d   =   2, 1, 1, 1 and also 1, 1, 1, 1.   Which entry of   R
+becomes zero when the columns are dependent and Gram-Schmidt breaks down?
+Problems   26-29   use the   QR   code in equation (11).   It   executes Gram-Schmidt.
+26   Show why   C   (found via   C*   in the steps after (11)) is equal to   C   in equation (8).
+27   Equation (8) subtracts from cits components along   A   and   B.   Why not subtract the
+components along   a   and along b?
+28   Where are the   mn
+2
+multiplications in equation (11)?
+29   Apply the MATLAB qr code to   a=   (2, 2, -1),   b   =   (0, -3, 3),   c   =   (1, 0, 0). What
+are the   q's?
+Problems   30-35   involve orthogonal matrices   that   are special.
+30   The first four   wavelets   are in the columns of this wavelet matrix W:
+r l   1
+w-   �   1   1
+2   1   -1
+1   -1
+J]
+0   -v'2
+0
+What is special about the columns? Find the inverse wavelet transform w-
+1
+.

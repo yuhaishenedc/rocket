@@ -1,0 +1,89 @@
+196   Chapter 4.   Orthogonality
+Every vector   x   in the nullspace is perpendicular to every row of   A,   because   Ax   =   0.
+The nullspace   N(A)   and the row space   C(A
+T
+)   are orthogonal subspaces of   R
+n
+.
+To see why   xis perpendicular to the rows, look at   Ax   =   0.   Each row multiplies   x:
+rowl
+rowm
+]H   rrl
+(row 1
+)
+·xis zero
+(row   m) ·xis zero
+(1)
+The first equation says that row 1 is perpendicular to   x.   The last equation says that row mis
+perpendicular to   x. Every row has a zero dot product with x.   Then   xis also perpendicular
+to every   combination   of the rows. The whole row space C(A
+T
+) is orthogonal to   N(A).
+Here is a second proof of that orthogonality for readers who like matrix shorthand.
+The vectors in the row space are combinations A
+T
+y   of the rows.   Take the dot product
+of A
+T
+y   with any   x   in the nullspace.   These vectors are perpendicular:
+Nullspace orthogonal to row space   (2)
+We like the first proof. You can see those rows of   A   multiplyingxto produce zeros in equa
+tion (1). The second proof shows why   A   and A
+T
+are both in the Fundamental Theorem.
+Example 3   The rows of   A   are perpendicular to   x= (   1, 1, -1) in the nullspace :
+gives the dot products
+1+3-4=0
+5+2-7=0
+Now we tum to the other two subspaces. In this example, the column space is all of R
+2
+.
+The nullspace of A
+T
+is only the zero vector (orthogonal to every vector). The column space
+of   A   and the nullspace of A
+T
+are always orthogonal subspaces.
+Every vector   y   in the nullspace of A
+T
+is perpendicular to every column of   A.
+The left nullspace   N(A
+T
+)   and the column space   C(A)   are orthogonal in   R
+m
+.
+A
+pp ly the original proof to   A
+T
+. The nullspace of A
+T
+is orthogonal to the row space of
+A
+T
+-and the row space of A
+T
+is the column space of   A.   Q.E.D.
+For a visual proof, look at A
+T
+y   =   0. Each column of   A   multiplies   y   to give   0:
+A
+T
+y
+=
+[
+(colu
+�� l
+)
+T
+l   [Yl
+=
+[
+�
+]
+-
+(column   n)
+T
+0
+(3)
+The dot product of   y   with every column of   A   is zero.   Then   y   in the left nullspace is
+perpendicular to each column of A-and to the whole column space.

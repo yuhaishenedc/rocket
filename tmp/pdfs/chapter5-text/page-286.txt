@@ -1,0 +1,56 @@
+276   Chapter 5.   Determinants
+Example 3   The "sum matrix" A has determinant 1. Then A-
+1
+contains cofactors:
+[1
+0   0
+�1
+r' �   C: �   [-l
+0   0
+�1
+A=
+1   0
+has inverse
+1   0
+1   1   -1   1
+1   1   0   -1
+Cross out row 1 and column 1 of A to see the 3 by 3 cofactor C 11   = 1. Now cross out row
+1 and column 2 for C 12   .   The 3 by 3 submatrix is still triangular with determinant 1. But
+the cofactor C 12   is -1 because of the sign (   -1)
+1
++
+2
+.   This number -1 goes into the (2, 1)
+entry of A-
+1
+-don't forget to transpose   C.
+The inverse of   a triangular matrix is triangular.   Cofactors give a reason why.
+Example 4   If all cofactors are nonzero, is   A   sure to be invertible?   No way.
+Area of a Triangle
+Everybody knows the area of a rectangle-base times height. The area of a triangle is   half
+the base times the height. But here is a question that those formulas don't answer.   If we
+know the corners   (x1, Y1)   and   (x2, Y2)   and   (x3, y3)   of a triangle, what is the area?
+Using the corners to find the base and height is not a good way to compute area.
+Determinants are the best way to find area.   The area of a triangle is half of a   3   by   3
+determinant.   The square roots in the base and height cancel out in the good formula. If
+one corner is at the origin, say ( x 3,   y 3)   = (0, 0), the determinant is only 2 by 2.
+Figure 5   .1: General triangle; special triangle from (0, 0); general from three specials.
+.   .   determinant
+The tnangle with corners (x1, y1) and (x2, Y2) and (x3,   y3)   has   area=
+2
+:
+Area of triangle
+1
+X1   Yl
+-   X2   Y2
+2
+1
+1
+1
+Area=
+!
+1x1
+2   X2
+Y
+i   I   when   (x3, y3)   = (0, 0).
+Y2

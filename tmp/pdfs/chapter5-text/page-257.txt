@@ -1,0 +1,80 @@
+Chapter 5
+Determinants
+1   The   determi n a n t   of   A   = [ �   �] is   ad   -   be.   Singular matrix   A   = [ �   :�] has det   =   0.
+2
+Row exch
+�
+n ge
+p
+A   =
+[
+0
+0
+1
+]   [
+a
+e d
+b
+]
+=
+[
+a
+e d
+b
+]
+has det p
+A   =   be   -   ad   = - det   A.
+reverses sig n s   1
+.
+[
+xa   +   yA   xb   +   yB
+]
+.   Det is li n ear i n
+3   The determmant of
+d
+1s   x(ad   -   be)+ y(Ad- Be).
+1   b   ·t   If e row   y I se   .
+4 Elimi n atio n   EA=   [ �
+d
+_
+b
+�
+b
+]   det   EA= a   (
+d
+- �
+b
+)   =   product of pivots=   det   A.
+5   If   A is   n   by   n   then 1,   2, 3,   4 remain true:   det   =   0   when A is singular,   det reverses sig n
+when rows are exchanged, det   is li n ear i n   row 1 by itself,   <let   =   product of the pivots.
+Always det   BA   = (   det   B )(   det A) and det   A
+T
+=   det   A.   This is an amazing number.
+5.1   The Properties of Determinants
+The determinant of a square matrix is a single number. That number contains an amazing
+amount of information about the matrix. It tells immediately whether the matrix is invert
+ible.   The determinant is zero when the matrix has no inverse.   When A is invertible, the
+determinant of A-
+1
+is 1 / (   <let   A).   If   det   A   = 2 then det   A   -   I   =   ½.   In fact the determinant
+leads to a formula for every entry in A-
+1
+.
+This is one use for determinants-to find formulas for inverse matrices and pivots and
+solutions A-   I   b.   For a large matrix we seldom use those formulas, because elimination is
+faster. For a 2 by 2 matrix with entries   a , b,   e, d,   its determinant   ad   -   be   shows how A-
+1
+changes as A changes. Notice the division by the determinant!
+A=[�   !]
+A
+_   1 _
+1
+[
+d   -
+a
+b
+]
+. has inverse
+ad- be   -e
+247
+(1)

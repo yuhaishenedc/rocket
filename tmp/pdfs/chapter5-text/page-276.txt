@@ -1,0 +1,47 @@
+266   Chapter 5.   Determinants
+Solution   The cofactor C 11   for   H 4   is the determinant IH 3   1.   We also need C12 (in boldface):
+1   1   0   2   1   0   1   0   0
+C 1 2   = -   1   2   1   = -   1   2   1   +   1   2   1
+1   1   2   1   1   2   1   1   2
+Rows 2 and 3 stayed the same and we used linearity in row 1.   The two determinants on the
+right are -IH3I and +IH2I- Then the 4 by 4 determinant is
+IH4I= 2Cn + lC12= 2IH3I - IH3I   + IH2I= IH3I   + IH2I-
+The actual numbers are IH2I =   3 and IH3I =   5 (and of course IH1I =   2).   Since
+IH n   I= 2, 3, 5, 8, ... follows Fibonacci's rule IH n -1I+ IH n -2I, it must be IH n   I= F n +2 .
+5.2 B   These questions use the± signs (even and odd P's) in the big formula for detA:
+1.   If A is the 10 by 10 all-ones matrix, how does the big formula give detA   =   0?
+2. If you multiply all n! permutations together into a single   P,   is   P   odd or even?
+3.   If you multiply each% by the fraction i/ j,   why is detA unchanged?
+Solution   In Question   1,   with all aij   =   l, all the products in the big formula (8) will
+be 1. Half of them come with a plus sign, and half with minus. So they cancel to leave
+detA= 0. (Of course the all-ones matrix is singular.   I am assuming n > 1.)
+In Question   2,   multiplying [ � �] [ � �] gives an odd permutation. Also for 3 by 3, the
+three odd permutations multiply (in any order) to give   odd.   But for   n   > 3 the product of
+all permutations will be   even.   There are n!/2 odd permutations and that is an even number
+as soon as n! includes the factor 4.
+In Question   3,   each aij is multiplied by i/ j.   So each product a 1   °'a213 · • · a nw   in the big
+formula is multiplied by all the row numbers i   =   1, 2, ..., n and divided by all the column
+numbers
+j
+=   1, 2, ..., n. (The columns come in some permuted order!) Then each product
+is unchanged and detA stays the same.
+Another approach to Question 3:   We are multiplying the matrix A by the diagonal
+matrix D =   diag(l   : n) when row i is multiplied by i. And we are postmultiplying by
+v-
+1
+when column   j   is divided by   j.   The determinant of DAD-
+1
+is the same as detA
+by the product rule.
+Problem Set 5.2
+Problems 1-10 use the big formula with   n!   terms:   IAI =   L   ±a1aa2,a • • • U nw   ·
+Every term uses each row and each column once.
+1   Compute the determinants of   A, B, C   from six terms.   Are their rows independent?
+[
+1   2   3
+] A=   3   1   2
+3   2   1
+[
+1   1   l
+l C=   1   1   0   .
+1   0   0

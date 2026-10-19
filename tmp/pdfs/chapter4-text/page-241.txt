@@ -1,0 +1,67 @@
+4.3. Least Squares Approximations   231
+15   A doctor takes 4 readings of your heart rate. The best solution to   x   =   b 1, ... ,   x   =   b 4
+is the average x of b 1, ... ,   b 4.   The matrix   A   is a column of 1 's. Problem 14 gives
+the expected error (x - x)
+2
+as   0"
+2
+(A
+T
+A)-
+1
+= __ .   By averaging, the vmiance
+drops   from   0"
+2
+to   0"
+2
+/   4.
+16   If you know the average x 9   of 9 numbers b 1, ... ,   b 9   ,   how can you quickly find the
+average x 10   with one more number b 1 0 ? The idea of   recursive   least squares is to
+avoid adding 10 numbers. What number multiplies   x 9   in computing   x 10   ?
+x10   =   {0   b 10   +   __ xg   =   {
+0
+(b 1   + · · · +   b10)   as in Worked Example 4.2 C.
+Questions 17-24 give more practice with x and   p   and   e.
+17   Write down three equations for the line   b   =   C   +   Dt   to go through   b   =   7 at   t   =   -1,
+b   =   7 at   t   =   l, and   b   =   21 at   t   =   2. Find the least squares solution x   =   (C,   D)   and
+draw the closest line.
+18   Find the projection   p   =   Ax   in Problem 17. This gives the three heights of the closest
+line. Show that the error vector ise   =   (2, -6, 4). Why is   Pe=   O?
+19   Suppose the measurements at   t   =   -1, 1, 2 are the errors 2, -6, 4 in Problem 18.
+Compute   x   and the closest line to these new measurements.   Explain the answer:
+b   =   (2, -6, 4) is perpendicular to _   _ so the projection is   p   =   0.
+20   Suppose the measurements at   t   = -1, 1, 2 are b = (   5, 13, 17). Compute   x   and the
+closest line and   e.   The error is   e   =   0 because this b is
+21   Which of the four subspaces contains the error vector   e?   Which contains   p?   Which
+contains   x?   What is the nullspace of   A?
+22   Find the best line   C   +   Dt   to fit   b   =   4, 2, -1, 0, 0 at times   t   =   -2, -1, 0, 1, 2.
+23   Is the error vector   e   orthogonal to   b   or   pore   or   x?   Show that llell
+2
+equals   e
+T
+b
+which equals   b
+T
+b   -   p
+T
+b.   This is the smallest total error   E.
+24   The partial derivatives of 11Axll
+2
+with respect to x 1, ...   ,   Xn   fill the vector 2A
+T
+Ax.
+The derivatives of 2b
+T
+Ax   fill the vector   2A
+T
+b.   So the derivatives of IIAx - bll
+2
+are
+zero when
+Challenge Problems
+25   What condition on   (t 1,   b 1),
+(
+t 2   ,   b2), (t3, b3)   puts those threepoints onto a straight
+line?   A column space answer is: (b 1   , b 2   , b 3   ) must be a combination of (1, 1, 1) and
+(t 1,   t 2,   t 3).   Try to reach a specific equation connecting the t's and   b's.   I should have
+thought of this question sooner!

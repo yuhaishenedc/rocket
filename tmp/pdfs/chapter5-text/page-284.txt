@@ -1,0 +1,80 @@
+274   Chapter 5.   Determinants
+Those determinants of   A,   B1,   B 2   are -2 and -4 and 2. All ratios divide by det   A=   -2:
+-4
+X1   = - = 2
+-2
+2
+X2   = - = -1
+-2
+CRAMER'S RULE   If det   A   is not zero,   Ax   =   b   is solved by determinants:
+detB 1
+xi
+=
+detA
+detB n
+Xn   =
+detA
+The matrix B
+j
+has the jth column of A replaced by the vector b.
+(4)
+To solve an   n   by   n   system, Cramer's Rule evaluates   n   +   l determinants (of   A   and the
+n   different B's). When each one is the sum of n! terms-applying the "big formula" with
+all permutations-this makes a total of ( n   +   l) ! terms.   It would be crazy to solve equations
+that way.   But we do finally have an explicit formula for the solution.x.
+Example 2   Cramer's Rule is inefficient for numbers but it is well suited to letters. For
+n   = 2, find the columns of A-
+1
+=   [x y] by solving   AA-
+1
+= I:
+Columns of   A-
+1 [
+a   b
+]   [
+x 1 ]   [   1
+]
+are   x   and   y   c   d   x 2   0
+Those share the same matrix   A.   We need IAI and four determinants for x1, x2, YI, Y2:
+The last four determinants are   d,   -c,   -b,   and   a.   (They are the cofactors!) Here is A-
+1
+:
+d   -c   -b   a   _
+1
+1
+[
+d   -b
+] x1 = TAT' x2 =
+TAT
+, y 1   = TAT, Y2 =
+TAT
+and then   A   =
+ad   _   be   -c   a   .
+I chose 2 by 2 so that the main points could come through clearly.   The new idea is :
+A-
+1
+involves the cofactors.   When the right side is a column of the identity matrix   I,
+as in   AA-
+1
+=   I,   the determinant of each   B
+j
+in Cramer's Rule is a cofactor of   A.
+You can see those cofactors for   n   =   3. Solve   Ax   =   (l, 0, 0) to find column 1 of A-
+1
+:
+Determinants of   B's
+=   Cofactors of A
+1   a 1   2   a13
+0   a22   a23
+0   a32   a33
+a11   1   a13
+a21   0   a23
+a31   0   a33
+a11   a12   1
+a21   a22   0
+a31   a32   0
+(5)
+That first determinant IB1 I is the cofactor C11
+=   a22a33 -a23a32. Then IB2I is the cofactor
+C 1   2- Notice that the correct minus sign appears in -(a2 1   a33 - a23a31). This cofactor C 1   2
+goes into column 1 of   A - I.   When we divide by det   A,   we have the inverse matrix !

@@ -1,0 +1,64 @@
+4.4. Orthonormal Bases and Gram-Schmidt   241
+Confession   Good software like LAPACK, used in good systems like MATLAB and
+Julia and Python, will not use this Gram-Schmidt code.   There is now a better way.
+"Householder reflections" act on   A   to produce the upper triangular   R.   This happens one
+column at a time in the same way that elimination produces the upper triangular U in LU.
+Those reflection matrices   I   -   2uu   T will be described in Chapter 11 on numerical linear
+algebra. If   A   is tridiagonal we can simplify even more to use 2 by 2 rotations. The result
+is always   A   =   QR   and the MATLAB command to orthogonalize   A   is [Q, R]   =   qr(A).
+I believe that Gram-Schmidt is still the good process to understand, even if the reflections
+or rotations lead to a more perfect   Q.
+•   REVIEW OF THE KEY IDEAS   •
+1. If the orthonormal vectors q
+1
+, ...   ,   q
+n
+are the columns of   Q,   then q;   q
+1
+=   0 and
+q;   q
+i
+= 1 translate into the matrix multiplication   Q
+T
+Q   =   I.
+2. If   Q   is square (an   orthogonal matrix)   then   Q
+T
+=   Q-
+1
+:   transpose= inverse.
+3. The length of   Qx   equals the length of x: IIQxll   =   llxll-
+4. The projection onto the column space of   Q   spanned by the   q's   is   P   =   QQ
+T
+.
+5. If   Q   is square then   P   =   QQ
+T
+=   I   and every   b   =   q
+1
+(qlb)   + · · · +   q
+n
+(qJb).
+6. Gram-Schmidt produces orthonormal vectors q
+1
+,   q
+2
+,   q
+3
+from independent   a,   b,   c.
+In matrix form this is the factorization   A= QR=   (orthogonal Q)(triangular   R).
+•   WORKED EXAMPLES   •
+4.4 A   Add two more columns with all entries 1 or -1, so the columns of this 4 by 4
+"Hadamard matrix" are orthogonal. How do you turn   H4   into an   orthogonal matrix Q?
+The block matrix   H 8   = [   ;:   _;:]
+and
+l
+is the next Hadamard matrix with 1   's and -1   's.
+What is the product Hl'   H 8   ?
+The projection of   b   = (6, 0, 0, 2) onto the first column of   H 4   is p
+1
+= (2, 2, 2, 2).   The
+projection onto the second column is p
+2
+= (1, -1, 1, -1). What is the projection p
+1   2
+of   b
+onto the 2-dimensional space spanned by the first two columns?

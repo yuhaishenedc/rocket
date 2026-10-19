@@ -1,0 +1,55 @@
+5.3.   Cramer's Rule, Inverses, and Volumes
+5.3   Cramer's Rule, Inverses, and Volumes
+273
+1   A-
+1
+equals   C
+T
+/ det   A.   Then (A-
+1
+)ij   = cofactor   Cji   divided by the determinant of   A.
+2 Cramer's Rule   computes   x   =   A-lb   from   x j   =   <let ( A   with column   j   changed to   b)   / <let   A.
+3 Area of parallelogram=
+lad-bcl
+if the four corners are (0, 0),   (a, b),   (c,   d),   and   (a+c, b+d).
+4 Volume of box=   ldetAl if the rows of   A   (or the columns of   A)   give the sides of the box.
+Notice   v   x   u   =   -(u xv).
+S   The   cross product   w   =   u   x   v   is det [ : 1
+V1
+w1,   w2, W3   are cofactors of row 1.
+Notice w
+T
+u = 0 and w
+T
+v = 0.
+This section solves   Ax   = band also finds A-
+1
+-by algebra and not by elimination.
+In all formulas you will see a division by <let   A.   Each entry in A   -l   and A-
+1
+bis a determi
+nant divided by the determinant of   A.   Let me start with Cramer's Rule.
+Cramer's Rule solves   Ax   =   b.   A neat idea gives the first component x 1   .   Replacing
+the first column of   I   by   x   gives a matrix with determinant x 1   .   When you multiply it by   A,
+the   first column becomes Ax which is b.   The other columns of B 1   are copied from A:
+Key idea
+[
+A
+o   o
+l   [
+b1
+1   0   =   b2
+0   1   b3
+We multiplied a column at a time.   Take determinants of   the three matrices to   find   x 1 :
+Product rule   or
+detB 1
+xi
+=
+detA ·
+(1)
+(2)
+This is the first component of x in Cramer's Rule! Changing a column of   A   gave B 1   .
+To find   x 2   and B 2   ,   put the vectors   x   and   b   into the   second   columns of   I   and A:
+Same idea   (3)
+Take determinants to find (   <let   A)(x 2)   =   <let B 2.   This gives x 2   = ( detB 2) / ( det   A).
+Example 1   Solving 3x 1   +   4x 2   = 2 and 5x 1   +   6x 2   = 4 needs three determinants:

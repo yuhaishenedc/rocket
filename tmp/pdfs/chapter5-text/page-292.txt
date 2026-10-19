@@ -1,0 +1,54 @@
+282   Chapter 5. Determinants
+•   WORKED EXAMPLES   •
+5.3 A   If   A   is singular, the equation   AC
+T
+= (   det   A)I   becomes   AC
+T
+=   zero matrix.
+Then each column of   C
+T
+is in the nullspace of A.   Those columns contain cofactors along
+rows of   A.   So the cofactors quickly find the nullspace for a 3 by 3 matrix of rank 2. My
+apologies that this comes so late!
+Solve   Ax =   0   by   x   =   cofactors along a row, for these singular matrices of rank 2:
+Cofactors
+give
+nullspace
+Solution   The first matrix has these cofactors along its top row (note each minus sign):
+I ;   � I
+=
+-
+2
+Then   x   =   (6, 2, -2) solves   Ax =   0. The cofactors along the second row are (-18, -6, 6)
+which is just -3x. This is also in the one-dimensional nullspace of   A.
+The second matrix has   zero cofactors   along its first row. The nullvector   x   =   (0, 0, 0) is
+not interesting. The cofactors of row 2 give   x   =   (l, -1, 0) which solves   Ax =   0.
+Every n by n matrix of rank n - l has at least one nonzero cofactor by Problem 3.3.12.
+But for rank n - 2, all cofactors are zero and we only find x   =   0.
+5.3 B   Use Cramer's Rule with ratios det   BJ/   det   A   to solve   Ax   =   b.   Also find the
+inverse matrix A-
+1
+=   C
+T
+/   det   A.   For this   b   =   (0, 0, 1) the solution   xis   column 3 of
+A-
+1
+! Which cofactors are involved in computing that column   x   = ( x, y, z)?
+Column 3 of A-
+1
+Find the volumes of two boxes : edges are   columns   of   A   and edges are rows of A-
+1
+.
+Solution   The determinants of the   BJ   (with right side   b   placed in column j) are
+0   6   2
+IB1l =   0   4   2   = 4
+1   9   0
+2   0   2
+IB2l   =   1   0   2   =   -2
+5   1   0
+2   6   0
+JB3J   =   1   4   0   =   2.
+5   9   1
+Those are cofactors C 31,   C 32,   C 33   of row 3. Their dot product with row 3 is det   A   = 2:
+The three ratios det   BJ/   det   A   give the three components of   x   = (2, -1, 1). This   x   is the
+third column of   A -   l   because   b   = (   0, 0, 1) is the third column of   I.

@@ -1,0 +1,47 @@
+5.1. The Properties of Determinants   251
+7   If A is triangular then   det   A   =   a 11   a 22 • • •   ann   =   product of   diagonal entries.
+Triangular   and also
+1:   �I
+=   ad.
+Suppose all diagonal entries are nonzero. Remove the off-diagonal entries by elimination!
+(If   A   is lower triangular, subtract multiples of each row from lower rows. If   A   is upper
+triangular, subtract from higher rows.) By rule 5 the determinant is not changed-and now
+the matrix is diagonal:
+0
+Diagonal matrix   det   =   (an)(a22) · · ·   (a nn   )-
+0
+Factor   an   from the first row by rule 3. Then factor a22 from the second row. Eventually
+factor   a nn   from the last row. The determinant is   an   times a22 times · · · times   a nn   times
+det   I.   Then rule 1 (used at last!) is det   I   =   1.
+What if a diagonal entry   aii   is zero? Then the triangular   A   is singular. Elimination
+produces a   zero row.   By rule 5 the determinant is unchanged, and by rule 6 a zero row
+means det   A=   0. We reach the great test for   singular or invertible   matrices.
+8   If A is singular then   det   A   =   0.   If A is invertible then   det   A =I-   0.
+Singular
+[ac   d
+b
+]
+is singular if and only if   ad   -   b   e=   0.
+Proof   Elimination goes from   A   to   U.   If   A   is singular then Uhas a zero row. The rules
+give det   A   = det   U   = 0. If   A   is invertible then   U   has the pivots along its diagonal. The
+product of nonzero pivots (using rule 7) gives a nonzero determinant:
+Multiply pivots   det   A=   ±   det   U   =   ±   (product of the pivots).
+The pivots of a 2 by 2 matrix (if   a   =/- 0) are   a   and   d   - (   c/ a)b:
+The determinant is
+lac   d
+b
+l
+=
+l
+a
+o
+b
+I
+d   -   (c/a)b
+=   ad   -   b   e.
+(2)
+This is the first formula for the determinant.   MATLAB multiplies the pivots to find
+det   A.   The sign in ± det   U   depends on whether the number of row exchanges is even or
+odd:   +   1 or -1 is the determinant of the permutation   P   that exchanges rows.
+With no row exchanges,   P   =   I   and det   A   = det   U   =   product of   pivots.   And det   L   = 1:
+If   PA   =   LU   then   det   P   det   A   = det   L   det   U   and   det   A   = ± det   U.   (3)

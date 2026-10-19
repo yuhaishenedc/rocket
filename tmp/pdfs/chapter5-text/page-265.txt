@@ -1,0 +1,66 @@
+5.1.   The Properties of Determinants
+6   Show how Rule 6 (determinant= 0   if a row is all zero) comes from Rule 3.
+7   Find the determinants of rotations and reflections:
+Q = [
+c�s0 -sin0
+]
+sm0   cos0
+d   [
+1- 2cos
+2
+0 -2cos0sin0
+] an   Q   =
+-2cos0sin0   1- 2sin
+2
+0   ·
+8   Prove that every orthogonal matrix (Q
+T
+Q =   I)   has determinant 1 or-1.
+(a) Use the product rule IABI =   IAI IBI and the transpose rule IQI =   IQ
+T
+I.
+255
+(b) Use only the product rule. If I   detQI > 1 then detQ
+n
+= (detQr blows up.
+How do you know this can't happen to Q
+n
+?
+9   Do these matrices have determinant   0   , 1, 2, or 3?
+10   If the entries in every row of   A   add to zero, solve   Ax   = 0 to prove det A   =   0   . If
+those entries add to one, show that   det(A -   I)   = 0 . Does this mean det A=   1?
+11   Suppose that   CD   =- DC   and find the flaw in this reasoning: Taking determinants
+gives ICI IDI =   -IDI ICI-   Therefore ICI =   0   or IDI =   0   .   One or both of the
+matrices must be singular. (That is not true.)
+12   The inverse of a 2 by 2 matrix seems to have determinant =   1:
+detA-l=det
+1
+[
+d -b
+]   =
+ad- be
+=l   .
+ad- be -e   a   ad- be
+What is wrong with this calculation? What is the correct det A - I?
+Questions 13-27 use the rules to compute specific determinants.
+13   Reduce   A   to   U   and find det A   =   product of the pivots:
+14   By applying row operations to produce an upper triangular   U,   compute
+r   1   2
+2   6
+det
+_1   0
+0 2
+3   ol
+6   1
+0 3
+0   7
+and
+r-�
+-
+� -�   �1
+det
+0
+0
+-1   2 -1
+.
+0   -1   2

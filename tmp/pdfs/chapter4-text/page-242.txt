@@ -1,0 +1,46 @@
+232   Chapter 4.   Orthogonality
+26   Find the   plane   that gives the best fit to the 4 values   b   =   (0, 1, 3, 4) at the corners
+(1, 0) and (0, 1) and (-1, 0) and (0, -1) of a square.   The equations   C   +   Dx+   Ey   =
+b   at those 4 points are   Ax   =   b   with 3 unknowns   x   =   ( C, D, E).   What is   A?
+At the center (0, 0) of the square, show that   C   +   Dx   +   Ey   =   average of the b's.
+27   (Distance between lines ) The points   P   =   (x, x, x)   and   Q   =   (y, 3y,   -1) are on two
+lines in space that don't meet. Choose x and y to minimize the squared distance
+11   P - Q   11
+2
+.   The line connecting the closest P and Q is perpendicular to __ .
+28   Suppose the columns of   A   are not independent. How could you find a matrix   B   so
+that   P   =   B   (   B
+T
+B   )-
+1
+B
+T
+does give the projection onto the column space of   A?   (The
+usual formula will fail when   A
+T
+A   is not invertible.)
+29   Usually there will be exactly one hyperplane in   R
+n
+that contains the n given points
+x   = 0, a 1, ...   ,   an-l·   (Example for n = 3:   There will be one plane containing
+0, a 1,   a 2   unless __ .) What is the test to have exactly one plane in   R
+n
+?
+30   Example 2 shifted the times   t i   to make them add to zero. We subtracted away the
+average time   t   =   (t 1   + · · · +   t m   )/m   to get   T i
+=   t i   -   t.   Those   Ti   add to zero.
+With the columns (1, ... , 1) and (T1 , ... ,   Tm)   now orthogonal,   A
+T
+A   is diagonal.   Its
+entries are   m   and   T'f   + · · · +   T�.   Show that the best   C   and   D   have direct formulas:
+Tist -   t   C   =
+b1   + · · · +   bm
+m
+and   D   =
+b1T1   + · · · +   b m   T m
+T'f   + · · ·   +T;,
+The best line is C   +   D T   or C   +   D   (   t   -   t).   The time shift that makes   A
+T
+A   diagonal
+is an example of the Gram-Schmidt process:   orthogonalize the columns of A in
+advance.

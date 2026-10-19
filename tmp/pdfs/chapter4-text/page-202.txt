@@ -1,0 +1,50 @@
+192   Chapter 3.   Vector Spaces and Subspaces
+18   (Left nullspace) Add the extra column b and reduce A to echelon form:
+[Ab]=   4   5   6   b2 [
+1   2   3 b1
+]
+[1   2   3
+0   -3 -6
+0 0 0 7   8   9   b3
+A combination of the rows of   A   has produced the zero row. What combination is it?
+(Look at b 3   -   2b 2   +   b 1   on the right side.) Which vectors are in the nullspace of A
+T
+and which vectors are in the nullspace of   A?
+19   Following the method of Problem 18, reduce A to echelon form and look at zero
+rows. The b column tells which combinations you have taken of the rows:
+[
+1   2
+(a)   34
+4   6
+(b)
+From the b column after elimination, read off   m-r   basis vectors in the left nullspace.
+Those y's are combinations of rows that give zero rows in the echelon form.
+20   (a) Check that the solutions to   Ax   =   0 are perpendicular to the rows of A:
+A   = [�   �   �i [� � � �i   =   ER.
+341   0000
+(b) How many independent solutions to A
+T
+y   =   O? Why does y T   =   row 3 of E-
+1
+?
+21   Suppose   A   is the sum of two matrices of rank one:   A   =   uv   T   +   wz   T.
+(a) Which vectors span the column space of   A?
+(b) Which vectors span the row space of   A?
+(c) The rank is less than 2 if __ or if __ .
+(d) Compute A and its rank if   u   =   z   =   (   1, 0, 0) and   v   =   w   =   (   0, 0, 1).
+22   Construct   A   =   uv   T   +   wz   T   whose column space has basis ( 1, 2, 4), (   2 , 2, 1) and
+whose row space has basis ( 1, 0), ( 1, 1). Write   A   as (3 by 2) times (2 by 2).
+23   Without multiplying matrices, find bases for the row and column spaces of A:
+[
+1 2
+] [
+3   o   3
+]
+A
+=   i �   11   2
+.
+How do you know from these shapes that A cannot be invertible?
+24   (Important) A
+T
+y   =   d   is solvable when   d   is in which of the four subspaces? The
+solution y is unique when the __ contains only the zero vector.

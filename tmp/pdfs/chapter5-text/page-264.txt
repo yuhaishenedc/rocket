@@ -1,0 +1,54 @@
+254   Chapter 5.   Determinants
+5.1 B   Explain how to reach this determinant by row operations:
+[
+1- a   1   1   l
+det   1   1-a   1   =a
+2
+(3-a).
+1   1   1-a
+Solution   Subtract row   3 from row   1 and then from row   2 . This leaves
+det [ �
+a
+�a   :   ]
+1   1   1-   a
+(4)
+Now add column 1 to column 3, and also column 2 to column 3. This leaves a lower
+triangular matrix with   -a, -a,   3   -   a   on the diagonal: det = (- a)(-a)(3   - a).
+The determinant is zero if   a   = 0 or   a   = 3. For   a   = 0 we have the   all-ones matrix
+certainly singular. For   a   = 3, each row adds to zero-again singular. Those numbers 0
+and   3 are the   eigenvalues   of the all-ones matrix. This example is revealing and important,
+leading toward Chapter 6.
+Problem Set 5.1
+Questions 1-12 are about the rules for determinants.
+1   If a 4 by 4 matrix has detA =   ½,   find det(2A) and det(-A) and det(A
+2
+)   and
+det(A-
+1
+).
+2   If a 3 by 3 matrix has detA = - 1, find det(½A) and det(- A) and det(A
+2
+) and
+det(A-
+1
+).
+3   True or false, with a reason if true or a counterexample if false:
+(a) The determinant of   I+ A   is   1   +   detA.
+(b) The determinant of   ABC   is IAI IBI ICI .
+(c) The determinant of   4A   is 4IAI.
+(d) The determinant of   AB   -   BA   is zero. Try an example with   A=   [ �   � ] .
+4   Which row exchanges show that these "reverse identity matrices"   J 3   and   J 4   have
+IJ3I = -1 but IJ4I = +1?
+[
+o   o   1]
+det   O   1   0   = -1
+1   0   0
+but
+r o   o   o   11 0   0   1   0
+det
+O   1   0   0
+=   + 1.
+1   0   0   0
+5   For   n   = 5, 6, 7, count the row exchanges to permute the reverse identity J n   to the
+identity matrix I n   .   Propose a rule for every size   n   and predict whether J 101   has
+determinant   + 1 or   - 1.

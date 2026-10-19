@@ -1,0 +1,101 @@
+4.4.   Orthonormal Bases and Gram-Schmidt
+4.4   Orthonormal Bases and Gram-Schmidt
+233
+1 Th   1   h   l
+.
+f
+T
+{
+0
+1
+£
+f
+o
+r
+i_
+#
+J_
+}· Then I
+Q
+T
+Q   --   I.   I e co umns q1,   ... ,   q n   are ort onorma   1   q
+i
+% =
+.   . or   i   = J
+2 If   Q   is also square, then   QQ
+T
+=   I   and I   Q
+T
+=   Q-
+1
+I-   Q   is an "orthogonal matrix".
+3 The least squares solution to   Qx   =   bis   x   =   Q
+T
+b.   Projection of b:   p   =   QQ
+T
+b   =   Pb.
+4   The   Gram-Schmidt   process takes independent a i   to orthonormal q
+i
+. Start with q
+1
+=ai/ I la1II-
+5 q
+i
+is (a i   - projection   p
+i )/ lla i   -p i ll; projection P i
+=
+(a'fq 1   )q 1   + · · · +   (a'fq i _   1   )q i -l·
+6 Each a i   will be a combination of q
+1
+to q
+i
+. Then   A   =   QR:   orthogonal   Q   and triangular   R.
+This section has two goals,   why   and   how.   The first is to see why orthogonality is good.
+Dot products are zero, so A
+T
+A will be diagonal. It becomes so easy to find x and   p = Ax.
+The second goal is to construct orthogonal vectors.   You will see how Gram-Schmidt
+chooses combinations of the original basis vectors to produce right angles. Those original
+vectors are the columns of   A,   probably   not   orthogonal.   The orthonormal basis vectors
+will be the columns of   a new matrix Q.
+From Chapter   3,   a   basis consists of independent vectors that span the space.
+The basis vectors could meet at any angle (except 0
+°
+and 180
+°
+). But every time we visu
+alize axes, they are perpendicular.   In our imagination, the coordinate axes are practically
+always orthogonal.   This simplifies the picture and it greatly simplifies the computations.
+The vectors q
+1
+, ...   ,   q
+n
+are   orthogonal   when their dot products q
+i
+· % are zero. More
+exactly   q'f   % = 0 whenever i # j. With one more step-just   divide each vector by its
+length-the   vectors become   orthogonal unit vectors.   Their lengths are all 1 (normal).
+Then the basis is called   orthonormal.
+DEFINITION   The vectors q
+1
+, ... ,   q
+n
+are   orthonormal   if
+q
+T
+q   = {
+0   when i #   j
+i   1
+1   when i =   j
+(orthogonal   vectors)
+(unit   vectors: llq
+i ll = 1)
+A matrix with orthonormal columns is assigned the special letter   Q.
+The matrix   Q   is easy to work with because   Q
+T
+Q   =   I. This repeats in matrix lan
+guage that the columns q
+1
+, ... ,   q
+n
+are orthonormal.   Q   is not required to be square.

@@ -1,0 +1,82 @@
+5.1. The Properties of Determinants   257
+23   From   A   = [   i   ! ]   find   A
+2
+and   A -
+1
+and   A   -   )J   and their determinants. Which two
+numbers,\ lead to det(A -   ,\I)   = 0 ?
+24   Elimination reduces   A   to   U.   Then   A= LU:
+[J
+3
+j]
+[ l
+0
+�rn
+3
+t] A=   8   1   2   =   LU.
+5   4   0   -1
+Find the determinants of   L, U, A,   u-
+1
+L-
+1
+,   and u-
+1
+L -
+1
+A.
+25   If the i, j   entry of   A   is i times   j,   show that det   A   = 0. (Exception when   A   = [ 1 ]   .)
+26   If the i, j   entry of   A   is i   +   j,   show that det   A   =   0. (Exception when n   =   1 or 2.)
+27   Compute the determinants of these matrices by row operations:
+A�[!
+�]
+[
+a   0
+]
+a
+0   b
+0   and   B   =
+0   0
+and   C=
+0
+0   0
+28   True or false (give a reason if true or a 2 by 2 example if false):
+(a) If   A   is not invertible then   AB   is not invertible.
+(b) The determinant of   A   is always the product of its pivots.
+(c) The determinant of   A   -   B   equals det   A   - det   B.
+(d)   AB   and   BA   have the same determinant.
+[;
+29   What is wrong with this proof that projection matrices have det   P   = 1?
+p   =   A(A
+T
+A)-lA
+T
+so   IPI   =   IAI
+IA/IIAI
+IA
+T
+/
+=   l.
+a
+b
+b
+30   (Calculus question) Show that the partial derivatives of ln(   det A) give A-
+1
+!
+�]
+f(a, b,   c,   d) = ln(ad -   be)   leads to   [
+8f   /8a   8f   /8c
+]
+_
+A
+_   1
+a   JI   ob   a   JI   od   -
+31   (MATLAB) The Hilbert matrix hilb(n) has   i,j   entry equal to 1/(i   +   j   - 1). Print
+the determinants ofhilb(l), hilb(2),   ..., hilb(lO). Hilbert matrices are hard to work
+with! What are the pivots ofhilb (   5)?
+32   (MATLAB) What is a typical determinant (experimentally) ofrand(n) and   randn(n)
+for n = 50,100,200,400? (And what does "Inf" mean in MATLAB?)
+33   (MATLAB) Find the largest determinant of a 6 by 6 matrix of 1   's and -1   's.
+34   If you know that det   A   = 6, what is the determinant of   B?
+row 1   row 3   +   row 2   +   row I
+From det   A   =   row 2   =   6 find det   B   =   row 2 + row I
+row 3   row I

@@ -1,0 +1,55 @@
+5.3. Cramer's Rule, Inverses, and Volumes   285
+17   A box has edges from (0,0,0) to (3,1,1) and (1,3,1) and (1,1,3). Find its volume.
+Also find the area of each parallelogram face using llu x vll-
+18   (a) The corners of a triangle are (2,1) and (3,4) and (0,   5). What is the area?
+(b) Add a comer at (   -1,0) to make a lopsided region (four sides). Find the area.
+19   The parallelogram with sides (2,1) and (2,3) has the same area as the parallelogram
+with sides (2,2) and (1,3). Find those areas from 2 by 2 determinants and say why
+they must be equal. (I can't see why from a picture. Please write to me if you do.)
+20   The Hadamard matrix H has orthogonal rows. The box is a hypercube!
+What is
+1   1   1   1
+1   -1   -1 1
+IHI
+=
+1   -1   -1   1
+1   -1   1   -1
+volume of a hypercube in R
+4
+?
+21   If the columns of a 4 by 4 matrix have lengths L 1,   L 2,   L 3,   L 4,   what is the largest
+possible value for the determinant (based on volume)?   If   all entries of the matrix are
+1 or -1, what are those lengths and the maximum determinant?
+22   Show by a picture how a rectangle with area x 1   y 2   minus a rectangle with area x 2   y 1
+produces the same area as our parallelogram.
+23   When the edge vectors   a,   b, care perpendicular, the volume of the box is llall times
+llbll times llcll- The matrix A
+T
+A is _   _ . Find det A
+T
+A and det A.
+24   The box with edges i and j and   w   =   2i   +   3j   +   4k has height_   _ . What is the
+volume? What is the matrix with this determinant? What is i x j and what is its dot
+product with   w?
+25   An n-dimensional cube has how many corners?   How many edges?   How many
+(n - 1)-dimensional faces? The cube in R
+n
+whose edges are the rows of   2I   has
+volume _   _ . A hypercube computer has parallel processors at the corners with
+connections along the edges.
+26   The triangle with corners (0,0),   (1,0),   (0,1) has area ½- The pyramid in R
+3
+with
+four corners (0,0,0),   (1,0,0),   (0,1,0),   (0,0,1) has volume __ . What is the vol
+ume of a pyramid in R
+4
+with five corners at (0,0,0,0) and the rows of I?
+Problems 27-30 are about areas   dA   and volumes   dV   in calculus.
+27   Polar coordinates satisfy x   =   r cos 0 and y   =   r sin 0. Polar area is J dr d0:
+J   = I
+8x   /   8r   8x   /   80
+1 = I
+cos 0   -r sin 0
+1
+8y   /   8r   8y   /   80   sin 0   r cos 0   ·
+The two columns are orthogonal. Their lengths are __ . Thus J   = __ .

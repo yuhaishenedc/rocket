@@ -1,0 +1,85 @@
+5.3. Cramer's Rule, Inverses, and Volumes   275
+The   i,   j entry of   A-
+1
+is the cofactor   C
+ji   (not   Cij)   divided   by det   A:
+FORMULA FOR   A-
+1
+and
+C
+T
+A -1
+=
+detA.
+(6)
+The cofactors   C ij
+go into the   "cofactor matrix" C.   The transpose of C leads to   A-
+1
+.
+To compute the i,   j   entry of A-
+1
+,   cross out row   j   and column i of   A.   Multiply the
+determinant by ( -1   )i+j to get the cofactor   C
+ji   ,   and divide by det   A.
+Check this rule for the 3, 1 entry of A-
+1
+.   For column 1 we solve   Ax
+=
+(l, 0, 0).
+The third component x 3   needs the third determinant in equation (5), divided by det   A.
+That determinant is exactly the cofactor   C13   =   a21a32-a22a31.   So (A-
+1
+h1   =   C13/   det   A.
+Summary   In solving   AA-
+1
+=   I,   each column of   I   leads to a column of A-
+1
+.   Every
+entry of A-
+1
+is a ratio: determinant of size   n   - l / determinant of size   n.
+Direct proof of the formula   A-
+1
+=   C
+T
+/ det   A   This means   AC
+T
+= (   det   A)I:
+c 31
+]   l
+detA
+C32   =   0
+C33
+0
+0
+detA
+0
+(Row 1 of   A)   times (column 1 of C
+T
+) yields the first det   A   on the right:
+0   j
+0
+detA
+an   Cn   +   a12C12   +   a13C13   =   det   A   This is exactly the cofactor rule!
+(7)
+Similarly row 2 of   A   times column 2 of C
+T
+(notice the transpose)   also yields det   A.
+The entries   a 2j   are multiplying cofactors C 2j
+as they should, to give the determinant.
+How to explain the zeros off the main diagonal in equation   (7)?   The rows of   A   are
+multiplying cofactors from   different   rows. Why is the answer zero?
+Row2 of   A
+Row 1 ofC
+(8)
+Answer: This is the cofactor rule for a new matrix, when the second row of   A   is copied into
+its first row. The new matrix   A*   has two equal rows, so det   A*   =   0 in equation (8). Notice
+that   A*   has the same cofactors   C11, C12, C13   as A-because all rows agree after the first
+row. Thus the remarkable multiplication (7) is correct:
+AC
+T
+=   (detA)I   or   A-1   =
+C
+T
+.
+detA

@@ -1,0 +1,48 @@
+4.2.   Projections   207
+In this case the projections p 1   and p 2   are perpendicular.   The   xy   plane and the   z   axis
+are   orthogonal subspaces,   like the floor of a room and the line between two walls.
+Projection p
+1
+=   Ab=   [�zl ..._''
+..._
+[x   l
+':   b=   ;
+Figure 4.5: The projections p
+1
+=   Ab   and p
+2
+=   P 2 b   onto the   z   axis and the   xy   plane.
+More than just orthogonal, the line and plane are orthogonal   complements.   Their
+dimensions add to 1   +   2   =   3. Every vector   b   in the whole space is the sum of its parts in
+the two subspaces. The projections p
+1
+and p
+2
+are exactly those two parts of   b:
+The vectors give p
+1
++   p
+2
+=   b.   The matrices give   A+   P 2   =   I.   (1)
+This is perfect. Our goal is reached-for this example. We have the same goal for any line
+and any plane and any n-dimensional subspace. The object is to find the part   p   in each
+subspace, and the projection matrix   P   that produces that part p =   Pb.   Every subspace
+of R
+m
+has its own m by m projection matrix. To compute   P,   we absolutely need a good
+description of the subspace that it projects onto.
+The best description of a subspace is a basis. We put the basis vectors into the columns
+of   A.   Now we are projecting onto the column space of   A!   Certainly the   z   axis is the
+column space of the 3 by 1 matrix A 1   .   The   xy   plane is the column space of A 2   .   That plane
+is   also   the column space of   A 3   (a subspace has many bases). So p
+2
+=   p
+3
+and P2 = P 3 .
+Our problem is   to project any   b onto the column space of any   m   by   n   matrix.
+Start with a line (dimension n = l). The matrix   A   will have only one column. Call it a.
+Projection Onto a Line
+A line goes through the origin in the direction of a   =   (a 1   , .   .   .   ,a m   )-   Along that line,
+we want the point   p   closest to   b   =   (b 1   , .   .   . ,   b m   )- The key to projection is orthogonality:
+The line from b to p is perpendicular to the vector a.   This is the dotted line marked
+e   =   b   -   p   for the error on the left side of Figure 4.6. We now compute   p   by algebra.

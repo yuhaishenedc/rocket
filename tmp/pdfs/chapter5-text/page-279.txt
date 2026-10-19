@@ -1,0 +1,79 @@
+5.2. Permutations and Cofactors   269
+17   The matrix B n   is the -1, 2, -1 matrix A n   except that bu = 1 instead of au = 2.
+Using cofactors of the   last   row of B4 show that IB4I = 2IB3I - IB2J = 1.
+r
+-
+�
+-
+�
+-1
+l
+-1   2   -1
+-1   2
+[ 1 -lJ
+B2   =
+-1   2
+.
+The recursion IBnl   =   2IBn-1I - JBn-21 is satisfied when every IBnl   =   1.   This
+recursion is the same as for the A's in Example 6. The difference is in the starting
+values 1, 1, 1 for the determinants of sizes n   =   l, 2, 3.
+i 8   Go back to B n   in Problem 17.   It is the same as A n   except for bu   =   1.   So use
+linearity in the first row, where [ 1   -1   0] equals [ 2   -1   0] minus [ 1   0   0]:
+1   -1   0   2   -1
+JBnJ   =
+-1   -1
+A n -1   A n -1
+0   0
+Linearity gives IBnJ   =   IAnl - JAn-11   = ��·
+0   1   0
+-1
+A n -1
+0
+19   Explain why the 4 by 4 Vandermonde determinant contains   x
+3
+but not   x
+4
+or   x
+5
+:
+r l   a   a
+2
+l   b   b
+2
+Vi= <let
+1
+c
+c
+2
+l   X   X
+2
+a
+3
+]
+b
+3
+c3
+x
+3
+0
+The determinant is zero at x   = __ , __ ,   and __ . The cofactor of x
+3
+is
+V3   =   (b-   a)(c - a)(c - b). Then Vi=   (b-   a)(c - a)(c -   b)(x   -   a)(x   -   b)(x   - c).
+20   Find G 2   and G 3   and then by row operations G 4.   Can you predict G n   ?
+0   1
+1   0
+0   1   1
+1   0   1
+1   1   0
+0   1   1   1
+1   0   1   1
+1   1   0   1
+1   1   1   0
+21   Compute S 1   ,   S 2   ,   S 3   for these 1, 3, 1 matrices. By Fibonacci guess and check S 4   .
+3   1   0
+S3   =   1   3   1
+0   1   3
+22   Change 3 to 2 in the upper left comer of the matrices in Problem 21.   Why does
+that subtract S n -l from the determinant S n   ? Show that the determinants of the new
+matrices become the Fibonacci numbers 2, 5, 13 (always F2n+1).

@@ -1,0 +1,59 @@
+4.3. Least Squares Approximations   223
+Chapter 7 will have the complete picture-all four subspaces included. Every x splits
+into X r   +   X n   , and every b splits into p   +   e. The best solution is   x   = X r   in the row space.
+We can't help   e   and we don't want X n   from the nullspace-this leaves Ax   =   p.
+Fitting a Straight Line
+Fitting a line is the clearest application of least squares. It starts with   m   >   2 points,
+hopefully near a straight line.   At times t 1, ... ,   t m   those   m   points are at heights
+b 1, ...   ,   b m   .   The best line   C   +   Dt   misses the points by vertical distances   e1, ...   ,   e m   .
+No line is perfect, and the least squares line minimizes E   = er+···+   e;,...
+The first example in this section had three points in Figure 4.6. Now we allow   m   points
+(and   m   can be large).   The two components of   x   are still C and D.
+A line goes through them points when we exactly solve   Ax   =   b.   Generally we can't
+do it. Two unknowns   C   and   D   determine a line, so   A   has only   n   =   2 columns. To fit the
+m   points, we are trying to solve   m   equations (and we only have two unknowns!).
+C+Dti   =   bi
+Ax=b   is
+C   +   Dt2   =   b2
+with
+C+Dt m   =   b m
+A
+�   r;   t,   1
+t2
+.   .
+t m
+(5)
+The column space is so thin that almost certainly b is outside of it. When b happens to lie
+in the column space, the points happen to lie on a line. In that case b   =   p. Then   Ax   =   b
+is solvable and the errors are   e   = (0, ..., 0).
+The closest line C   +   Dt   has heights   p 1, . . . ,   P rn   with errors e   1, • • • ,   e rn .
+Solve   A
+T
+Ax= A
+T
+b   for   x   =   (C, D).   The errors are   ei   =   bi -   C   - Dti.
+Fitting points by a straight line is so important that we give the two equations A
+T
+Ax=
+A
+T
+b, once and for all. The two columns of A are independent (unless all times ti are the
+same). So we turn to least squares and solve A
+T
+Ax= A
+T
+b.
+Dot-product matrix   A
+T
+A   = [   t�   (6)
+On the right side of the normal equation is the 2 by 1 vector A
+T
+b:
+(7)
+In a specific problem, these numbers are given.   The best x   = (   C,   D)   is (A
+T
+A)-
+1
+A
+T
+b.

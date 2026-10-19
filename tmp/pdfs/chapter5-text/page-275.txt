@@ -1,0 +1,38 @@
+5.2. Permutations and Cofactors
+Example 7   This is the same matrix, except the first entry (upper left) is now 1:
+[
+-
+�
+-
+�
+-
+1
+l
+-1   2   -1
+-1   2
+265
+All pivots of this matrix turn out to be 1.   So its determinant is 1.   How does that come
+from cofactors? Expanding on row 1, the cofactors all agree with Example 6. Just change
+an = 2 to b 11   = 1:
+instead of
+The determinant of B 4   is 4 - 3 = 1. The determinant of every B n   is n - (   n - 1) = 1.
+If you also change the last 2 into 1, why is det = 0?
+•   REVIEW OF THE KEY IDEAS   •
+1. With no row exchanges, det   A   =   (product of   pivots).   In the upper left corner of   A,
+det   Ak   =   (product of   the   first k pivots).
+2.   Every term in the big formula (8) uses each row and column once.   Half of the
+n! terms have plus signs (when det P =   + 1) and half have minus signs.
+3.   The cofactor   Cij   is ( -1) i+
+j
+times the smaller determinant that omits row i and
+column   j   (because   aij   uses that row and column).
+4.   The determinant is the dot product of any row of   A   with its row of cofactors.
+When a row of   A   has a lot of zeros, we only need a few cofactors.
+•   WORKED EXAMPLES   •
+5.2 A   A   Hessenberg matrix   is a triangular matrix with one extra diagonal. Use cofactors
+of row 1 to show that the 4 by 4 determinant satisfies Fibonacci's rule IH4I = IH3I   +   IH2I
+The same rule will continue for all sizes, IH n l = IH n   -11   +   IH n   -21-   Which Fibonacci
+number is IHnl?
+H2 = [�
+�
+]

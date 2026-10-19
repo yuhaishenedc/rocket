@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>第1章_向量导论</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<!-- 来源：Gilbert Strang, Introduction to Linear Algebra, 5th ed.，PDF 第 11–40 页（书页第 1–30 页）。依照整理规范，不收录各节 Problem Set 与 Challenge Problems。 -->
+<h1 id="第-1-章-向量导论">第 1 章　向量导论</h1>
+<p>线性代数的核心是对向量进行两种运算：向量相加得到 <span
+class="math inline">\(v+w\)</span>，向量乘数得到 <span
+class="math inline">\(cv\)</span>。把两种运算结合起来，就得到<strong>线性组合</strong></p>
+<p><span class="math display">\[cv+dw
+=c\begin{bmatrix}1\\1\end{bmatrix}
++d\begin{bmatrix}2\\3\end{bmatrix}
+=\begin{bmatrix}c+2d\\c+3d\end{bmatrix}.\]</span></p>
+<p>例如，<span class="math inline">\(c=d=1\)</span> 时得到 <span
+class="math inline">\(v+w=(3,4)\)</span>；<span
+class="math inline">\(c=2,d=1\)</span> 时得到 <span
+class="math inline">\(cv+dw=(4,5)\)</span>。有时我们需要一个特定组合，另一些时候则关心
+<span class="math inline">\(c,d\)</span>
+取遍所有实数时得到的<strong>全部线性组合</strong>。</p>
+<p>所有 <span class="math inline">\(cv\)</span> 位于一条直线上。如果
+<span class="math inline">\(w\)</span> 不在这条直线上，全部 <span
+class="math inline">\(cv+dw\)</span>
+将充满二维平面。四维空间中，四个向量 <span
+class="math inline">\(u,v,w,z\)</span> 的组合 <span
+class="math inline">\(cu+dv+ew+fz\)</span>
+通常能充满整个空间，但也可能只落在一个平面或一条直线上。</p>
+<p>本章从可以画出的二维、三维向量出发，再自然地进入 <span
+class="math inline">\(n\)</span> 维空间：</p>
+<ul>
+<li>1.1：向量加法 <span class="math inline">\(v+w\)</span> 与线性组合
+<span class="math inline">\(cv+dw\)</span>；</li>
+<li>1.2：点积 <span class="math inline">\(v\cdot w\)</span> 与长度 <span
+class="math inline">\(\lVert v\rVert=\sqrt{v\cdot v}\)</span>；</li>
+<li>1.3：矩阵 <span class="math inline">\(A\)</span>、线性方程 <span
+class="math inline">\(Ax=b\)</span> 与解 <span
+class="math inline">\(x=A^{-1}b\)</span>。</li>
+</ul>
+<h2 id="向量与线性组合">1.1　向量与线性组合</h2>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;ol style=&quot;margin:0; padding-left:1.6em;&quot;&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$3v+5w$ 是向量 $v,w$ 的一个典型线性组合。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;若 $v=(1,1)$、$w=(2,3)$，则 $3v+5w=(13,18)$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;向量 $(2,3)=(2,0)+(0,3)$ 在平面中表示向右 $2$、向上 $3$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;组合 $c(1,1)+d(2,3)$ 充满整个 $xy$ 平面。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;组合 $c(1,1,1)+d(2,3,4)$ 在三维空间中充满一个平面。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;方程 $c+2d=1,\ c+3d=0,\ c+4d=0$ 无解，因为 $(1,0,0)$ 不在该平面上。&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+</div>
+</div>
+<p>两个彼此分开的数 <span class="math inline">\(v_1,v_2\)</span>
+组成一个二维列向量</p>
+<p><span
+class="math display">\[v=\begin{bmatrix}v_1\\v_2\end{bmatrix}.\]</span></p>
+<p>虽然不把 <span class="math inline">\(v_1\)</span> 与 <span
+class="math inline">\(v_2\)</span>
+相加，却可以把向量相加。不同位置的分量始终彼此对应：</p>
+<p><span class="math display">\[\begin{bmatrix}v_1\\v_2\end{bmatrix}
++\begin{bmatrix}w_1\\w_2\end{bmatrix}
+=\begin{bmatrix}v_1+w_1\\v_2+w_2\end{bmatrix}.\]</span></p>
+<p>减法同理。另一种基本运算是<strong>标量乘法</strong>：</p>
+<p><span
+class="math display">\[2v=\begin{bmatrix}2v_1\\2v_2\end{bmatrix}=v+v,
+\qquad
+-v=\begin{bmatrix}-v_1\\-v_2\end{bmatrix}.\]</span></p>
+<p><span class="math inline">\(cv\)</span> 的分量是 <span
+class="math inline">\(cv_1,cv_2\)</span>，数 <span
+class="math inline">\(c\)</span> 称为<strong>标量</strong>。<span
+class="math inline">\(-v\)</span> 与 <span
+class="math inline">\(v\)</span> 的和是零向量 <span
+class="math inline">\(\boldsymbol 0=(0,0)\)</span>；零向量与标量 <span
+class="math inline">\(0\)</span> 不是同一个对象。</p>
+<h3 id="线性组合">线性组合</h3>
+<p>先把 <span class="math inline">\(v\)</span> 乘以 <span
+class="math inline">\(c\)</span>，把 <span
+class="math inline">\(w\)</span> 乘以 <span
+class="math inline">\(d\)</span>，再相加，就得到 <span
+class="math inline">\(cv+dw\)</span>。</p>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.7em 1em; text-align:left; font-weight:600;">
+<pre><code>$cv$ 与 $dw$ 的和称为向量 $v,w$ 的一个线性组合 $cv+dw$。</code></pre>
+</div>
+</div>
+<p>四个特殊组合是</p>
+<p><span class="math display">\[\begin{aligned}
+1v+1w&amp;=v+w, &amp; 1v-1w&amp;=v-w,\\
+0v+0w&amp;=\boldsymbol 0, &amp; cv+0w&amp;=cv.
+\end{aligned}\]</span></p>
+<p>零向量总是可能的组合。以后每次遇到一个向量“空间”，其中都会包含零向量。</p>
+<p>向量有三种相互对应的表示：一组分量、从原点出发的箭头，以及平面中的终点。分量用于计算，箭头用于观察几何意义。将
+<span class="math inline">\(w\)</span> 的起点放到 <span
+class="math inline">\(v\)</span>
+的终点，得到首尾相接的向量和；平行四边形的对角线也是 <span
+class="math inline">\(v+w\)</span>。</p>
+<div data-align="center">
+<img src="images/1-1.png" alt="图 1.1 向量加法与向量之差" style="display:block; width:auto; max-width:min(100%, 610px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.1　向量加法 <span class="math inline">\(v+w=(3,4)\)</span>
+与向量之差 <span class="math inline">\(v-w=(5,0)\)</span>。
+</div>
+</div>
+<p>先沿 <span class="math inline">\(v\)</span> 再沿 <span
+class="math inline">\(w\)</span>，或者先沿 <span
+class="math inline">\(w\)</span> 再沿 <span
+class="math inline">\(v\)</span>，会到达同一点，因此 <span
+class="math inline">\(w+v=v+w\)</span>。</p>
+<h3 id="三维向量">三维向量</h3>
+<p>二维向量 <span class="math inline">\((v_1,v_2)\)</span> 对应 <span
+class="math inline">\(xy\)</span>
+平面内的点。三个分量则对应三维空间中的点。例如</p>
+<p><span class="math display">\[v=\begin{bmatrix}1\\1\\-1\end{bmatrix},
+\qquad
+w=\begin{bmatrix}2\\3\\4\end{bmatrix},
+\qquad
+v+w=\begin{bmatrix}3\\4\\3\end{bmatrix}.\]</span></p>
+<p>三维向量通常表示从原点 <span class="math inline">\((0,0,0)\)</span>
+指向 <span class="math inline">\((v_1,v_2,v_3)\)</span>
+的箭头。列向量、从原点出发的箭头和箭头终点三者完全对应。平面中的 <span
+class="math inline">\((x,y)\)</span> 与三维空间中的 <span
+class="math inline">\((x,y,0)\)</span> 是不同的向量。</p>
+<div data-align="center">
+<img src="images/1-2.png" alt="图 1.2 二维与三维向量所对应的点" style="display:block; width:auto; max-width:min(100%, 560px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.2　向量 <span class="math inline">\((x,y)\)</span> 与 <span
+class="math inline">\((x,y,z)\)</span> 分别对应二维和三维空间中的点。
+</div>
+</div>
+<p>为节省空间，列向量也常写成 <span
+class="math inline">\(v=(1,1,-1)\)</span>。它仍表示列向量，不是行向量
+<span class="math inline">\([\,1\ 1\
+-1\,]\)</span>；后者是前者的转置。三维向量仍按分量相加，这一规则可直接推广到
+<span class="math inline">\(n\)</span> 维。</p>
+<h3 id="从一个组合到全部组合">从一个组合到全部组合</h3>
+<p>一个向量 <span class="math inline">\(u\)</span> 的全部组合是 <span
+class="math inline">\(cu\)</span>；两个向量的全部组合是 <span
+class="math inline">\(cu+dv\)</span>；三个向量的全部组合是 <span
+class="math inline">\(cu+dv+ew\)</span>。在三维空间中，典型情形是：</p>
+<ol type="1">
+<li>全部 <span class="math inline">\(cu\)</span>
+充满一条经过原点的直线；</li>
+<li>全部 <span class="math inline">\(cu+dv\)</span>
+充满一个经过原点的平面；</li>
+<li>全部 <span class="math inline">\(cu+dv+ew\)</span>
+充满整个三维空间。</li>
+</ol>
+<div data-align="center">
+<img src="images/1-3.png" alt="图 1.3 一个向量张成直线，两个向量张成平面" style="display:block; width:auto; max-width:min(100%, 560px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.3　(a) 经过 <span class="math inline">\(u\)</span> 的直线；(b) 包含
+<span class="math inline">\(u,v\)</span> 的平面。
+</div>
+</div>
+<p>若第三个向量 <span class="math inline">\(w\)</span> 不在 <span
+class="math inline">\(u,v\)</span> 的平面内，<span
+class="math inline">\(ew\)</span> 与所有 <span
+class="math inline">\(cu+dv\)</span> 的组合将充满整个三维空间。但如果
+<span class="math inline">\(w\)</span> 本身就是某个 <span
+class="math inline">\(cu+dv\)</span>，加入 <span
+class="math inline">\(w\)</span> 后仍不会离开原来的平面。</p>
+<h3 id="关键思想回顾">关键思想回顾</h3>
+<ol type="1">
+<li>二维向量 <span class="math inline">\(v\)</span> 有两个分量 <span
+class="math inline">\(v_1,v_2\)</span>。</li>
+<li><span class="math inline">\(v+w\)</span> 与 <span
+class="math inline">\(cv\)</span> 都按分量计算。</li>
+<li>三个向量 <span class="math inline">\(u,v,w\)</span> 的线性组合是
+<span class="math inline">\(cu+dv+ew\)</span>。</li>
+<li>一个、两个、三个典型三维向量的全部组合依次充满直线、平面和 <span
+class="math inline">\(\mathbb R^3\)</span>。</li>
+</ol>
+<h3 id="worked-examples">Worked Examples</h3>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.1 A&lt;/div&gt;
+&lt;div&gt;向量 $v=(1,1,0)$ 与 $w=(0,1,1)$ 的全部组合在 $\mathbb R^3$ 中充满一个平面。描述该平面，并找出一个不在平面内的向量。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle cv+dw=c\begin{bmatrix}1\\1\\0\end{bmatrix}+d\begin{bmatrix}0\\1\\1\end{bmatrix}=\begin{bmatrix}c\\c+d\\d\end{bmatrix}.$&lt;/div&gt;
+&lt;div&gt;第二分量始终等于第一、三分量之和。因此 $(1,2,3)$ 不在平面中，因为 $2\ne1+3$。也可以用 $n=(1,-1,1)$ 描述这个平面：$v\cdot n=w\cdot n=0$，所以 $n$ 垂直于平面。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.1 B&lt;/div&gt;
+&lt;div&gt;令 $v=(1,0)$、$w=(0,1)$。描述 $c$ 取整数或 $c\ge0$ 时的所有 $cv$，再加入全部 $dw$。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;　整数 $c$ 产生 $x$ 轴上的等间距点；加入全部 $dw$ 后，得到经过这些点的无穷多条竖直平行线。$c\ge0$ 产生正 $x$ 轴半直线；再加入全部 $dw$，得到右半平面 $x\ge0$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.1 C&lt;/div&gt;
+&lt;div&gt;求 $c,d$，使 $cv+dw=b$，其中 $v=(2,-1)$、$w=(-1,2)$、$b=(1,0)$。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle c\begin{bmatrix}2\\-1\end{bmatrix}+d\begin{bmatrix}-1\\2\end{bmatrix}=\begin{bmatrix}1\\0\end{bmatrix}.$&lt;/div&gt;
+&lt;div&gt;比较分量得到 $2c-d=1$、$-c+2d=0$，所以 $c=\frac23,d=\frac13$。矩阵形式为&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0 0; text-align:center;&quot;&gt;$\displaystyle \begin{bmatrix}2&amp;-1\\-1&amp;2\end{bmatrix}\begin{bmatrix}c\\d\end{bmatrix}=\begin{bmatrix}1\\0\end{bmatrix}.$&lt;/div&gt;</code></pre>
+</div>
+</div>
+<h2 id="长度与点积">1.2　长度与点积</h2>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;ol style=&quot;margin:0; padding-left:1.6em;&quot;&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$(1,2)\cdot(4,5)=14$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$(1,3,2)$ 与 $(4,-4,4)$ 垂直，因为点积为零。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$v=(1,3,2)$ 的长度平方为 $v\cdot v=14$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$u=v/\lVert v\rVert$ 是与 $v$ 同方向的单位向量。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$\cos\theta=(v\cdot w)/(\lVert v\rVert\lVert w\rVert)$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$(1,0)$ 与 $(1,1)$ 的夹角为 $45^\circ$。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$|\cos\theta|\le1$ 导出 $|v\cdot w|\le\lVert v\rVert\lVert w\rVert$。&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+</div>
+</div>
+<p>点积先将对应分量相乘，再把结果相加。点积的结果是一个数。</p>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.7em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;定义　点积&lt;/div&gt;
+&lt;div&gt;$\displaystyle v\cdot w=v_1w_1+\cdots+v_nw_n$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<p><strong>例 1</strong>　<span class="math inline">\(v=(4,2)\)</span>
+与 <span class="math inline">\(w=(-1,2)\)</span> 的点积为</p>
+<p><span class="math display">\[v\cdot w=(4)(-1)+(2)(2)=0.
+\tag{1}\]</span></p>
+<p>两个非零向量点积为零时互相垂直。坐标单位向量 <span
+class="math inline">\(i=(1,0)\)</span>、<span
+class="math inline">\(j=(0,1)\)</span> 就满足 <span
+class="math inline">\(i\cdot j=0\)</span>。点积的次序无关紧要：<span
+class="math inline">\(w\cdot v=v\cdot w\)</span>。</p>
+<p><strong>例 2</strong>　在 <span class="math inline">\(x=-1\)</span>
+处放重量 <span class="math inline">\(4\)</span>，在 <span
+class="math inline">\(x=2\)</span> 处放重量 <span
+class="math inline">\(2\)</span>。重量与距离的点积为 <span
+class="math inline">\((4)(-1)+(2)(2)=0\)</span>，两侧力矩抵消，杠杆平衡。</p>
+<p><strong>例 3</strong>　三种商品的价格为 <span
+class="math inline">\(p=(p_1,p_2,p_3)\)</span>，买卖数量为 <span
+class="math inline">\(q=(q_1,q_2,q_3)\)</span>，则总收入为</p>
+<p><span class="math display">\[q\cdot
+p=q_1p_1+q_2p_2+q_3p_3.\]</span></p>
+<p>当 <span class="math inline">\(q\cdot p=0\)</span>
+时，总销售额与总购买额相等。</p>
+<h3 id="长度与单位向量">长度与单位向量</h3>
+<p>向量与自身的点积给出长度的平方。若 <span
+class="math inline">\(v=(1,2,3)\)</span>，则 <span
+class="math inline">\(v\cdot v=14\)</span>。</p>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.7em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;定义　向量的长度&lt;/div&gt;
+&lt;div&gt;$\displaystyle \lVert v\rVert=\sqrt{v\cdot v}=\sqrt{v_1^2+\cdots+v_n^2}$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<p>二维和三维中的长度来自勾股定理。四维向量 <span
+class="math inline">\((1,1,1,1)\)</span> 的长度为 <span
+class="math inline">\(2\)</span>；<span class="math inline">\(n\)</span>
+维单位立方体主对角线的长度为 <span class="math inline">\(\sqrt
+n\)</span>。</p>
+<div data-align="center">
+<img src="images/1-6.png" alt="图 1.6 二维与三维向量的长度" style="display:block; width:auto; max-width:min(100%, 640px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.6　二维和三维向量的长度 <span class="math inline">\(\sqrt{v\cdot
+v}\)</span>。
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.7em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;定义　单位向量&lt;/div&gt;
+&lt;div&gt;长度为 $1$ 的向量称为单位向量。非零向量 $v$ 同方向的单位向量是 $u=v/\lVert v\rVert$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<p>坐标单位向量为 <span class="math inline">\(i=(1,0)\)</span>、<span
+class="math inline">\(j=(0,1)\)</span>。与 <span
+class="math inline">\(x\)</span> 轴夹角为 <span
+class="math inline">\(\theta\)</span> 的单位向量为</p>
+<p><span class="math display">\[u=(\cos\theta,\sin\theta),\]</span></p>
+<p>因为 <span
+class="math inline">\(\cos^2\theta+\sin^2\theta=1\)</span>。</p>
+<div data-align="center">
+<img src="images/1-7.png" alt="图 1.7 坐标单位向量与单位圆" style="display:block; width:auto; max-width:min(100%, 590px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.7　坐标单位向量与单位圆上的向量。
+</div>
+</div>
+<h3 id="两个向量之间的夹角">两个向量之间的夹角</h3>
+<p>当 <span class="math inline">\(v,w\)</span> 垂直时，勾股定理给出</p>
+<p><span class="math display">\[\begin{equation}
+\lVert v\rVert^2+\lVert w\rVert^2=\lVert v-w\rVert^2.
+\tag{2}
+\end{equation}\]</span></p>
+<p>二维中展开为</p>
+<p><span class="math display">\[\begin{equation}
+(v_1^2+v_2^2)+(w_1^2+w_2^2)
+=(v_1-w_1)^2+(v_2-w_2)^2.
+\tag{3}
+\end{equation}\]</span></p>
+<p>消去相同的平方项后得到</p>
+<p><span class="math display">\[\begin{equation}
+v_1w_1+v_2w_2=0.
+\tag{4}
+\end{equation}\]</span></p>
+<p>因此直角对应 <span class="math inline">\(v\cdot w=0\)</span>。若
+<span class="math inline">\(v\cdot w&gt;0\)</span>，夹角小于 <span
+class="math inline">\(90^\circ\)</span>；若 <span
+class="math inline">\(v\cdot w&lt;0\)</span>，夹角大于 <span
+class="math inline">\(90^\circ\)</span>。</p>
+<div data-align="center">
+<img src="images/1-8.png" alt="图 1.8 点积的正负与夹角" style="display:block; width:auto; max-width:min(100%, 630px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.8　点积的正负区分锐角和钝角，点积为零对应直角。
+</div>
+</div>
+<p>夹角为 <span class="math inline">\(\theta\)</span> 的单位向量 <span
+class="math inline">\(u,U\)</span> 满足 <span
+class="math inline">\(u\cdot U=\cos\theta\)</span>。</p>
+<div data-align="center">
+<img src="images/1-9.png" alt="图 1.9 单位向量的点积等于夹角余弦" style="display:block; width:auto; max-width:min(100%, 550px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.9　单位向量 <span class="math inline">\(u,U\)</span> 的点积是夹角
+<span class="math inline">\(\theta\)</span> 的余弦。
+</div>
+</div>
+<p>非零向量 <span class="math inline">\(v,w\)</span>
+分别除以长度后成为单位向量，从而得到</p>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.7em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;余弦公式&lt;/div&gt;
+&lt;div&gt;若 $v,w$ 都是非零向量，则夹角 $\theta$ 由下式给出。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<p><span class="math display">\[\begin{equation}
+\cos\theta=\frac{v\cdot w}{\lVert v\rVert\lVert w\rVert}.
+\tag{5}
+\end{equation}\]</span></p>
+<p>由 <span class="math inline">\(|\cos\theta|\le1\)</span> 得到</p>
+<p><span class="math display">\[|v\cdot w|\le\lVert v\rVert\lVert
+w\rVert
+\qquad\text{（柯西—施瓦茨不等式）},\]</span></p>
+<p><span class="math display">\[\lVert v+w\rVert\le\lVert v\rVert+\lVert
+w\rVert
+\qquad\text{（三角不等式）}.\]</span></p>
+<p><strong>例 5</strong>　<span
+class="math inline">\(v=(2,1)\)</span>、<span
+class="math inline">\(w=(1,2)\)</span> 的点积为 <span
+class="math inline">\(4\)</span>，长度均为 <span
+class="math inline">\(\sqrt5\)</span>，所以</p>
+<p><span
+class="math display">\[\cos\theta=\frac{4}{\sqrt5\sqrt5}=\frac45.\]</span></p>
+<p>施瓦茨不等式给出 <span class="math inline">\(4&lt;5\)</span>。又因
+<span class="math inline">\(v+w=(3,3)\)</span>，三角不等式给出 <span
+class="math inline">\(\sqrt{18}&lt;2\sqrt5\)</span>。</p>
+<p><strong>例 6</strong>　<span class="math inline">\(v=(a,b)\)</span>
+与 <span class="math inline">\(w=(b,a)\)</span> 的点积为 <span
+class="math inline">\(2ab\)</span>，长度均为 <span
+class="math inline">\(\sqrt{a^2+b^2}\)</span>。因此</p>
+<p><span class="math display">\[2ab\le a^2+b^2.\]</span></p>
+<p>令 <span
+class="math inline">\(x=a^2,y=b^2\)</span>，得到几何平均数不超过算术平均数：</p>
+<p><span class="math display">\[\sqrt{xy}\le\frac{x+y}{2}.\]</span></p>
+<h3 id="关键思想回顾-1">关键思想回顾</h3>
+<ol type="1">
+<li>点积把对应分量相乘后求和。</li>
+<li><span class="math inline">\(\lVert v\rVert=\sqrt{v\cdot
+v}\)</span>，<span class="math inline">\(u=v/\lVert v\rVert\)</span>
+是单位向量。</li>
+<li>非零向量垂直时，<span class="math inline">\(v\cdot
+w=0\)</span>。</li>
+<li>夹角余弦为 <span class="math inline">\((v\cdot w)/(\lVert
+v\rVert\lVert w\rVert)\)</span>。</li>
+</ol>
+<h3 id="worked-examples-1">Worked Examples</h3>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.2 A&lt;/div&gt;
+&lt;div&gt;对 $v=(3,4)$、$w=(4,3)$ 检验两个不等式并求夹角余弦。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;　$v\cdot w=24$，$\lVert v\rVert=\lVert w\rVert=5$，$v+w=(7,7)$，所以&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle 24&lt;25,\qquad 7\sqrt2&lt;10,\qquad \cos\theta=\frac{24}{25}.$&lt;/div&gt;
+&lt;div&gt;当一个向量是另一个的倍数时，施瓦茨不等式取等号；两向量同向时，三角不等式也取等号。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.2 B&lt;/div&gt;
+&lt;div&gt;求与 $v=(3,4)$ 同方向的单位向量 $u$，以及与 $u$ 垂直的单位向量。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle u=\left(\frac35,\frac45\right),\qquad U=\left(-\frac45,\frac35\right),\qquad u\cdot U=0.$&lt;/div&gt;
+&lt;div&gt;另一个选择是 $-U=(\frac45,-\frac35)$，因此共有两个。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.2 C&lt;/div&gt;
+&lt;div&gt;已知 $r=(2,-1)$、$s=(-1,2)$，求 $x=(c,d)$，使 $x\cdot r=1$、$x\cdot s=0$。&lt;/div&gt;
+&lt;div style=&quot;margin-top:0.8em;&quot;&gt;&lt;strong&gt;解&lt;/strong&gt;　两个点积给出 $2c-d=1$、$-c+2d=0$，即 Worked Example 1.1 C 中的方程。列组合与行点积最终都统一为 $Ax=b$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<h2 id="矩阵">1.3　矩阵</h2>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;ol style=&quot;margin:0; padding-left:1.6em;&quot;&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$A=\begin{bmatrix}1&amp;2\\3&amp;4\\5&amp;6\end{bmatrix}$ 是 $3\times2$ 矩阵。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$Ax$ 是 $A$ 的各列的线性组合。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;$Ax$ 的各分量也是 $A$ 的各行与 $x$ 的点积。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;矩阵方程 $Ax=b$ 同时表示一组线性方程。&lt;/li&gt;
+  &lt;li style=&quot;margin:0.35em 0;&quot;&gt;若 $A$ 可逆，解可以写成 $x=A^{-1}b$；但并非每个矩阵都有逆。&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+</div>
+</div>
+<p>取三个向量</p>
+<p><span class="math display">\[u=\begin{bmatrix}1\\-1\\0\end{bmatrix},
+\qquad
+v=\begin{bmatrix}0\\1\\-1\end{bmatrix},
+\qquad
+w=\begin{bmatrix}0\\0\\1\end{bmatrix}.\]</span></p>
+<p>把它们放入矩阵 <span class="math inline">\(A\)</span> 的各列，则</p>
+<p><span class="math display">\[\begin{equation}
+x_1u+x_2v+x_3w
+=\begin{bmatrix}x_1\\x_2-x_1\\x_3-x_2\end{bmatrix}.
+\tag{1}
+\end{equation}\]</span></p>
+<p><span class="math display">\[\begin{equation}
+Ax=
+\begin{bmatrix}
+1&amp;0&amp;0\\
+-1&amp;1&amp;0\\
+0&amp;-1&amp;1
+\end{bmatrix}
+\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}
+=\begin{bmatrix}x_1\\x_2-x_1\\x_3-x_2\end{bmatrix}.
+\tag{2}
+\end{equation}\]</span></p>
+<p>矩阵乘向量 <span class="math inline">\(Ax\)</span> 与列组合 <span
+class="math inline">\(x_1u+x_2v+x_3w\)</span> 完全相同。记输出为 <span
+class="math inline">\(b\)</span>：</p>
+<p><span class="math display">\[\begin{equation}
+Ax=
+\begin{bmatrix}x_1\\x_2-x_1\\x_3-x_2\end{bmatrix}
+=\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}=b.
+\tag{3}
+\end{equation}\]</span></p>
+<p>这个 <span class="math inline">\(A\)</span>
+称为<strong>差分矩阵</strong>，因为输出的分量是输入的相邻差分。例如</p>
+<p><span class="math display">\[\begin{equation}
+x=\begin{bmatrix}1\\4\\9\end{bmatrix},
+\qquad
+Ax=\begin{bmatrix}1-0\\4-1\\9-4\end{bmatrix}
+=\begin{bmatrix}1\\3\\5\end{bmatrix}.
+\tag{4}
+\end{equation}\]</span></p>
+<p>平方数 <span class="math inline">\(1,4,9\)</span> 的差是奇数 <span
+class="math inline">\(1,3,5\)</span>。矩阵乘法也可以逐行理解：<span
+class="math inline">\(Ax\)</span> 的各分量分别是 <span
+class="math inline">\(A\)</span> 的各行与 <span
+class="math inline">\(x\)</span> 的点积：</p>
+<p><span class="math display">\[\begin{equation}
+Ax=
+\begin{bmatrix}
+(1,0,0)\cdot x\\
+(-1,1,0)\cdot x\\
+(0,-1,1)\cdot x
+\end{bmatrix}.
+\tag{5}
+\end{equation}\]</span></p>
+<p>逐行计算适合数值运算；逐列理解则直接揭示线性组合，而线性组合是线性代数的核心。</p>
+<h3 id="线性方程与逆矩阵">线性方程与逆矩阵</h3>
+<p>过去的问题是已知 <span class="math inline">\(x\)</span>，计算 <span
+class="math inline">\(b=Ax\)</span>；现在反过来，已知 <span
+class="math inline">\(b\)</span>，寻找产生它的 <span
+class="math inline">\(x\)</span>。这就是逆问题。方程组为</p>
+<p><span class="math display">\[x_1=b_1,\qquad -x_1+x_2=b_2,\qquad
+-x_2+x_3=b_3.\]</span></p>
+<p>从上到下求解：</p>
+<p><span class="math display">\[\begin{equation}
+x_1=b_1,\qquad x_2=b_1+b_2,\qquad x_3=b_1+b_2+b_3.
+\tag{6}
+\end{equation}\]</span></p>
+<p>若 <span class="math inline">\(b=(0,0,0)\)</span>，则 <span
+class="math inline">\(x=(0,0,0)\)</span>；若 <span
+class="math inline">\(b=(1,3,5)\)</span>，则 <span
+class="math inline">\(x=(1,4,9)\)</span>。这个矩阵 <span
+class="math inline">\(A\)</span> 是<strong>可逆的</strong>，可以从 <span
+class="math inline">\(b\)</span> 恢复 <span
+class="math inline">\(x\)</span>：</p>
+<p><span class="math display">\[\begin{equation}
+x=
+\begin{bmatrix}
+1&amp;0&amp;0\\
+1&amp;1&amp;0\\
+1&amp;1&amp;1
+\end{bmatrix}
+\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}
+=A^{-1}b.
+\tag{7}
+\end{equation}\]</span></p>
+<p>如果 <span class="math inline">\(b\)</span> 是 <span
+class="math inline">\(x\)</span> 的差分，那么 <span
+class="math inline">\(x\)</span> 就是 <span
+class="math inline">\(b\)</span>
+的逐项累加。求和矩阵正是差分矩阵的逆。这与微积分基本定理相似：</p>
+<p><span class="math display">\[\begin{equation}
+Ax=b,\quad x=A^{-1}b;
+\qquad
+\frac{dx}{dt}=b,\quad x(t)=\int_0^t b\,dt.
+\tag{8}
+\end{equation}\]</span></p>
+<p>对 <span class="math inline">\(x(t)=t^2\)</span>，后向差分为</p>
+<p><span class="math display">\[\begin{equation}
+x(t)-x(t-1)=2t-1,
+\tag{9}
+\end{equation}\]</span></p>
+<p>而中心差分恰好等于导数：</p>
+<p><span class="math display">\[\begin{equation}
+\frac{x(t+1)-x(t-1)}{2}=2t.
+\tag{10}
+\end{equation}\]</span></p>
+<h3 id="循环差分">循环差分</h3>
+<p>将第三个向量换为 <span
+class="math inline">\(w^*=(-1,0,1)\)</span>，得到循环差分矩阵</p>
+<p><span class="math display">\[\begin{equation}
+Cx=
+\begin{bmatrix}
+1&amp;0&amp;-1\\
+-1&amp;1&amp;0\\
+0&amp;-1&amp;1
+\end{bmatrix}
+\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}
+=\begin{bmatrix}x_1-x_3\\x_2-x_1\\x_3-x_2\end{bmatrix}=b.
+\tag{11}
+\end{equation}\]</span></p>
+<p><span class="math inline">\(Cx=0\)</span> 有无穷多个解：</p>
+<p><span class="math display">\[\begin{equation}
+\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}
+=\begin{bmatrix}c\\c\\c\end{bmatrix}.
+\tag{12}
+\end{equation}\]</span></p>
+<p>任意常向量的循环差分都为零。另一方面，取 <span
+class="math inline">\(b=(1,3,5)\)</span>
+时无解，因为左边三个差分之和恒为零，而右边分量之和为 <span
+class="math inline">\(9\)</span>：</p>
+<p><span class="math display">\[\begin{equation}
+\begin{bmatrix}x_1-x_3\\x_2-x_1\\x_3-x_2\end{bmatrix}
+=\begin{bmatrix}1\\3\\5\end{bmatrix}
+\qquad\text{无解}.
+\tag{13}
+\end{equation}\]</span></p>
+<p>一般地，<span class="math inline">\(Cx=b\)</span> 可解必须满足 <span
+class="math inline">\(b_1+b_2+b_3=0\)</span>。所有列组合都位于平面 <span
+class="math inline">\(b_1+b_2+b_3=0\)</span> 中。</p>
+<div data-align="center">
+<img src="images/1-10.png" alt="图 1.10 独立向量与相关向量" style="display:block; width:auto; max-width:min(100%, 610px); height:auto;">
+<div
+style="font-style:italic; font-size:0.92em; color:#666; margin-top:0.35em;">
+图 1.10　独立向量 <span
+class="math inline">\(u,v,w\)</span>；位于同一平面内的相关向量 <span
+class="math inline">\(u,v,w^*\)</span>。
+</div>
+</div>
+<h3 id="线性无关与线性相关">线性无关与线性相关</h3>
+<p>矩阵 <span class="math inline">\(A\)</span> 与 <span
+class="math inline">\(C\)</span> 的前两列 <span
+class="math inline">\(u,v\)</span>
+相同，它们的组合形成一个平面。关键是第三个向量是否在这个平面内：</p>
+<ul>
+<li><strong>线性无关：</strong><span class="math inline">\(w\)</span>
+不在 <span class="math inline">\(u,v\)</span> 的平面内；</li>
+<li><strong>线性相关：</strong><span class="math inline">\(w^*\)</span>
+位于 <span class="math inline">\(u,v\)</span> 的平面内。</li>
+</ul>
+<p>事实上，</p>
+<p><span class="math display">\[\begin{equation}
+u+v+w^*=0,\qquad w^*=-u-v.
+\tag{14}
+\end{equation}\]</span></p>
+<p>加入已在平面中的 <span class="math inline">\(w^*\)</span>
+不会产生新向量；原来的 <span class="math inline">\(w=(0,0,1)\)</span>
+不在平面内，所以 <span class="math inline">\(u,v,w\)</span>
+的组合能充满三维空间。</p>
+<p><span class="math inline">\(u,v,w\)</span>
+线性无关：除零组合外，没有其他组合产生零向量。<span
+class="math inline">\(u,v,w^*\)</span> 线性相关：例如 <span
+class="math inline">\(u+v+w^*=0\)</span>。对 <span
+class="math inline">\(n\)</span> 个 <span
+class="math inline">\(n\)</span> 维向量：</p>
+<ul>
+<li>列向量独立：<span class="math inline">\(Ax=0\)</span>
+只有零解，<span class="math inline">\(A\)</span> 可逆；</li>
+<li>列向量相关：<span class="math inline">\(Cx=0\)</span>
+有非零解，<span class="math inline">\(C\)</span> 是奇异矩阵。</li>
+</ul>
+<h3 id="关键思想回顾-2">关键思想回顾</h3>
+<ol type="1">
+<li><span class="math inline">\(Ax\)</span> 是 <span
+class="math inline">\(A\)</span> 的各列的线性组合。</li>
+<li>当 <span class="math inline">\(A\)</span> 可逆时，<span
+class="math inline">\(Ax=b\)</span> 的解是 <span
+class="math inline">\(x=A^{-1}b\)</span>。</li>
+<li>循环差分矩阵 <span class="math inline">\(C\)</span>
+没有逆；它的三列位于同一平面内并相加为零。</li>
+<li>本节提前展示了后续章节将正式发展的关键概念。</li>
+</ol>
+<h3 id="worked-examples-2">Worked Examples</h3>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.3 A&lt;/div&gt;
+&lt;div&gt;把差分矩阵 $A$ 的左下角元素改为 $a_{31}=1$：&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle \begin{bmatrix}1&amp;0&amp;0\\-1&amp;1&amp;0\\1&amp;-1&amp;1\end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}=\begin{bmatrix}b_1\\b_2\\b_3\end{bmatrix}.$&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;解&lt;/strong&gt;　$x_1=b_1$，$x_2=b_1+b_2$，$x_3=b_2+b_3$，所以&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle A^{-1}=\begin{bmatrix}1&amp;0&amp;0\\1&amp;1&amp;0\\0&amp;1&amp;1\end{bmatrix}.$&lt;/div&gt;
+&lt;div&gt;$A^{-1}$ 的第 $j$ 列，就是右端 $b$ 取第 $j$ 个坐标单位向量时的解。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.3 B&lt;/div&gt;
+&lt;div&gt;$E$ 是消元矩阵。$E$ 完成减法，$E^{-1}$ 完成相应的加法：&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle E=\begin{bmatrix}1&amp;0\\-\ell&amp;1\end{bmatrix},\qquad E^{-1}=\begin{bmatrix}1&amp;0\\\ell&amp;1\end{bmatrix}.$&lt;/div&gt;
+&lt;div&gt;若 $b_2=x_2-\ell x_1$，逆运算就把 $\ell b_1$ 加回 $b_2$。&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div style="width:100%; margin:1em 0; overflow-x:auto;">
+<div
+style="width:100%; box-sizing:border-box; border:1px solid #00a6df; padding:0.8em 1em; text-align:left;">
+<pre><code>&lt;div style=&quot;font-weight:700; color:#008fd3; margin-bottom:0.45em;&quot;&gt;1.3 C&lt;/div&gt;
+&lt;div&gt;把循环差分改成中心差分：&lt;/div&gt;
+&lt;div style=&quot;margin:0.8em 0; text-align:center;&quot;&gt;$\displaystyle Cx=\begin{bmatrix}0&amp;1&amp;0\\-1&amp;0&amp;1\\0&amp;-1&amp;0\end{bmatrix}\begin{bmatrix}x_1\\x_2\\x_3\end{bmatrix}=\begin{bmatrix}x_2\\x_3-x_1\\-x_2\end{bmatrix}=b.$&lt;/div&gt;
+&lt;div&gt;$Cx=b$ 只有在 $b_1+b_3=0$ 时才可解，所以这个 $3\times3$ 矩阵不可逆。相应的 $4\times4$ 中心差分矩阵却可逆：第一、四行先确定 $x_2,x_3$，中间两行再确定 $x_1,x_4$；$5\times5$ 时又会变成奇异矩阵。&lt;/div&gt;</code></pre>
+</div>
+</div>
+</body>
+</html>

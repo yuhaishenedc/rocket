@@ -1,0 +1,39 @@
+3.5. Dimensions of the Four Subspaces   191
+8   What are the dimensions of the four subspaces for   B,   and   C,   if   I   is the 3 by 3
+identity matrix and O is the 3 by 2 zero matrix?
+A   = [   J   O]   and   B   =
+[ 0; 0;]
+and   C   = [   O] .
+9   Which subspaces are the same for these matrices of different sizes?
+(a) [A] and
+[
+1]   (b)
+[
+1]   and
+[
+1 �] .
+Prove that all three of those matrices have the   same rank r.
+10   If the entries of a 3 by 3 matrix are chosen randomly between O and 1, what are the
+most likely dimensions of the four subspaces? What if the random matrix is 3 by 5?
+11   (Important)   A   is an   m   by   n   matrix of rank   r.   Suppose there are right sides   b   for
+which   Ax   =   b   has   no solution.
+(a) What are all inequalities (   <   or :s;) that must be true between m,   n,   and   r?
+(b) How do you know that   A
+T
+y   =   0 has solutions other than   y   =   O?
+12   Construct a matrix with ( 1, 0, 1) and ( 1, 2, 0) as a basis for its row space and its
+column space. Why can't this be a basis for the row space and nullspace?
+13   True or false (with a reason or a counterexample):
+(a) If   m   =   n   then the row space of   A   equals the column space.
+(b) The matrices   A   and   -A   share the same four subspaces.
+(c) If   A   and   B   share the same four subspaces then   A   is a multiple of   B.
+14   Without computing   A,   find bases for its four fundamental subspaces:
+A=   [! �   �i [� � �   !]
+981   0012
+15   If you exchange the first two rows of   A,   which of the four subspaces stay the same?
+If   v   = ( 1, 2, 3, 4) is in the left nullspace of   A,   write down a vector in the left nullspace
+of the new matrix after the row exchange.
+16   Explain why v   = ( 1, 0, -1)   cannot be a row of A and also in the nullspace.
+17   Describe the four subspaces of R
+3
+associated with

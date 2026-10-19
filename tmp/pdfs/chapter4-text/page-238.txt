@@ -1,0 +1,73 @@
+228   Chapter 4.   Orthogonality
+•   WORKED EXAMPLES   •
+4.3 A   Start with nine measurements b 1   to   b 9   ,   all zero,   at times t   =   1, ..., 9. The
+tenth measurement b 10   = 40 is an outlier. Find the   best horizontal line   y   =   C   to fit
+the ten points   (1, 0), (2, 0), ..., (9, 0), (10, 40) using three options for the error E:
+(1) Least   squares   E 2   =   ef + · · · + ef 0   (then the normal equation for   C   is linear)
+(2)   Least   maximum   error   E 00   = lemaxl   (3)   Least   sum   of errors E1=le1I   + · · · +   le1ol-
+Solution   (1) The least squares fit to 0, 0, ..., 0, 40 by a horizontal line is   C   =   4:
+A=   column of l's   A
+T
+A=   10   A
+T
+b =   sum of   b i   =   40.   So 10   C =40.
+(2) The least maximum error requires   C   =   20, halfway between O and 40.
+(3) The least sum requires   C   =   0 (!!).The sum of errors 9ICI   +   140 - Cl would increase
+if   C   moves up from zero.
+The least sum comes from the   median   measurement (the median of 0, ..., 0, 40 is zero).
+Many statisticians feel that the least squares solution is too heavily influenced by outliers
+like b 1   o=   40, and they prefer least sum. But the equations become   nonlinear.
+Now find the least squares line   C   +   Dt   through those ten points (1, 0) to (10, 40):
+A
+T
+A=[
+lO   Lti
+]=[
+lO   55
+]
+I:   ti   I:   t;   55   385
+Those come from equation (8).Then   A
+T
+Ax= A
+T
+b   gives   C = -8 and   D =   24/11.
+What happens to   C   and   D   if you multiply b= (0, 0, ..., 40) by 3 and then add 30 to
+get bnew   =   (30, 30, ..., 150)? Linearity allows us to rescale   b.   Multiplying   b   by 3 will
+multiply   C   and   D   by 3. Adding 30 to all   b i   will add 30 to   C.
+4.3 B   Find the parabola   C   +   Dt   +   Et
+2
+that comes closest (least squares error) to the
+values b = (0, 0, 1, 0, 0) at the times   t = -2, -1, 0, 1, 2.   First write down the five equations
+Ax   =   bin three unknowns   x   = (   C, D, E)   for a parabola to go through the five points. No
+solution because no such parabola exists. Solve   A
+T
+Ax   =   A
+T
+b.
+I would predict   D = 0. Why should the best parabola be symmetric around   t   = O?
+In   A
+T
+Ax =   A
+T
+b,   equation 2 for   D   should uncouple from equations 1 and 3.
+Solution   The five equations   Ax =   b   have a rectangular   Vandermonde matrix   A:
+C   +   D   (-2)   +   E   (-2)
+2
+0   1   -2   4
+C   +   D   (-1)   +   E   (-1)
+2
+0   1   -1   1
+A
+T
+A- [
+5   0
+�i
+C+D   (0)   +   E   (0)
+2
+1   A=   1   0   0   0   10
+C+D   (1)   +   E   (1)
+2
+0   1   1   1   10   0   34
+C+D   (2)   +   E   (2)
+2
+0   1   2   4

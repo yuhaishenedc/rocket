@@ -1,0 +1,58 @@
+260   Chapter 5. Determinants
+The Big Formula for Determinants
+Pivots are good for computing. They concentrate a lot of information-enough to find the
+determinant. But it is hard to connect them to the original   aij.   That part will be clearer if
+we go back to rules 1-2-3, linearity and sign reversal and det   I   = l. We want to derive a
+single explicit formula for the determinant, directly from the entries aij.
+The formula has   n!   terms.   Its size grows fast because n! = 1, 2, 6, 24, 120, .... For
+n   = 11 there are about forty million terms. For   n   = 2, the two terms are   ad   and   be.   Half
+the terms have minus signs (as in   -be).   The other half have plus signs (as in   ad).   For   n   = 3
+there are 3! = (3)(2)(1) terms. Here are those six terms:
+3 by 3
+determinant
+a11   a12   a13
+a21   a22   a23
+a31   a32   a33
++a11a22a33 + a12a23a31 +a13a21a32
+-a11a23a32 - a12a21a33 - a13a22a31.
+� ________..._,
+(4)
+Notice the pattern. Each product like   a11a23a32   has   one entry from each rollf.   It also has
+one entry from each column.   The column order 1,3, 2 means that this particular term
+comes with a minus sign. The column order 3, 1, 2 in   a13a21a32   has a plus sign (boldface).
+It will be "permutations" that tell us the sign.
+The next step   (n   = 4) brings 4! = 24 terms. There are 24 ways to choose one entry
+from each row and column. Down the main diagonal, a 11a22a33a44   with column order
+1, 2, 3, 4 always has a plus sign.   That is the "identity permutation".
+To derive the big formula I start with n = 2.   The goal is to reach   ad- be   in a systematic
+way.   Break each row into two simpler rows:
+[a b]=[a o]+[o b]   and   [e d]=[e o]+[o d].
+Now apply linearity, first in row 1 (with row 2 fixed) and then in row 2 (with row 1 fixed):
+I:   !l
+=
+I:   �l+I�   !I
+=I:   �l+I�   �l+I�   �l+I�   !I
+(break up row   1)
+(break up row   2).
+(5)
+The last line has 2
+2
+= 4 determinants. The first and fourth are zero because one row is a
+multiple of the other row.   We are left with 2! = 2 determinants to compute:
+1�   �I+I�   �I
+=   ad
+I�
+�
+I+
+be
+I
+�   �
+I
+=   ad   -   be.
+The splitting led to permutation matrices. Their determinants give a plus or minus sign.
+The permutation tells the column sequence.   In this case the column order is (1, 2) or (2, 1).
+Now try n = 3. Each row splits into 3 simpler rows like [ a 11   0   0].   Using linearity in
+each row, det   A   splits into 3
+3
+=   27 simple determinants. If a column choice is repeated
+for example if we also choose the row [ a 21   0   0]-then the simple determinant is zero.

@@ -1,0 +1,72 @@
+4.4. Orthonormal Bases and Gram-Schmidt
+The separate projections of   b   =   (0, 0, 1) onto q 1
+and q
+2
+and <1:3 are p
+1
+and p
+2
+and   p
+3
+:
+q 1   (qTb)   =   jq 1
+and   q 2   (qib)   =   jq 2
+and   q 3   (qjb)   =   -½q 3   .
+237
+The sum of the first two is the projection of   b   onto the   plane   of q
+1
+and q
+2   .   The sum of all
+three is the projection of   b   onto the   whole   space-which is p
+1
++   p
+2
++   p
+3
+=   b   itself:
+Reconstruct b
+b   = P1 +P2 + P3
+The Gram-Schmidt Process
+The point of this section is that "orthogonal is good".   Projections and least squares
+always involve   A
+T
+A.   When this matrix becomes   Q
+T
+Q   =   I,   the inverse is no problem.
+The one-dimensional projections are uncoupled. The best   x   is   Q
+T
+b   (just   n   separate dot
+products).   For this to be true,   we had to say   "If
+the vectors are orthonormal".
+Now we explain the "Gram-Schmidt way" to create orthonormal vectors.
+Start with three independent vectors   a,   b,   c. We intend to construct three orthogonal
+vectors   A, B, C.   Then (at the end may be easiest) we divide   A, B, C   by their lengths.
+That produces three orthonormal vectors q
+1   =   A/IIAII, q
+2   =   B/IIBII,   q 3   =   C   /IICII-
+Gram-Schmidt   Begin by choosing   A   =   a.   This first direction is accepted as it comes.
+The next direction   B   must be perpendicular to   A.   Start with   b and subtract its
+projection along A.   This leaves the perpendicular part, which is the orthogonal vector   B:
+First Gram-Schmidt step   (7)
+A and   B   are orthogonal in Figure 4.11. Multiply equation (7) by A
+T
+to verify that A
+T
+B   =
+A
+T
+b   - A
+T
+b   =   0. This vector   B   is what we have called the error vector   e,   perpendicular
+to   A.   Notice that B in equation (7) is not zero (otherwise   a   and   b   would be dependent).
+The directions   A   and   B   are now set.
+The third direction starts with c. This is not a combination of   A   and   B   (because   c   is
+not a combination of   a   and   b).   But most likely   c   is not perpendicular to   A   and   B.   So
+subtract off its components in those two directions to get a perpendicular direction   C:
+Next Gram-Schmidt step   (8)
+This is the one and only idea of the Gram-Schmidt process.   Subtract from every new
+vector its projections in the directions already set.   That idea is repeated at every step.
+2
+If we had a fourth vector   d,   we would subtract three projections onto   A, B, C   to get   D.
+2
+1 think Gram had the idea. I don't really know where Schmidt came in.

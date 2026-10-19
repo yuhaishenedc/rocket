@@ -1,0 +1,50 @@
+4.3. Least Squares Approximations   221
+Figure 4.6b shows the same problem in 3-dimensional space (b   p e   space). The vector
+b   is not in the column space of   A.   That is why we could not solve Ax =   b.   No line goes
+through the three points. The smallest possible error is the perpendicular vector   e.   This is
+e   =   b - Ax, the vector of errors (1, -2, 1) in the three equations. Those are the distances
+from the best line. Behind both figures is the fundamental equation A
+T
+Ax   =   A
+T
+b.
+b
+P2   =   2
+e2   =   -2
+b3   =   0
+L------""'*--�,........:')i(' e3   =   1
+p3   =   -1
+errors = vertical distances to line
+b=
+e   =   (1,-2, I)
+Figure 4.6:   Best line and projection: Two pictures, same problem.   The line has heights
+p   =   (5, 2, -1) with errors   e   =   (1, -2, 1). The equations A
+T
+Ax=A
+T
+b give x   =   (5, -3).
+Same answer! The best line is   b   =   5 -   3t   and the closest point is   p   =   5a 1 -   3a 2.
+Notice that the errors 1, -2, 1 add to zero.   Reason:   The error   e   = (e1, e2, e3) is
+perpendicular to the first column (1, 1, 1) in   A.   The dot product gives e1   +   e2   +   e3   =   0.
+By calculus   Most functions are minimized by calculus! The graph bottoms out and the
+derivative in every direction is zero. Here the error function   E   to be minimized is a   sum of
+squares   ei   +   e�   +   e�   (the square of the error in each equation):
+E   = IIAx - bll
+2
+=   (C + D ·0 - 6)
+2
++ (C + D ·1)
+2
++ (C + D ·2)
+2
+.   (3)
+The unknowns are   C   and   D.   With two unknowns there are   two derivatives-both   zero
+at the minimum. They are "partial derivatives" because   8E   /   fJC   treats   D   as constant and
+8E/8D   treats   C   as constant:
+8E/8C=2(C+D·0-6)   +2(C+D·l)   +2(C+D·2)   =0
+8E/8D   = 2(C+ D ·0 - 6)(0)+2(C+ D ·1)(1)+2(C+ D ·2)(2) = 0.
+8E /   8D   contains the extra factors O, 1, 2 from the chain rule. (The last derivative from
+(C   +   2D)
+2
+was 2 times   C   +   2D times that extra 2.)   Those factors are just 1, 1, 1 in
+8E/8C.

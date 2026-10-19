@@ -1,0 +1,37 @@
+5.2. Pennutations and Cofactors   271
+28   A 3 by 3 determinant has three products "down to the right" and three "down to the
+left" with minus signs. Compute the six terms like (1)(5)(9)   =   45 to find   D.
++   +   +
+Explain without determinants
+why this particular matrix
+is or is not invertible.
+29   For E 4   in Problem 15, five of the 4!   =   24 terms in the big formula (8) are nonzero.
+Find those five terms to show that E4   =   -1.
+30   For the 4 by 4 tridiagonal second difference matrix (entries -1, 2, -1) find the five
+terms in the big formula that give det   A=   16 - 4 - 4 - 4   +   1.
+31   Find the determinant of this cyclic P by cofactors of row 1 and then the "big for
+mula". How many exchanges reorder 4, 1, 2, 3 into 1, 2, 3, 4? Is   IP
+2
+1   = 1 or -1?
+[   �   �   ]
+.
+Challenge Problems
+32   Cofactors of the 1, 3, 1 matrices in Problem 21 give a recursion   S n   =   3S n   -l   -S n -2·
+Amazingly that recursion produces every second Fibonacci number. Here is the chal
+lenge.
+Show that S n   is the Fibonacci number   F2 n +2   by proving   F2 n +2   =   3F2n   - F2 n   -2·
+Keep using Fibonacci's rule   Fk   =   Fk-l   +   Fk-2   starting with   k   = 2n   +   2.
+33   The symmetric Pascal matrices have determinant 1.   If I subtract 1 from the n, n
+entry, why does the determinant become zero? (Use rule 3 or cofactors.)
+<let   [1   �   L�]   =   1 (known)
+4   10   20
+1
+3
+6
+det
+[i   l
+1   4   10
+1
+�
+]   =   0 (to explain).
+19

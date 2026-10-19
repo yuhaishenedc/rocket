@@ -1,0 +1,72 @@
+4.2.   Projections   209
+The error vector between   b   and   p   is   e   =   b   -   p.   Those vectors   p   and   e   will add to
+b=(l,1,1):
+The error   e   should be perpendicular to   a=   (   1, 2, 2) and it is:   e
+T
+a=   ½ - � - � =   0.
+Look at the right triangle of   b, p,   and   e.   The vector   b   is split into two parts-its
+component along the line is   p,   its perpendicular part is   e.   Those two sides   p   and   e
+have length I IPI
+I = JJbJJ c
+os 0   and I
+Jel I = llbll   s in   0.   Trigonometry matches the dot product:
+p   = :
+::
+a   has length   IIPII
+=
+JJalJ
+i'i'!
+\\�
+ose
+lJaJJ   =   JJbJJ c os   0.   (3)
+The dot product is a lot simpler than getting involved with c os 0   and the length of   b.
+The example has square roots in   cos0   =   5   /3/3 and JJbll   =   /3.   There are no square
+roots in the projection   p   =   5a/9.   The good way to 5 /9 is   a
+T
+b/   a
+T
+a.
+Now comes the   projection matrix.   In the formula for   p,   what matrix is multiplying   b?
+You can see the matrix better if the number xis on the right side of a:
+Projection
+matrix   P
+a
+T
+b
+p   =   ax   =   a--   =   Pb   when the matrix   is
+a
+T
+a
+aa
+T
+P=
+�
+a   a
+P   is a column times a row! The column is   a,   the row is   a T. Then divide by the number
+a
+T
+a.   The projection matrix   P   is   m   by   m,   but   its   rank   is   one.   We are projecting onto a
+one-dimensional subspace, the line through   a.   That line is the column space of P.
+T
+Example 2   Find the projection matrix   P   = :�
+a
+onto the line through   a   = [ �] .
+Solution   Multiply column   a   times row   a T and divide by   a
+T
+a   = 9:
+Projection matrix
+This matrix projects   any   vector   b   onto   a.   Checkp =   Pb   for   b   = ( 1, 1, 1) in Example 1:
+P   =Pb=   ! [�   �   �i [�]   !   [   1
+5
+0]   which is correct.
+9
+244   1
+9
+10
+If the vector   a   is doubled, the matrix   P   stays the same! It still projects onto the same line.
+If the matrix is squared,   P
+2
+equals   P.   Projecting a second time doesn't change anything,
+so P
+2
+=   P.   The diagonal entries of   P   add up to½ ( 1 + 4   + 4)   = 1.

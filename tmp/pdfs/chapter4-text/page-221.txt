@@ -1,0 +1,73 @@
+4.2. Projections   211
+The combination   p   =   x 1   a 1   + · · · +   x n   a n   = Ax that is closest to b   comes from   x:
+(5)
+This symmetric matrix A
+T
+A is   n   by   n.   It is invertible if the a's are independent.
+The solution is x   =   (A
+T
+A)-
+1
+A
+T
+b. The   projection   of   b   onto the subspace is p:
+Find   p   (m x   1)
+The next formula picks out the   projection matrix   that is multiplying bin (6):
+Find   P(m   x m)
+Compare with projection onto a line, when A has only one column : A
+T
+A is a
+T
+a.
+Forn   =   1   and   and
+aa
+T
+P=-.
+a
+T
+a
+(6)
+(7)
+Those formulas are identical with (5) and (6) and (7). The number a
+T
+a becomes the
+matrix A
+T
+A.   When it is a number, we divide by it.   When it is a matrix, we invert it.
+The new formulas contain (A
+T
+A)-
+1
+instead of l/a
+T
+a.   The linear independence of the
+columns a 1, ... ,   a n   will guarantee that this inverse matrix exists.
+The key step was A
+T
+(b - Ax)   =   0. We used geometry (e is orthogonal to each   a).
+Linear algebra gives this "normal equation" too,   in a very quick and beautiful way :
+1. Our subspace is the column space of   A.
+2. The error vector   b   - Ax is perpendicular to that column space.
+3. Therefore   b   - Ax is in the nullspace of A
+T
+! This means A
+T
+(   b   - Ax)   =   0.
+The left nullspace is important in projections.   That nullspace of A
+T
+contains the error
+vector   e   =   b-   Ax. The vector bis being split into the projection   p   and the error   e   =   b-   p.
+Projection produces a right triangle with sides   p,   e,   and   b.
+Example 3   If   A   = [   i   i]   and   b   = [   g]   find   x   and   p   and   P.
+Solution   Compute the square matrix A
+T
+A and also the vector A
+T
+b:
+1
+1
+;   l [: [] � [; ;J
+1
+1
+;1   m
+[   �]

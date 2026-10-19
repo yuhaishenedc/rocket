@@ -1,0 +1,98 @@
+4.4. Orthonormal Bases and Gram-Schmidt   239
+The Factorization   A   =   QR
+We started with a matrix   A,   whose columns were   a,   b,   c. We ended with a matrix   Q,
+whose columns are q
+1
+,   q
+2
+,   q
+3
+.   How are those matrices related? Since the vectors   a, b,   c
+are combinations of the q's (and vice versa), there must be a third matrix connecting A
+to   Q.   This third matrix is the triangular   R   in   A   =   QR.
+The first step was q
+1
+= a/llall (other vectors not involved). The second step was
+equation (7), where b is a combination of   A   and B. At that stage   C   and   q
+3
+were not
+involved.   This non-involvement of later vectors is the key point of Gram-Schmidt:
+• The vectors   a   and A and q
+1
+are all along a single line.
+• The vectors   a,   band   A, B   and q
+1
+,   q
+2
+are all in the same plane.
+• The vectors   a, b,   c and   A, B, C   and q
+1
+,   q
+2
+,   q
+3
+are in one subspace (dimension 3).
+At every step a1, ...,ak are combinations of q
+1
+, ... ,qk.   Later q's are not involved.
+The connecting matrix   R   is   triangular,   and we have   A= QR:
+or   A=QR.   (9)
+A= QR   is Gram-Schmidt in a nutshell. Multiply by   Q
+T
+to recognize   R   = Q
+T
+A   above.
+(Gram-Schmidt)   From   independent   vectors a 1,   . . . ,   a n   ,   Gram-Schmidt   constructs
+orthonormal vectors   q
+1
+, ... ,   q n.   The matrices with these columns satisfy   A   =   QR.
+Then   R   =   Q
+T
+A   is   upper triangular   because later q's are orthogonal to earlier a's.
+Here are the original   a's and the final q's from the example.   The i,   j   entry of   R   =   Q
+T
+A
+is row i of   Q
+T
+times column   j   of   A.   The dot products   q; a
+1
+go into   R.   Then   A   =   QR:
+[
+1   2   3
+]   [
+1/./2   1/v'6
+A=   -1   0   -3   =   -1/./2   1/v'6
+0   -2   3   0   -2/v'6
+1/v'3
+]   [
+v12   v'2   v'IS]
+1/v'3   0   v'6   -v'6   =   QR.
+1/v'3   0   0   v'3
+Look closely at   Q   and   R.   The lengths of   A, B, C   are ./2,   v'6, v'3 on the diagonal of   R.
+The columns of   Q   are orthonormal. Because of the square roots,   QR   might look harder
+than   LU.   Both factorizations are absolutely central to calculations in linear algebra.
+Any   m   by   n   matrix   A   with independent columns can be factored into   A   =   QR.   The
+m   by   n   matrix   Q   has orthonormal columns, and the square matrix   R   is upper triangular
+with positive diagonal.   We must not forget why this is useful for least squares:
+A
+T
+A = (QR)TQR = R
+T
+Q
+T
+QR = R
+T
+R   The least squares equation   A
+T
+Ax   =
+A
+T
+b   simplifies to   R
+T
+Rx   =   R
+T
+Q
+T
+b.   Then finally we reach   Rx   =   Q
+T
+b: good.

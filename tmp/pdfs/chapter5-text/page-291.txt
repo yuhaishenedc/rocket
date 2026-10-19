@@ -1,0 +1,39 @@
+5.3.   Cramer's Rule, Inverses, and Volumes   281
+parallel to   u,   then   u   x   F   = 0-there is no turning. The cross product   u   x   F   is the turning
+force or   torque.   It points along the turning axis (perpendicular to   u   and   F).   Its length
+llull llFII sin 0 measures the "moment" that produces turning.
+Triple Product = Determinant = Volume
+Since   u   x vis a vector, we can take its dot product with a third vector   w.   That produces
+the   triple product   (   u x v) ·   w.   It is called a "scalar" triple product, because it is a number.
+In fact it is a determinant-it gives the volume of the   u, v, w   box:
+Triple product   (uxv)·w
+W1   Wz   W3
+U1   Uz   U3
+V1   Vz   V3
+U1   Uz   U3
+V1   Vz   V3
+W1   Wz   W3
+(13)
+We can put   w   in the top or bottom row. The two determinants are the same because __
+row exchanges go from one to the other. Notice when this determinant is zero:
+( u   x   v)   ·   w   = 0   exactly when the vectors   u, v,   w   lie in the   same plane.
+First reason   u   x   v   is perpendicular to that plane so its dot product with   w   is zero.
+Second reason   Three vectors in a plane are dependent. The matrix is singular (<let= 0).
+Third reason   Zero volume when the   u, v, w   box is squashed onto a plane.
+It is rema r kable that ( u   x   v)   ·   w   equals the volume of the box with sides   u, v, w.   This
+3 by 3 determinant carries tremendous information. Like   ad   -   be   for a 2 by 2 matrix, it
+separates invertible from singular. Chapter 6 will be looking for singular.
+•
+REVIEW OF THE KEY IDEAS
+•
+1. Cramer's Rule solves   Ax=   b   by ratios like X1   =   IB1I/IAI   =   lba2 · · · a n   l/lAI.
+2. When   C   is the cofactor matrix for   A,   the inverse is A-
+1
+=   C
+T
+/   det   A.
+3. The volume of a box is I det   Al, when the box edges are the rows of   A.
+4. Area and volume are needed to change variables in double and triple integrals.
+5. In R
+3
+,   the cross product   u   x   v   is perpendicular to   u   and   v.   Notice i x   j   =   k.

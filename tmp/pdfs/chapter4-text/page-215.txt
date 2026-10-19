@@ -1,0 +1,19 @@
+4.1.   Orthogonality of the Four Subspaces   205
+Challenge Problems
+30   Suppose   A   is 3 by 4 and   B   is 4 by 5 and   AB   =   0.   So   N(A)   contains   C(B).
+Prove from the dimensions of   N(A)   and   C(B)   that rank(A)   +   rank(B) S:: 4.
+31   The command   N   =   null(A) will produce a basis for the nullspace of   A.   Then the
+command   B   =   null(N') will produce a basis for the __ of   A.
+32   Suppose I give you four nonzero vectors   r, n, c,   l   in R
+2
+.
+(a) What are the conditions for those to be bases for the four fundamental sub
+spaces   C(A
+T
+), N(A), C(A), N(A
+T
+)   of a 2 by 2 matrix?
+(b) What is one possible matrix   A?
+(a) What are the conditions for those pairs to be bases for the four fundamental
+subspaces of a 4 by 4 matrix?
+(b) What is one possible matrix   A?

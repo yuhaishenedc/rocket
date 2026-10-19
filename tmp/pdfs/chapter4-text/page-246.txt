@@ -1,0 +1,87 @@
+236   Chapter 4.   Orthogonality
+Projections Using Orthonormal Bases:   Q   Replaces   A
+Orthogonal matrices are excellent for computations-numbers can never grow too large
+when lengths of vectors are fixed.   Stable computer codes use   Q's   as much as possible.
+For projections onto subspaces, all formulas involve   A
+T
+A.   The entries of   A
+T
+A   are the
+dot products   a;a
+1
+of the basis vectors a 1, ...   ,   a n   .
+Suppose the basis vectors are actually orthonormal.   Thea's   become the   q's.   Then
+A
+T
+A simplifies to Q
+T
+Q   =   I.   Look at the improvements in   x   and   p   and   P.   Instead of
+Q
+T
+Q   we print a blank for the identity matrix:
+__ X   =   Q
+T
+b   and   p   =   Qx   and   p   =   Q __ Q
+T
+.   (4)
+The least squares solution of Qx   =   bis   x   =   Q
+T
+b.   The projection matrix is QQ
+T
+.
+There are no matrices to invert. This is the point of an orthonormal basis. The best   x   =
+Q
+T
+b   just has dot products of q
+1
+, . . .   ,q
+n
+with   b.   We have !-dimensional projections!
+The "coupling matrix" or "correlation matrix"   A
+T
+A   is now   Q
+T
+Q   =   I.   There is no
+coupling. When   A   is   Q,   with orthonormal columns, here is   p   =   Qx   =   QQ
+T
+b:
+Projection
+onto q's
+(5)
+Important case:   When   Q   is square and   m   =   n,   the subspace is the whole space. Then
+Q
+T
+= Q-
+1
+and   x   =   Q
+T
+b   is the same as x =   Q-
+1
+b.   The solution is exact! The projection
+of   b   onto the whole space is   b   itself. In this case   p   = band   P   =   QQ
+T
+=   I.
+You may think that projection onto the whole space is not worth mentioning. But when
+p   =   b,   our formula assembles   b   out of its 1-dimensional projections. If q
+1
+,   . . . ,   q
+n
+is an
+orthonormal basis for the whole space, then   Q   is square. Every b =   QQ
+T
+b is the sum of
+its components along the   q's:
+(6)
+Transforms   QQ
+T
+=   I   is the foundation of Fourier series and all the great "transforms"
+of applied mathematics. They break vectors   b   or functions   f   (   x)   into perpendicular pieces.
+Then by adding the pieces in (6), the inverse transform puts   band f(x)   back together.
+Example 4   The columns of this orthogonal Qare orthonormal vectors q
+1   , q 2   , q3
+:
+m=n=3
+Q=�
+3
+[-� -i   �i
+2   2   -1

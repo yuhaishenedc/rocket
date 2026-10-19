@@ -1,0 +1,46 @@
+190   Chapter 3.   Vector Spaces and Subspaces
+3.5 B   Fact: All the rows of   AB   are combinations of the rows of   B.   So the row space of
+AB   is contained in (possibly equal to) the row space of   B.   Rank   (AB)   :::;   rank   (B).
+All columns of   AB   are combinations of the columns of   A.   So the column space of
+AB   is contained in (possibly equal to) the column space of   A.   Rank   (AB)   :::;   rank   (A).
+If we multiply by an   invertible   matrix,the rank will not change. The rank can't drop,
+because when we multiply by the inverse matrix the rank can't jump back.
+Problem Set 3.5
+1   (a) If a 7 by 9 matrix has rank 5,   what are the dimensions of the four subspaces?
+What is the sum of all four dimensions?
+(b) If a 3 by 4 matrix has rank 3,what are its column space and left nullspace?
+2   Find bases and dimensions for the four subspaces associated with   A   and B:
+A=[l   2   4]
+2   4   8
+[
+1   2
+4] and   B   =
+2   5   8   .
+3   Find a basis for each of the four subspaces associated with A:
+A=
+[
+�   �   �   !   !]   =
+[
+�   �   �i [�
+00012   011   0
+1   2
+0   0
+0   0
+3   4]
+1 2   .
+0   0
+4   Construct a matrix with the required property or explain why this is impossible:
+(a) Column space contains [   !   ] ,   [�],row space contains [ �], [ �].
+(b) Column space has basis [   l] ,   nullspace has basis [   ½] .
+(c) Dimension of nullspace = 1   +   dimension of left nullspace.
+(d) Nullspace contains [   §],   column space contains [   f].
+(e) Row space = column space,nullspace -/- left nullspace.
+5   If V is the subspace spanned by ( 1, 1, 1) and ( 2, 1, 0), find a matrix   A   that has
+Vas its row space. Find a matrix   B   that has Vas its nullspace. Multiply   AB.
+6   Without using elimination,find dimensions and bases for the four subspaces for
+[o   3   3   3
+]
+A=   0000
+0   1   0   1
+7   Suppose the 3 by 3 matrix   A   is invertible. Write down bases for the four subspaces
+for   A,   and also for the 3 by 6 matrix   B   = [   A   A]. (The basis for   Z   is empty.)

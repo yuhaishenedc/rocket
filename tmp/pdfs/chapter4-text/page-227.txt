@@ -1,0 +1,77 @@
+4.2. Projections   217
+23   If   A   is square and invertible, the warning against splitting (   A
+T
+A) -
+1
+does not apply.
+It is true that   AA -   l   (A
+T
+)-
+1
+A
+T
+=   I.   When A is invertible, why is P   =   I? What   is
+the   error e?
+24   The nullspace of   A
+T
+is __ to the column space   C(A).   So if   A
+T
+b   =   0, the
+projection of   b   onto   C(A)   should be   p   =   _   _ .   Check that   P   =   A(A
+T
+A)-
+1
+A
+T
+gives this answer.
+25   The projection matrix   P   onto an n-dimensional subspace of R
+m
+has rank r   =   n.
+Reason:   The projections   Pb   fill the subspace   S.   So Sis the _   _ of   P.
+26   If anm bym matrix has A
+2
+=   A   and its rank ism, prove that   A= I.
+27   The important fact that ends the section is this:   If A
+T
+Ax   =   0   then   Ax   =   0.
+New   Proof:   The vector   Ax   is in the nullspace of __ .   Ax   is always in the column
+space of __ . To be in both of those perpendicular spaces,   Ax   must be zero.
+28   Use
+p
+T
+=   P   and P
+2
+=   P   to prove that the length squared of column 2 always
+equals the diagonal entry A 2.   This number is �   =
+3
+�   +
+3
+�   +
+3
+�   for
+p
+=
+! [ � �   -�i
+6
+-1   2   5
+29   If   B   has rankm (full row rank, independent rows) show that   BE
+T
+is invertible.
+Challenge Problems
+30   (a) Find the projection matrix Pc onto the column space of A (after looking closely
+at the matrix!)
+A=[
+3   6   6
+]
+4   8   8
+(b) Find the 3 by 3 projection matrix   P R   onto the row space of   A.   Multiply   B   =
+P0AP
+R .   Your answer   B   should be a little surprising-can you explain it?
+31   In R
+m
+, suppose I give you   b   and also a combination   p   of a 1, ... ,   a n   .   How would
+you test to see if pis the projection of b onto the subspace spanned by the   a's?
+32   Suppose Pi is the projection matrix onto the I-dimensional subspace spanned by
+the first column of   A.   Suppose   P2   is the projection matrix onto the 2-dimensional
+column space of   A.   After thinking a little, compute the product P 2   Pi.
+A�   [ �   :]

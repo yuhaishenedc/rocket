@@ -1,0 +1,76 @@
+4.3.   Least Squares Approximations   219
+4.3   Least Squares Approximations
+1   Solving   I   A
+T
+A x   =   A
+T
+b   I   gives the projection   p   =   Ax of b onto the column space of A.
+2   When Ax=   b has no solution, xis the "least -squares solution":   I   lb - Axl   1
+2
+= minimum.
+3   Setting partial derivatives of E   =   I   !Ax - bl   1
+2
+to zero (   gf   =   0)   also produces A
+T
+Ax   =   A
+T
+b.
+4 To fit points (t1, b1 ), ..., (t
+m , b m
+) by a straight line, A has columns (1, ..., 1) and (t1, ..., t
+m )-
+A
+T
+A   [
+m   �
+ti
+]   A
+T
+b
+.
+[
+�
+bi
+] S In that case   is the 2 by 2 matrix   �   ti
+�
+tr
+and   1s the vector
+�   tibi
+.
+It often happens that Ax   =   b   has no solution. The usual reason is:   too many equations.
+The matrix   A   has more rows than columns.   There are more equations than unknowns
+(mis greater thann). Then columns span a small part of m-dimensional space. Unless all
+measurements are perfect,   b   is outside that column space of A.   Elimination reaches an
+impossible equation and stops. But we can't stop just because measurements include noise!
+To repeat: We cannot always get the error e   =   b   - Ax down to zero. When e is zero,
+x is an exact solution to Ax   =   b.   When the length of e is as small as possible,   x   is a
+least squares solution.   Our goal in this section is to compute   x   and use it. These are real
+problems and they need an answer.
+The previous section emphasized   p   (the projection).   This section emphasizes x (the
+least squares solution). They are connected by   p   =   Ax. The fundamental equation is still
+A
+T
+Ax=A
+T
+b. Here is a short unofficial way to reach this   "normal equation":
+When   Ax=   b   has no solution, multiply by   A
+T
+and solve   A
+T
+Ax=A
+T
+b.
+Example 1   A crucial application of least squares is fitting a straight line to m points.
+Start with three points:   Find the closest line to the points   (0, 6), (1, 0),   and   (2, 0).
+No straight line   b   =   C   +   Dt   goes through those three points.   We are asking for two
+numbers   C   and   D   that satisfy three equations: n   = 2 and m = 3.   Here are the three
+equations at   t =0, l, 2 to match the given values b =6, 0, 0:
+t=O
+t=l
+t=2
+The first point is on the line b   =   C   +   Dt   if
+The second point is on the line b =   C +   Dt   if
+The third point is on the line b   =   C   +   Dt   if
+C+D·0=6
+C+D·l=0
+C+D·2=   0.

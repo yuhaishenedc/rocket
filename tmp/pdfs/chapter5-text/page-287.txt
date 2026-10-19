@@ -1,0 +1,51 @@
+5.3. Cramer's Rule, Inverses, and Volumes   277
+When you set   x 3   =   y 3   = 0 in the 3 by 3 determinant,you get the 2 by 2 determinant. These
+formulas have no square roots-they are reasonable to memorize. The 3 by 3 determinant
+breaks into a sum of three 2 by 2's (cofactors),just as the third triangle in Figure 5.1 breaks
+into three special triangles from (0, 0):
+Area
+1
+1
+1
++½(x1Y2 - X2Y1)
++½(x2y3 - X3y2)
++½(x3y1 - X1Y3).
+(9)
+If (0, 0) is outside the triangle,two of the special areas can be negative-but the sum is still
+correct. The real problem is to explain the area of a triangle with comer (0, 0).
+Why is
+½
+lx1y2 -   x 2   y 1   I the area of this triangle?   We can remove the factor
+½
+for
+a parallelogram (twice as big, because the parallelogram contains two equal triangles).
+We now prove that the parallelogram area is the determinant x 1 y   2   -   x   2   y 1.   This area in
+Figure 5.2 is 11,and therefore the triangle has area
+1
+2
+1
+•
+(0, 0)
+Parallelogram
+Area=
+I�
+!I
+= 11
+11
+Triangle: Area=
+2
+Figure 5.2: A triangle is half of a parallelogram. Area is half of a determinant.
+Proof   that a parallelogram starting from   (   O, 0)   has area   =   2   by   2   determinant.
+There are many proofs but this one fits with the book. We show that the area has the same
+properties 1-2-3 as the determinant. Then area= determinant! Remember that those three
+rules defined the determinant and led to all its other properties.
+1   When   A= I,   the parallelogram becomes the unit square. Its area is <let   I=   1.
+2 When rows are exchanged,   the determinant reverses sign. The absolute value (positive
+area) stays the same-it is the same parallelogram.
+3 If row 1 is multiplied by   t,   Figure 5.3a shows that the area is also multiplied by   t.   Sup
+pose a new row (x�,   YD   is added to (x 1,   y 1)   (keeping row 2 fixed). Figure 5.3b shows
+that the solid parallelogram areas add to the dotted parallelogram area (because the two
+triangles completed by dotted lines are the same).
+That is an exotic proof,   when we could use plane geometry. But the proof has a major
+attraction-it applies in n dimensions. The n edges going out from the origin are given by
+the   rows of   an   n   by   n   matrix.   The box is completed by more edges,like the parallelogram.

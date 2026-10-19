@@ -1,0 +1,63 @@
+208   Chapter 4.   Orthogonality
+The projection   p   will be some multiple of   a.   Call it   p   =   xa   =   "x   hat" times   a.
+Computing this number   x   will give the vector   p.   Then from the formula for   p,   we will
+read off the projection matrix   P.   These three steps will lead to all projection matrices:
+find   x,   then find the vector   p,   then find the matrix   P.
+The dotted line   b   - p is the "error"   e   =   b   -   xa.   It is perpendicular to a-this will
+determine   x.   Use the fact that   b- xa   is   perpendicular to   a   when their dot product is zero:
+Projecting   b   onto   a   with error   e   =   b   -   xa
+a·(b -xa)=O   or   a,b-xa•a=O
+�   a,b   a
+T
+b
+x------
+-a,a -a
+T
+a"
+(2)
+The multiplication   a
+T
+b   is the same as   a   ·   b.   Using the transpose is better, because it
+applies also to matrices. Our formula   x   =   a
+T
+b/   a
+T
+a   gives the projection p =   xa.
+b
+error
+1
+e =h-p
+I
+p=Ax
+=   A(A
+T
+A)-
+1
+A
+T
+b
+=Pb
+Figure 4.6: The projection   p   of   b   onto a line and onto   S   = column space of   A.
+�   a
+T
+b
+The projection of   b   onto the line through   a   is the vector   p =   xa   = --   a.
+a T   a
+Special case 1: If   b   =   a   then   x   =   l. The projection of   a   onto   a   is itself.   Pa= a.
+Special case 2: If bis perpendicular to   a   then   a
+T
+b   =   0. The projection is p   =   0.
+Example 1   [
+1
+�
+l
+Project   b   =   onto   a   =   [
+�
+1
+l
+to find p =   xa   in Figure 4.6.
+Solution   The number   x   is the ratio of   a
+T
+b   = 5 to   a
+T
+a   = 9. So the projection is p = �   a.

@@ -1,0 +1,34 @@
+3 .5.   Dimensions of the Four Subspaces
+•   REVIEW OF THE KEY IDEAS   •
+1.   The   r   pivot rows of   Rare   a basis for the row spaces of Rand   A   (same space).
+2.   The   r   pivot columns of A(!) are a basis for its column space   C(A).
+189
+3.   Then -   r   special solutions are a basis for the nullspaces of   A   and   R   (same space).
+4.   If   EA   =   R,   the last   m   -   r   rows of   E   are a basis for the left nullspace of   A.
+Note about the four subspaces   The Fundamental Theorem looks like pure algebra, but
+it has very important applications.   My favorites are the networks in Chapter 10 (often
+I go to 10.1 for my next lecture). The equation for   y   in the left nullspace is A
+T
+y   = 0:
+Flow into a node equals   flow out. Kirchhoff's Current Law is the "balance equation".
+This must be the most important equation in applied mathematics. All models in science
+and engineering and economics involve a balance-of force or heat flow or charge or mo
+mentum or money.   That balance equation, plus Hooke's Law or Ohm's Law or some
+law connecting "potentials" to "flows", gives a clear framework for applied mathematics.
+My textbook on   Computational Science and Engineering   develops that framework,
+together with algorithms to solve the equations:   Finite differences,   finite elements,
+spectral methods, iterative methods, and multigrid.
+•   WORKED EXAMPLES   •
+3.5 A   Put four 1's into a 5 by 6 matrix of zeros, keeping the dimension of its   row space
+as small as possible. Describe all the ways to make the dimension of its   column space   as
+small as possible. Describe all the ways to make the dimension of its   nullspace   as small as
+possible. How to make the   sum of the dimensions of all four subspaces small?
+Solution   The rank is 1 if the four l's go into the same row, or into the same column.
+They can also go into   two rows and two columns   (so   aii   =   aij   =   aji   =   ajj   =   1).
+Since the column space and row space always have the same dimensions, this answers the
+first two questions: Dimension 1.
+The nullspace has its smallest possible dimension 6 - 4   =   2 when the rank is   r   =   4.
+To achieve rank 4, the 1's must go into four different rows and four different columns.
+You can't do anything about the sum   r   +   (n-r)   +   r   +   (m-r)   =   n   +   m. It will be
+6   +   5 = 11 no matter how the 1's are placed. The sum is 11 even if there aren't any 1's...
+If all the other entries of   A   are 2's instead of O's, how do these answers change?

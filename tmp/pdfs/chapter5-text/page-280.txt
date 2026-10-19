@@ -1,0 +1,25 @@
+270   Chapter 5.   Determinants
+Problems 23-26 are about block matrices and block determinants.
+23   With 2 by 2 blocks in 4 by 4 matrices, you cannot always use block determinants:
+I� �I
+=   IAI IDI   but
+(a) Why is the first statement true? Somehow   B   doesn't enter.
+(b) Show by example that equality fails (as shown) whenCenters.
+(c) Show by example that the answer det(AD- CB)   is also wrong.
+24   With block multiplication,   A= LU has   Ak= LkUk in the top left corner:
+(a) Suppose the first three pivots of   A are 2, 3,-1. What are the determinants of
+L   1   , L   2   , L   3   (with diagonal l's) andU   1   , U2,   U   3   and   A   1   ,A   2   ,A   3   ?
+(b) IfA   1   ,   A   2   ,A   3   have determinants 5, 6, 7 find the three pivots from equation (3).
+25   Block elimination subtracts   CA - l   times the first row [   A   B ] from the second row
+[   C   D]. This leaves the   Schur complement D - CA   -l   B   in the corner:
+Take determinants of these block matrices to prove correct rules if   A-
+1
+exists:
+1i �I=   IAI ID-cA-
+1
+BI   =   IAD- CBI   providedAC =   CA.
+26   If   A   is m by n and   B   is n by m, block multiplication gives det   M   =   det   AB:
+IfA is a single row and B is a single column what is det   M? IfA is a column and
+B is a row what is det   M? Do a 3 by 3 example of each.
+27   (A calculus question) Show that the derivative of detA with respect to au is the
+cofactorCu. The other entries are fixed-we are only changing au.

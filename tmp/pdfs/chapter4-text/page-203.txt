@@ -1,0 +1,45 @@
+3.5.   Dimensions of the Four Subspaces
+25   True or false (with a reason or a counterexample):
+(a)   A   and   A
+T
+have the same number of pivots.
+(b)   A   and   A
+T
+have the same left nullspace.
+(c) If the row space equals the column space then   A
+T
+=   A.
+(d) If   A
+T
+= -A   then the row space of   A   equals the column space.
+193
+26   If   a, b, c   are given with   a   -/=- 0, how would you choose   d   so that [ � �] has rank 1?
+Find a basis for the row space and nullspace. Show they are perpendicular!
+27   Find the ranks of the 8 by 8 checkerboard matrix Band the chess matrix C:
+1   0   1   0   1   0   1   0   r   n   b   q
+k   b   n
+0   1   0   1   0   1   0   1   p   p   p   p   p   p   p
+B=   1   0   1   0   1   0   1   0   and   C=   four zero rows
+p   p   p   p   p   p   p
+0   1   0   1   0   1   0   1   r   n   b   q   k   b   n
+r
+p
+p
+r
+The numbers   r, n, b,   q,   k,   p   are all different. Find bases for the row space and left
+nullspace of Band   C.   Challenge problem: Find a basis for the nullspace of   C.
+28   Can tic-tac-toe be completed (5 ones and 4 zeros in   A)   so that rank   (A)   =   2 but
+neither side passed up a winning move?
+Challenge Problems
+29   If   A   =   uv   T is a 2 by 2 matrix of rank 1, redraw Figure 3.5 to show clearly the Four
+Fundamental Subspaces. If Bproduces those same four subspaces, what is the exact
+relation of   B   to   A?
+30   M is the space of 3 by 3 matrices. Multiply every matrix   X   in M by
+(a) Which matrices   X   lead to   AX   =   zero matrix?
+(b) Which matrices have the form   AX   for some matrix   X?
+(a) finds the "nullspace" of that operation   AX   and (b) finds the "column space".
+What are the dimensions of those two subspaces of M? Why do the dimensions add
+to(n-r)+r=9?
+31   Suppose the m by n matrices   A   and   B   have   the same four subspaces.   If they are
+both in row reduced echelon form, prove that   F   must equal   G:
+A=[��]   B=[� �]-

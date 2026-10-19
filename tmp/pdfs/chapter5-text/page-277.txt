@@ -1,0 +1,68 @@
+5.2. Permutations and Cofactors
+2   Compute the determinants of   A, B, C, D.   Are their columns independent?
+A=
+[o�
+0
+1
+1
+�
+ll
+B   =
+[
+4
+7
+1 2
+�
+3
+� ]
+C
+=
+[�   1]   D
+=
+[i   �]-
+3   Show that det   A   = 0, regardless of the five nonzeros marked by x's:
+X
+0
+0
+X]
+X
+X
+What are the cofactors of row   1   ?
+What is the rank of   A?
+What are the 6 terms in det   A?
+4   Find two ways to choose nonzeros from four different rows and columns:
+0   0   0   0
+267
+ri   11   ri   �1
+A=
+1
+1
+B=
+3   4
+(B   has the same zeros as   A).
+1 0   4   0
+0   0   0   0
+Is det   A   equal to   1   +   1   or   1   - 1 or -1 - 1 ? What is det   B?
+5   Place the smallest number of zeros in a 4 by 4 matrix that will guarantee det   A   = 0.
+Place as many zeros as possible while still allowing det A# 0.
+6   (a) If   an   = a22   =   a33   =   0, how many of the six terms in det A will be zero?
+(b) If   au   =   a22   =   a33   =   a44   = 0, how many of the 24 products   a1 j a2ka3za4m
+are sure to be zero?
+7   How many 5 by 5 permutation matrices have det P =   +
+l
+? Those are even permuta
+tions. Find one that needs four exchanges to reach the identity matrix.
+8   If det   A   is not zero, at least one of the n! terms in formula (8) is not zero. Deduce
+from the big formula that some ordering of the rows of   A   leaves no zeros on the
+diagonal. (Don't use   P   from elimination; that   PA   can have zeros on the diagonal.)
+9   Show that 4 is the largest determinant for a 3 by 3 matrix of   1   's and -1's.
+10   How many permutations of (1, 2, 3, 4) are even and what are they?   Extra credit:
+What are all the possible 4 by 4 determinants of   I   +   Peven?
+Problems 11-22 use cofactors C ij
+=   (-l)
+i
++j <let Mi
+j
+· Remove row i and columnj.
+11   Find all cofactors and put them into cofactor matrices   C, D.   Find   AC   and det   B.
+A=[�   !]

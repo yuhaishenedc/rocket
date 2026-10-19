@@ -1,0 +1,60 @@
+268   Chapter 5. Determinants
+12   Find the cofactor matrix C and multiply A times C
+T
+. Compare AC
+T
+with A
+- 1
+:
+A=   [-�
+-
+� -�]
+0   -1   2
+13   Then byn determinant C n   has 1's above and below the main diagonal:
+0   1   0
+0   1   0   0
+C2 = I� �I
+1   0   1   0
+C1 =   IOI   C3 = 1   0   1   C4 =
+0   1   0   1
+0   1   0
+0   0   1   0
+(a)   What are these determinants C1, C2,   C3, C4 ?
+(b) By cofactors find the relation between C n   and C n -1 and C n -2· Find C10.
+14   The matrices in Problem 13 have 1's just above and below the main diagonal.   Going
+down the matrix, which order of columns (if any) gives all l's? Explain why that
+permutation is   even   forn   =   4, 8,   12, ...   and   odd   forn   =   2,6,   10,   ... .   Then
+C n   =   0 (oddn)   C n   =   1 (n   =   4, 8, ·   ·   ·)   C n   =   -1 (n   =   2,6, ·   ·   ·   ).
+15   The tridiagonal 1,   1,   1 matrix of ordern has determinant E n   :
+1   1   0
+1   1   0   0
+E2 = I� �I
+1   1   1   0
+E1 =   Ill   E3 = 1   1   1   E4 =
+0   1   1   1
+0   1   1
+0   0   1   1
+(a) By cofactors show that E n   =   E n -1 - E n -2·
+(b) Starting from E1   =   1 and E 2   =   0 find E3, E4, ..., Es.
+(c) By noticing how these numbers eventually repeat, find E100.
+16   F n   is the determinant of the 1,   1, -1 tridiagonal matrix of ordern:
+11   -11
+F2
+=
+l   l
+=   2   F3 =
+1
+1
+0
+-1   0
+1   -1
+1   1
+1   -1
+=3   F4 =
+1   1   -1
+#4.
+1   1   -1
+1   1
+Expand in cofactors to show that Fn   =   F n -l   +   F n   _ 2.   These determinants are
+Fibonacci numbers   1,   2,   3, 5, 8,   13, . . .. The sequence usually starts 1,   1,   2,   3 (with
+two l's) so our Fn is the usual F n +l·

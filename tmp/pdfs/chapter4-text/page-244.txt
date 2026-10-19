@@ -1,0 +1,105 @@
+234   Chapter 4.   Orthogonality
+A matrix Q with orthonormal columns satisfies
+QTQ
+[ -•i-   l [   I
+-q2   -
+Q 1
+-qJ-   I   +l
+Q 2
+Q
+T
+Q   =I:
+1   0
+ri
+0
+I.   (1)
+0   0
+When row i of Q
+T
+multiplies column j of Q, the dot product is   q;   q
+j
+. Off the diagonal
+(i -=/-   j)   that dot product is zero by orthogonality. On the diagonal (i =   j)   the unit vectors
+give q;   q
+i
+=   llq
+i
+ll
+2
+= 1. Often   Q   is rectangular (m   >   n).   Sometimes   m   =   n.
+When Q   is   square, Q
+T
+Q   =   Imeans that Q
+T
+= Q-
+1
+.-   transpose= inverse.
+If the columns are only orthogonal (not unit vectors) , dot products still give a diagonal
+matrix (not the identity matrix). This diagonal matrix is almost as good as   I.   The important
+thing is orthogonality-then it is easy to produce unit vectors.
+To repeat: Q
+T
+Q   =   I   even when   Q   is rectangular. In that case   Q
+T
+is only an inverse
+from the left. For square matrices we also have   QQ
+T
+=   I,   so   Q
+T
+is the two-sided in
+verse of   Q.   The rows of a square Qare orthonormal like the columns.   The inverse   is the
+transpose.   In this square case we call   Q   an   orthogonal matrix.
+1
+Here are three examples of orthogonal matrices-rotation and permutation and reflec
+tion. The quickest test is to check   Q
+T
+Q   =   I.
+Example 1   (Rotation)   Q   rotates every vector in the plane by the angle   0 :
+Q
+=
+[
+c? s0   -   s in 0
+] s m 0   co s0
+and   Q
+T   =
+Q
+-i=
+[
+c? s0   s in 0
+]
+·
+-   s m 0   co s0
+The columns of   Q   are orthogonal (take their dot product). They are unit vectors because
+s in
+2
+0 + co s
+2
+0   =   1. Those columns give an   orthonormal basis   for the plane R
+2
+.
+The standard basis vectors i and j are rotated through   0   (see Figure 4.10a). Q-
+1
+rotates
+vectors back through   -0.   It agrees with Q
+T
+,
+because the cosine of   -0   equals the cosine
+of   0,   and sin(- 0 )   = -   s in   0.   We have   Q
+T
+Q   =   I   and   QQ
+T
+=   I.
+Example 2   (Permutation)   These matrices change the order to   (y, z, x)   and   (y,   x):
+[� � !]   m m
+and
+[�   �   l [;   l [�   l .
+All columns of these Q's are unit vectors (their lengths are obviously 1). They are also
+orthogonal (the 1 's appear in different places).   The inverse of a permutation matrix   is   its
+transpose: Q-
+1
+=   Q
+T
+.   The inverse puts the components back into their original order:
+1
+"Orthonormal matrix" would have been a better name for   Q,   but it's not used. Any matrix with
+orthonormal columns has the letter   Q.   But we only call it an   orthogonal matrix   when it is square.

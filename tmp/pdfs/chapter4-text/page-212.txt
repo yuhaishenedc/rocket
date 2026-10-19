@@ -1,0 +1,54 @@
+202   Chapter 4.   Orthogonality
+Problem Set 4.1
+Questions 1-12 grow out of Figures 4.2 and 4.3 with four subspaces.
+1   Construct any 2 by 3 matrix of rank one. Copy Figure 4.2 and put one vector in each
+subspace (and put two in the nullspace). Which vectors are orthogonal?
+2   Redraw Figure 4.3 for a 3 by 2 matrix of rank   r   = 2. Which subspace is   Z   (zero
+vector only)? The nullspace part of any vector   x   in R
+2
+is   Xn   = __ .
+3   Construct a matrix with the required property or say why that is impossible:
+(a) Column space contains [ _!]
+and   [-!],   nullspace contains [ ½]
+(b) Row space contains [ _!]
+and
+[-!]   ,   nullspace contains [ ½]
+(c)   Ax   =   [½   ]   has a solution and   A
+T   [
+g]   =   [g]
+(d) Every row is orthogonal to every column   (A   is not the zero matrix)
+(e) Columns add up to a column of zeros, rows add to a row of 1's.
+4   If   AB   = 0 then the columns of   B   are in the   of   A.   The rows of   A   are in the
+__ of   B.   With   AB=   0, why can't   A   and   B   be 3 by 3 matrices of rank 2?
+5   (a) IfAx=bhas a solution andA
+T
+y=O,is(y
+T
+x=O)or(y
+T
+b=O)?
+(b) If   A
+T
+y=   (1, 1, 1) has a solution and   Ax=   0,   then __ .
+6   This system of equations   Ax   =   b   has   no solution   (they lead to O = 1):
+X   +   2y   +   2z   5
+2x   +   2y   +   3z   5
+3x   +   4y   +   5z   9
+Find numbers YI, Y2, y3 to multiply the equations so they add to O = 1. You have
+found a vector yin which subspace? Its dot product   y
+T
+b   is 1, so no solution   x.
+7   Every system with no solution is like the one in Problem 6.   There are numbers
+YI, ..., Y m   that multiply the m equations so they add up to O = 1. This is called
+Fredholm's Alternative:
+Exactly one of these problems has a solution
+Ax= b   OR   A
+T
+y   = O   with   y
+T
+b   = 1.
+If   b   is not in the column space of   A,   it is not orthogonal to the nullspace of   A
+T
+.
+Multiply the equations   XI   -   x 2   = 1 and x 2 -   x 3   = 1 and   XI   -   x 3   = 1 by numbers
+YI, Yz, y3 chosen so that the equations add up to O = 1.

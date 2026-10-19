@@ -1,0 +1,18 @@
+5.3. Cramer's Rule, Inverses, and Volumes   287
+Challenge Problems
+39   If you know all 16 cofactors of a 4 by 4 invertible matrix   A,   how would you find   A?
+40   Suppose   A   is a 5 by 5 matrix. Its entries in row 1 multiply determinants (cofactors)
+in rows 2-5 to give the determinant. Can you guess a "Jacobi formula" for det   A
+using 2 by 2 determinants from rows 1-2   times   3 by 3 determinants from rows 3-5?
+Test your formula on the -1, 2, -1 tridiagonal matrix that has determinant= 6.
+41   The 2 by 2 matrix   AB   =(2 by 3)(3 by 2) has a "Cauchy-Binet formula" for det   AB:
+det   AB   = sum of (2 by 2 determinants in   A)   (2 by 2 determinants in   B)
+(a) Guess which 2 by 2 determinants to use from   A   and   B.
+(b) Test your formula when the rows of   A   are 1, 2, 3 and 1, 4, 7 with   B   =   A
+T
+.
+42   The big formula has n! terms. But if an entry of   A   is zero, (   n - l) ! terms disappear.
+If   A   has only   three diagonals,   how many terms are left?
+For n =   l, 2, 3, 4 the tridiagonal determinant has 1, 2, 3, 5 terms.   Those are
+Fibonacci numbers in Section 6.2 ! Show why a tridiagonal 5 by 5 determinant has
+5   +   3   = 8 nonzero terms (Fibonacci again). Use the cofactors of a 11   and a 12.

@@ -1,0 +1,36 @@
+258   Chapter 5.   Determinants
+5.2   Permutations and Cofactors
+1 2 by 2   : ad - be has 2 ! terms with   ±   signs.   n   by   n : det   A   adds   n!   terms with   ±   signs.
+2 For n   =   3, det   A   adds 3!   =   6 terms.   Two terms are +a12a23a31 and -a13a22a31.
+Rows 1, 2, 3 and columns 1, 2, 3 appear once in each term.
+3 That minus sign came because the column order 3, 2, 1 needs one exchange to recover 1, 2, 3.
+4   The six terms include +a11a22a33   -a11a23a32   = a11   (a22a33 -a23a32) = a11   ( cofactor   C 11).
+5 Always detA = a11C11 + a12C12 + · · · + a1 n   C1 n   - Cofactors are determinants of size n - l.
+A computer finds the determinant from the pivots. This section explains two other ways
+to do it. There is a "big formula" using all n! permutations. There is a "cofactor formula"
+using determinants of size n - l. The best example is my favorite 4 by 4 matrix:
+A =
+-l   2   -1   0
+[
+2   -1   0   0
+1
+0   -1   2   -1
+0   0   -1   2
+has   detA   =   5.
+We can find this determinant in all three ways:   pivots, big   formula, cofactors.
+1. The product of the pivots is 2 ·   ! ·   ½ ·   ¾. Cancellation produces 5.
+2.   The "big formula" in equation (8) has 4! = 24 terms. Only five terms are nonzero:
+det   A   = 16 - 4 - 4 - 4 + 1 = 5.
+The 16 comes from 2 · 2 · 2 · 2 on the diagonal of   A.   Where do -4 and +1 come
+from? When you can find those five terms, you have understood formula (8).
+3. The numbers 2, -1, 0, 0 in the first row multiply their cofactors 4, 3, 2, 1 from the
+other rows. That gives 2 · 4 - 1 · 3   =   5. Those cofactors are 3 by 3 determinants.
+Cofactors use the rows and columns that are   not   used by the entry in the first row.
+Every term in a determinant uses each row and column once!
+The Pivot Formula
+When elimination leads to   A   =   LU, the pivots d 1   ,   .   .   . ,   d n   are on the diagonal of the
+upper triangular U.   If no row exchanges are involved,   multiply those pivots   to find the
+determinant:
+(1)
+This formula for det   A   appeared in Section 5.1,   with the further possibility of row
+exchanges. Then a permutation enters PA= L U. The determinant of P is -1 or   +   1.

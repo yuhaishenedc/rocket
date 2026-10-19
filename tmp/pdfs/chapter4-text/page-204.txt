@@ -1,0 +1,65 @@
+Chapter 4
+Orthogonality
+4.1   Orthogonality of the Four Subspaces
+1   Orthogonal vectors have v
+T
+w = 0. Then llvll
+2
++
+llwll
+2
+=   llv
++
+wll
+2
+=   llv- wll
+2
+.
+2 Subspaces V and W are orthogonal when v
+T
+w   =   0 for every v in V and every
+win W.
+3   The row space of   A   is orthogonal to the nullspace. The column space is orthogonal to N(A
+T   ).
+4 One pair of dimensions adds to   r   + (   n   - r) =   n.   The other pair has   r   + (   m   - r) =   m.
+S Row space and nullspace are orthogonal   complements:   Every   x   in R
+n
+splits into X row   +   X nu ll·
+6 Suppose a space   S   has dimension   d.   Then every basis for   S   consists of   d   vectors.
+7 If d vectors in Sare independent, they span   S.   If d vectors span   S,   they are independent.
+Two vectors are orthogonal when their dot product is zero:   v   ·   w   =   v   T   w   = 0. This
+chapter moves to   orthogonal subspaces   and   orthogonal bases   and   orthogonal matrices.
+The vectors in two subspaces, and the vectors in a basis, and the column vectors in Q ,
+all pairs will be orthogonal. Think of a
+2
++   b
+2
+= c
+2
+for a   right triangle   with sides   v   and   w.
+Orthogonal vectors   and
+llvll
+2
++
+llwll
+2
+=
+llv
++
+wll
+2
+-
+The right side is (v   +
+w)
+T   (v   +
+w). This equals v
+T   v   +   w   T   w when v   T   w = w   T   v = 0.
+Subspaces entered Chapter 3 to throw light on   Ax   =   b.   Right away we needed the
+column space and the nullspace.   Then the light turned onto   A
+T
+,   uncovering two more
+subspaces. Those four fundamental subspaces reveal what a matrix really does.
+A matrix multiplies a vector:   A times x.   At the first level this is only numbers. At
+the second level   Ax   is a combination of column vectors. The third level shows subspaces.
+But I don't think you have seen the whole picture until you study Figure 4.2.
+194

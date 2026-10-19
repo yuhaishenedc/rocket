@@ -1,0 +1,78 @@
+4.3. Least Squares Approximations   225
+That was a perfect example of the "Gram-Schmidt idea" coming in the next section:
+Make the columns orthogonal in advance.   Then AJe
+w
+A new   is diagonal and X new   is easy.
+Dependent Columns in   A:   What is   x?
+From the start, this chapter has assumed independent columns in A. Then A
+T
+A is invert
+ible. Then A
+T
+Ax= A
+T
+b produces the least squares solution to Ax=   b.
+[
+i
+Which   x   is best if   A   has   dependent columns?   Here is a specific example.
+n [   :�   J   [n
+[ i   i] [ �� ]
+[;]
+b1 =   3
+=b
+=p
+b2 = 1
+Ax=b   Ax=p
+'   •
+'   /
+,,,
+/
+- - - -... -   - -
+.,. /   I
+'
+'
+/   •   '
+T   = 1
+t
+The measurements b 1   = 3 and b 2   = 1 are at the same time   T ! A straight line   C   +   Dt
+cannot go through both points. I think we are right to project   b   =   (3, 1)   top   =   (2, 2) in
+the column space of   A.   That changes the equation Ax =   b   to the equation Ax =   p.
+An equation with no solution has become an equation with infinitely many solutions.
+The problem is that   A   has dependent columns and (   1, -1) is in its nullspace.
+Which solution   x   should we choose? All the dashed lines in the figure have the same
+two errors   1   and   -1   at time   T.   Those errors (   1, -1)   =   e   =   b   - p   are as small as possible.
+But this doesn't tell us which dashed line is best.
+My instinct is to go for the horizontal line at height 2. If the equation for the best line
+is   b   =   C   +   Dt,   then my choice will have   x 1   =   C   =   2 and   x 2   =   D   =   0. But what if
+the line had been written as   b   =   ct   +   d?   This is equally correct (just reversing   C   and D).
+Now the horizontal line has   x 1   =   c   =   0 and   x 2   =   d   =   2. I don't see any way out.
+In Section 7.4, the   "pseudoinverse" of   A will choose the   shortest solution to   Ax   =   p.
+Here, that shortest solution will be x
++
+=   (1, 1). This is the particular solution in the row
+space of   A,   and x
++
+has length v'2. (Both solutions x   = (2, 0) and (0, 2) have length 2.)
+We are arbitrarily choosing the nullspace component of the solution x
++
+to be zero.
+When   A   has independent columns, the nullspace only contains the zero vector and the
+pseudoinverse is our usual left inverse L = (A
+T
+A)-
+1
+A
+T
+. When I write it that way, the
+pseudoinverse sounds like the best way to choose   x.
+Comment   MATLAB experiments with singular matrices produced either   Inf   or   NaN
+(Not a Number) or   10
+16
+(a bad number). There is a warning in every case! I believe that   Inf
+and   NaN   and   10
+16
+come from the possibilities Ox   =   b and Ox   =   0   and   10-
+16
+x   =   1.
+Those are three small examples of three big difficulties: singular with no solution,
+singular with many solutions, and very very close to singular.

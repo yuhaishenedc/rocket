@@ -1,0 +1,80 @@
+4.2. Projections   213
+When A has independent columns, A
+T
+A is square, symmetric, and invertible.
+To repeat for emphasis:   A
+T
+A   is   (n   by m) times (m by   n).   Then   A
+T
+A   is square   (n   by   n).
+It is symmetric, because its transpose is   (A
+T
+A) T   =   A
+T
+(A
+T
+) T   which equals   A
+T
+A.   We just
+proved that   A
+T
+A   is invertible-provided   A   has independent columns. Watch the difference
+between dependent and independent columns:
+A
+T
+A
+[; ; �] [i �]
+dependent   singular
+A
+T
+A
+[i ; �] [i �]
+indep.   invertible
+Very brief summary   To find the projectionp = :i\a1   + · · ·   +x n   a n   ,   solve   A
+T
+Ax= A
+T
+b.
+This gives   x.   The projection is   p   =   Ax   and the error is   e   =   b   -   p   =   b   -   Ax.   The
+projection matrix   P   =   A(A
+T
+A)-
+1
+A
+T
+gives   p   =   Pb.
+This matrix satisfies P
+2
+=   P. The distance from b to the subspace C(A) is llell-
+•   REVIEW OF THE KEY IDEAS   •
+1. The projection of   b   onto the line through   a   is   p   =   ax   =   a(   a
+T
+b/   a
+T
+a).
+2.   The rank one projection matrix   P   =   aa T /   a
+T
+a   multiplies   b   to produce   p.
+3.   Projecting   b   onto a subspace leaves   e   =   b   -   p   perpendicular to the subspace.
+4.   When   A   has full rank n, the equation   A
+T
+Ax= A
+T
+b   leads to   x   and   p   =   Ax.
+5.   The projection matrix   P   =   A(A
+T
+A)-
+1
+A
+T
+has   p
+T
+=   P   and P
+2
+=   P   and   Pb= p.
+•   WORKED EXAMPLES   •
+4.2 A   Project the vector   b   =   (3, 4, 4) onto the line through   a   =   (2, 2, 1) and then
+onto the plane that also contains   a*   = (1, 0, 0).   Check that the first error vector   b   -   p
+is perpendicular to   a,   and the second error vector   e*   =   b   -   p*   is also perpendicular to   a*.
+Find the 3 by 3 projection matrix   P   onto that plane of   a   and   a*.   Find a vector whose
+projection onto the plane is the zero vector.   Why is it exactly the error   e*   ?

@@ -1,0 +1,59 @@
+198   Chapter 4.   Orthogonality
+Fundamental Theorem of   Linear Algebra,   Part 2
+N(A) is the orthogonal complement of   the row space C(A
+T
+)   (in   R
+n
+).
+N(A
+T
+) is the orthogonal complement of   the column space C(A)   (in   R
+m
+).
+Part 1 gave the dimensions of the subspaces. Part 2 gives the 90
+°
+angles between them.
+The point of "complements" is that every   x   can be split into a   row space component   Xr
+and a   nullspace component   X n   .   When   A   multiplies   x   =   Xr   +   X n   ,   Figure 4.3 shows what
+happens to   Ax= Ax r   +   Ax n   :
+The nullspace component goes to zero:   Ax n   = 0.
+The row space component goes to the column space:   Axr   =   Ax.
+Every vector goes to the column space!   Multiplying by   A   cannot do anything else.
+More than that:   Every vector b in the column space comes from one and only one vector
+X r   in the row space.   Proof: If   Axr   =   Ax�,   the difference   Xr   -   x�   is in the nullspace.
+It is also in the row space, where   Xr   and   x�   came from. This difference must be the zero
+vector, because the nullspace and row space are perpendicular. Therefore   Xr   =   x�.
+There is an   r   by   r   invertible matrix hiding inside   A,   if we throw away the two nullspaces.
+From the row space to the column space, A is invertible.   The "pseudoinverse" will invert
+that part of   A   in Section 7.4.
+Example 4   Every matrix of rank   r   has an   r   by   r   invertible submatrix:
+0
+5
+0
+0
+0
+0
+0
+0
+0
+�]
+contains the submatrix
+[� �]   .
+The other eleven zeros are responsible for the nullspaces. The rank of   B   is also   r   = 2:
+2
+2
+2
+3   4   5
+]   [1 4   5   6   contains
+1
+4   5   6
+! ]   in the pivot rows and columns.
+Every matrix can be diagonalized, when we choose the right bases for   R
+n
+and R
+m
+. This
+Singular Value Decomposition   has become extremely important in applications.
+Let me repeat one clear fact. A row of   A   can't be in the nullspace of   A   (except for
+a zero row). The only vector in two orthogonal subspaces is the zero vector.
+If   a vector   v   is orthogonal to itself then   v   is the zero vector.

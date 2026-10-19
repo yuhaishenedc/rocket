@@ -1,0 +1,82 @@
+214   Chapter 4.   Orthogonality
+Solution   The projection of   b   = (3,4,4) onto the line through   a=   (2,2,1) is   p   =   2a:
+Onto a line
+a
+T
+b   1 8
+p   = -
+T
+a=   -( 2 , 2 ,   1 ) = (4,4, 2 ) =   2a.
+a   a   9
+The error vector   e   =   b   - p   = (-l,0, 2 ) is perpendicular to   a=   ( 2 , 2 ,   1 ).   Sop   is correct.
+The plane of   a=   (2,2,1) and   a*=   (1,0,0) is the column space of   A=   [a a*]:
+(A
+T
+A)-1
+=
+! [
+1   -2
+]
+5   -2   9
+[1   o   o
+l P   =   0   .8   .4
+0   .4   .2
+Now   p*   =   Pb=   (3,4.8, 2 .4). The error   e*   =   b   -   p*   = (0,   -.8,1.6) is perpendicular to
+a   and   a*.   This   e*   is in the nullspace of   P   and   its projection is zero!   Note P
+2
+=   P   =   p
+T
+_
+4.2 B   Suppose your pulse is measured at   x   = 70 beats per minute, then at   x   = 80,
+then at   x   =   12 0. Those three equations   Ax   =   b   in one unknown have   A
+T
+= [ 1   1   1 ] and
+b   = (70,80, 12 0).   The best xis the   __   of   70, 80,120. Use calculus and projection:
+1. Minimize   E   =   (x   - 70)
+2
++ (x   - 80)
+2
++ (x   -   12 0)
+2
+by solving   dE/dx   = 0.
+2. Project   b   =   (70,80, 12 0) onto   a=   (l,   1 ,   1 ) to find
+x
+=   a
+T
+bja
+T
+a.
+Solution   The closest horizontal line to the heights 70,80,   1 20 is the   average   x   =90:
+dE   .   �   70+80+   12 0
+-
+d
+=   2(x   - 70)+ 2(x   - 80)+   2(x   -   12 0) =   0   gives   x   = ---- =90.
+X   3
+Also by projection
+x=
+a
+T
+b
+=
+( 1 , 1 , 1 ?(70,80, 12 0)
+=
+70+80+ 12 0
+=90
+a
+T
+a   ( 1 , 1 ,l)
+T
+(l, 1 , 1 )   3
+·
+In   recursive   least squares, a fourth measurement   1 30 changes the average Xol
+d
+= 90 to
+Xnew   =   1 00. Verify the   update formula Xnew   = Xol
+d
++ ¾( 1 30 -   x
+01d
+)- When a new
+measurement arrives, we don't have to average all the old measurements again!
+Problem Set 4.2
+Questions 1-9 ask for projections   p   onto lines. Also errors   e   =   b   -   p   and matrices   P.
+1   Project the vector b onto the line through   a.   Check that   e   is perpendicular to   a:

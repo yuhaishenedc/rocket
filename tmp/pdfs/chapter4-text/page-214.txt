@@ -1,0 +1,86 @@
+204   Chapter 4.   Orthogonality
+11   If S   is the subspace of R
+3
+containing only the zero vector, what is S
+1_
+?   If S   is
+spanned by (1, 1, 1), what is S
+1_
+? If Sis spanned by (1, 1, 1) and (1, 1, -1), what
+is a basis for S
+1_
+?
+18   Suppose Sonly contains two vectors (1, 5, 1) and (2, 2, 2) (not a subspace). Then
+S
+1-
+is the nullspace of the matrix A   = __ .   S
+1_
+is a subspace even if Sis not.
+19   Suppose L is a one-dimensional subspace (a line) in R
+3
+.   Its orthogonal complement
+L
+1_
+is the __ perpendicular to L. Then (L
+1_
+)
+1_
+is a __ perpendicular to L
+1-
+_
+In fact (L   1-)
+1-
+is the same as __ .
+20   Suppose   V   is the whole space R
+4
+.   Then   V
+1-
+contains only the vector __ . Then
+(V
+1_
+)1_ is __ . So (V
+1-
+)
+1_
+is the same as __ .
+21   Suppose Sis spanned by the vectors (1, 2, 2, 3) and (1, 3, 3, 2). Find two vectors
+that span S
+1_
+. This is the same as solving Ax   =   0 for which A?
+22   If P is the plane of vectors in R
+4
+satisfying x 1   +   x 2   +   x 3   +   x 4   =   0, write a basis
+for p
+.l
+. Construct a matrix that has P as its nullspace.
+23   If a subspace Sis contained in a subspace V, prove that S
+.l
+contains V
+.l
+.
+Questions 24-30 are about perpendicular columns and rows.
+24   Suppose an n by n matrix is invertible: AA-
+1
+=   I. Then the first column of A-
+1
+is
+orthogonal to the space spanned by which rows of A?
+25   Find A
+T
+A if the columns of A are unit vectors, all mutually perpendicular.
+26   Construct a 3 by 3 matrix   A   with no zero entries whose columns are mutually per
+pendicular. Compute A
+T
+A. Why is it a diagonal matrix?
+27   The lines 3x   +   y   =   b 1   and 6x   +   2y   =   b 2   are __ . They are the same line if __ .
+In that case (   b 1,   b 2)   is perpendicular to the vector __ . The nullspace of the matrix
+is the line 3x   +   y   = __ .   One particular vector in that nullspace is __ .
+28   Why is each of these statements false?
+(a) (1, 1, 1) is perpendicular to (1, 1, -2) so the planes x   +   y   +   z   =   0 and x   +   y   -
+2z   =   0 are orthogonal subspaces.
+(b) The subspace spanned by (1, 1, 0, 0, 0) and (0, 0, 0, 1, 1) is the orthogonal com
+plement of the subspace spanned by (1, -1, 0, 0, 0) and (2, -2, 3, 4, -4).
+(c) Two subspaces that meet only in the zero vector are orthogonal.
+29   Find a matrix with v   =   (l, 2, 3) in the row space and column space. Find another
+matrix with v in the nullspace and column space. Which pairs of subspaces can v
+notbe in?

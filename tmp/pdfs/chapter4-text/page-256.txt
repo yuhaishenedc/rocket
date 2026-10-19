@@ -1,0 +1,33 @@
+246   Chapter 4. Orthogonality
+31   (a) Choose   c   so that   Q   is an orthogonal matrix:
+[
+1   -1
+-1   1
+Q   =
+C   -1   -1
+-1   -1
+Project   b   = (l, 1, 1, 1) onto the first column. Then project   b   onto the plane of the
+first two columns.
+32   If   u   is a unit vector, then   Q   =   I   -   2uu   Tis a reflection matrix (Example 3). Find Q 1
+from   u   = (0, 1) and Q 2   from   u   = (0,v'J,/2,v'J,/2). Draw the reflections when Q   1
+and Q 2   multiply the vectors (1,2) and (1, 1, 1).
+33   Find all matrices that are both orthogonal and lower triangular.
+34   Q   =   I   -   2uu   Tis a reflection matrix when   u   Tu =   l. Two reflections give Q
+2
+=   I.
+(a) Show that   Qu   =   -u.   The mirror is perpendicular to   u.
+(b) Find   Qv   when   u   T v   =   0. The mirror contains   v.   It reflects to itself.
+Challenge Problems
+35   (MATLAB)   Factor   [   Q,R] = qr(A) for   A   = eye(4) - diag([ 1 1 1   ],-1). You
+are orthogonalizing the columns (1,-1, 0, 0) and (0, 1,-1, 0) and (0, 0, 1,-1) and
+(0, 0, 0, 1) of   A.   Can you scale the orthogonal columns of   Q   to get nice integer
+components?
+36   If   A   ism by   n   with rank   n,   qr(A) produces a   square   Q   and zeros below   R:
+The factors from MATLAB are (   m   bym)   (   m   by   n)
+The   n   columns of Q   1   are an orthonormal basis for which fundamental subspace?
+The   m-n   columns of Q 2   are an orthonormal basis for which fundamental subspace?
+37   We know that   P   =   QQ
+T
+is the projection onto the column space of Q(m by n).
+Now add another column   a   to produce   A   =   [Q   a]. Gram-Schmidt replaces   a   by
+what vector   q?   Start with   a,   subtract _   _ , divide by __ to find   q.

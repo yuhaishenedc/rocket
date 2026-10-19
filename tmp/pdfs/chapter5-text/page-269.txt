@@ -1,0 +1,59 @@
+5.2.   Permutations and Cofactors   259
+(det P)(det A)   =   (det   L   )(det U)   gives   <letA= ±(d 1   d2 · · · d n )-   (2)
+Example 1   A row exchange produces pivots 4, 2, 1 and that important minus sign:
+detA= -(4)(2)(1)= -8.
+The odd number of row exchanges (namely one exchange) means that <let   P = -l.
+The next example has no row exchanges. It may be the first matrix we factored into
+LU (when it was 3 by 3). What is remarkable is that we can go directly ton byn. Pivots
+give the determinant. We will also see how determinants give the pivots.
+Example 2   The first pivots of this tridiagonal matrix   A   are 2,   ! ,   ½.   The next are ¾ and
+i   and eventually �- Factoring thisn byn matrix reveals its determinant:
+2   -1   1
+-1   2   -1
+1
+-2
+-1   2
+-1
+-1   2
+1
+2
+1
+-3
+_n-1
+n
+1
+2   -1
+3
+-1
+2
+4
+-J
+3
+The pivots are on the diagonal of U (the last matrix).   When 2 and   !   and ½ and ¾ are
+multiplied, the fractions cancel.   The determinant of the 4 by 4 matrix is 5.   The 3 by 3
+determinant is 4.   Then byn determinant isn   +   l:
+-1, 2, -1 matrix   detA= (2)   (!) (1) · · · (
+0
+!
+1
+)   = n   +   1.
+Important point: The first pivots depend only on the   upper left corner   of the original
+matrix   A.   This is a rule for all matrices without row exchanges.
+The first k pivots come from the k by k matrix Ak in the top left corner of A.
+The determinant of   that corner submatrix   Ak   is   d1d2 · · · dk   (first k pivots).
+The 1 by 1 matrix A1 contains the very first pivot d1. This is detA1. The 2 by 2 matrix in
+the corner has <letA 2   =   d1d 2.   Eventually then byn determinant multiplies alln pivots.
+Elimination deals with the matrix Ak in the upper left corner while starting on the whole
+matrix. We assume no row exchanges-then A = LU and Ak = LkUk.   Dividing one
+determinant by the previous determinant (<letAk divided by <letA k   -l) cancels everything
+but the latest pivot dk.   Each pivot is a ratio of   determinants:
+Pivots from
+determinants
+d1d2 · · -dk
+The   kth   pivot is   dk   =
+d d   d 1   2 • . •   k   -1
+detAk
+detA k   -1
+.
+We don't need row exchanges when all the upper left submatrices have   <letAk -:/- 0.
+(3)

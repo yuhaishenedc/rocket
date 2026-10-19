@@ -1,0 +1,25 @@
+218   Chapter 4.   Orthogonality
+33   Suppose you know the average X o Jd of b1, b2, ..., b999. When b1000 arrives, check
+that the new average is a combination of X o Jd and the mismatch b1 000   - X o ld:
+x
+=
+b1   + · · · +   b1000
+=
+b1   + · · · +   bggg   _1_
+(b
+_ b1   + · · · +   b999
+) new
+1000   999
++
+1000
+1 000
+999
+·
+This is a "Kalman fi.Uer" Xnew = X o ld   +   iloo   (b1 000   - X o Jd) with gain matrix 1
+0
+1
+00
+.
+The last page of the book extends the Kalman filter to matrix updates.
+34   (2017) Suppose Pi and P 2   are projection matrices (Pl= Pi= P?). Prove this fact:
+Pi P2 is a projection matrix if and only if Pi P2   =   P2   A.

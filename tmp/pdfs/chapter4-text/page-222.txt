@@ -1,0 +1,147 @@
+212   Chapter 4.   Orthogonality
+Now solve the normal equation A
+T
+Ax= A
+T
+b to find   x:
+[� !] [!�] [�]   gives   x   =   [!�] [_;].   (8)
+The combination   p   = Axis the projection of b onto the column space of A:
+Two checks on the calculation. First, the error   e   = (1, - 2, 1) is perpendicular to both
+columns (1, 1, 1) and (0, 1, 2). Second, the matrix   P   times   b   = (6, 0, 0) correctly gives
+p   = (5, 2, -1). That solves the problem for one particular   b,   as soon as we find   P.
+The projection matrix is P = A(A
+T
+A)-
+1
+A
+T
+. The determinant of A
+T
+A is 15
+-
+9 = 6;
+then (A
+T
+A)-
+1
+is easy. Multiply A times (A
+T
+A)-
+1
+times A
+T
+to reach P:
+(A
+T
+A)-
+1
+= �
+[
+5
+-3]
+6   -3   3
+and   P = � [   �   ;
+-
+�1
+6
+-1   2   5
+(10)
+We must have   P
+2
+=   P,   because a second projection doesn't change the first projection.
+Warning   The matrix P = A(A
+T
+A)-
+1
+A
+T
+is deceptive. You might try to split (A
+T
+A)-
+1
+into A-
+1
+times (A
+T
+)-
+1
+. If you make that mistake, and substitute it into   P,   you will find
+P   = AA-
+1
+(A
+T
+)-
+1
+A
+T
+. Apparently everything cancels. This looks like   P   = I, the identity
+matrix. We want to say why this is wrong.
+The matrix A   is   rectangular. It has no inverse matrix.   We cannot split (A
+T
+A)-
+1
+into
+A -
+1
+times (A
+T
+)-
+1
+because there is no   A   -   l   in the first place.
+In our experience, a problem that involves a rectangular matrix almost always leads to
+A
+T
+A.   When A has independent columns, A
+T
+A is invertible. This fact is so crucial that we
+state it clearly and give a proof.
+A
+T
+A   is invertible if and only if   A   has linearly independent columns.
+Proof   A
+T
+A is a square matrix (   n   by n).   For every matrix A, we will now show that
+A
+T
+A   has the same nullspace as   A.   When the columns of A are linearly independent, its
+nullspace contains only the zero vector. Then A
+T
+A, with this same nullspace, is invertible.
+Let A be any matrix. If xis in its nullspace, then Ax = 0. Multiplying by A
+T
+gives
+A
+T
+Ax   = 0. So xis also in the nullspace of A
+T
+A.
+Now start with the nullspace of A
+T
+A.   From   A
+T
+Ax   =   Owe must prove   Ax   =   0.
+We can't multiply by (A
+T
+)-
+1
+, which generally doesn't exist. Just multiply by x
+T
+:
+(x
+T
+)A
+T
+Ax= 0   or   (Ax?(Ax) = 0   or   IIAxll
+2
+= 0.   (11)
+We have shown: If A
+T
+Ax   = 0 then Axhas length zero. Therefore Ax   = 0. Every vector
+x   in one nullspace is in the other nullspace.   If A
+T
+A has dependent columns, so has   A.
+If A
+T
+A has independent columns, so has   A.   This is the good case : A
+T
+A is invertible.
