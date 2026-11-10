@@ -1,3 +1,28 @@
+/* Center the image wrapper as well as the image in both Obsidian views.
+   Live Preview renders standalone images as widgets outside .cm-line. */
+.markdown-preview-view .image-embed,
+.markdown-source-view.mod-cm6 .image-embed {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto !important;
+  text-align: center;
+}
+
+.markdown-preview-view .image-embed img,
+.markdown-preview-view .el-p > p > img:only-child,
+.markdown-source-view.mod-cm6 .image-embed img,
+.markdown-source-view.mod-cm6 .cm-embed-block img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto !important;
+}
+
+.markdown-source-view.mod-cm6 .cm-embed-block:has(.image-embed) {
+  text-align: center;
+}
+
 /* Center Markdown images and their italic captions in reading view. */
 .markdown-preview-view p:has(> img:only-child),
 .markdown-preview-view p:has(> span.internal-embed.image-embed:only-child) {
@@ -15,6 +40,11 @@
   text-align: center;
 }
 
+/* Obsidian wraps each reading-view paragraph in a separate .el-p block. */
+.markdown-preview-view .el-p:has(img) + .el-p p:has(> em:only-child) {
+  text-align: center;
+}
+
 /* Center the same figure patterns in Live Preview. */
 .markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image),
 .markdown-source-view.mod-cm6 .cm-line:has(.image-embed) {
@@ -23,5 +53,19 @@
 
 .markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image) + .cm-line:has(.cm-em),
 .markdown-source-view.mod-cm6 .cm-line:has(.image-embed) + .cm-line:has(.cm-em) {
+  text-align: center;
+}
+
+/* A blank Markdown line separates the image and caption in Live Preview. */
+.markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image, .image-embed) + .cm-line:has(> br:only-child) + .cm-line:has(.cm-em),
+.markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image, .image-embed) + .cm-line:empty + .cm-line:has(.cm-em),
+.markdown-source-view.mod-cm6 .cm-line:has(.cm-formatting-image, .image-embed) + .cm-line:has(.cm-trailingSpace) + .cm-line:has(.cm-em) {
+  text-align: center;
+}
+
+/* Rendered image widgets may replace the original source line entirely. */
+.markdown-source-view.mod-cm6 .cm-embed-block:has(img) + .cm-line:has(.cm-em),
+.markdown-source-view.mod-cm6 .cm-embed-block:has(img) + .cm-line:has(> br:only-child) + .cm-line:has(.cm-em),
+.markdown-source-view.mod-cm6 .cm-embed-block:has(img) + .cm-line:empty + .cm-line:has(.cm-em) {
   text-align: center;
 }
